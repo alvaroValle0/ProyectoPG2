@@ -20,6 +20,8 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1040;
         }
         .sidebar {
             position: fixed;
@@ -27,9 +29,9 @@
             left: 0;
             height: 100vh;
             width: 280px;
-            background: rgba(255, 165, 0, 0.95);
+            background: rgba(18, 147, 252, 0.95);
             backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255, 165, 0, 0.2);
+            border-right: 1px solid rgba(18, 147, 252, 0.2);
             z-index: 1000;
             transition: transform 0.3s ease;
             display: flex;
@@ -102,6 +104,8 @@
             margin-left: 280px;
             padding: 2rem;
             transition: margin-left 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .main-content.expanded {
             margin-left: 0;
@@ -176,6 +180,74 @@
         /* Ocultar indicador cuando se está en la parte inferior */
         .sidebar-menu.at-bottom::after {
             opacity: 0;
+        }
+        
+        /* Estilos para el dropdown del usuario */
+        .dropdown-menu {
+            z-index: 1050;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            min-width: 250px;
+            padding: 0.75rem 0;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            background: linear-gradient(45deg, #007bff, #6610f2);
+            margin: -0.75rem -0rem 0.5rem -0rem;
+            border-radius: 10px 10px 0 0;
+            color: white;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .dropdown-item:hover, .dropdown-item:focus {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            transform: translateX(5px);
+        }
+        
+        .dropdown-item.text-danger:hover {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .dropdown-toggle::after {
+            margin-left: 0.5rem;
+        }
+        
+        /* Asegurar que el navbar no corte el dropdown */
+        .navbar .container-fluid {
+            overflow: visible;
+        }
+        
+        .main-content {
+            overflow: visible;
+        }
+        
+        /* Estilos adicionales para el botón del usuario */
+        .user-dropdown-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(0, 123, 255, 0.3);
+            color: #007bff;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .user-dropdown-btn:hover {
+            background: rgba(0, 123, 255, 0.1);
+            border-color: #007bff;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
         }
     </style>
     @yield('styles')
@@ -305,20 +377,57 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-2"></i>
-                            {{ auth()->user()->name }}
+                        <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center user-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                 style="width: 32px; height: 32px; font-size: 0.875rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="d-none d-md-inline">{{ auth()->user()->name }}</span>
+                            <span class="d-md-none">Cuenta</span>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i> Perfil</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li class="dropdown-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                         style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ auth()->user()->name }}</div>
+                                        <small class="text-muted">{{ auth()->user()->email }}</small>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('perfil') }}">
+                                    <i class="fas fa-user-cog me-2 text-primary"></i> 
+                                    Mi Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-2 text-info"></i> 
+                                    Dashboard
+                                </a>
+                            </li>
+                            @if(auth()->user()->esTecnico())
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('reparaciones.mis-tareas') }}">
+                                    <i class="fas fa-tasks me-2 text-warning"></i> 
+                                    Mis Tareas
+                                </a>
+                            </li>
+                            @endif
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                    <button type="submit" class="dropdown-item d-flex align-items-center text-danger" onclick="return confirm('¿Estás seguro de que deseas cerrar sesión?')">
+                                        <i class="fas fa-sign-out-alt me-2"></i> 
+                                        Cerrar Sesión
                                     </button>
                                 </form>
                             </li>
@@ -362,6 +471,31 @@
             
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('expanded');
+        });
+
+        // Asegurar que el dropdown del usuario esté siempre visible
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+            const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+            
+            // Forzar la visibilidad del dropdown
+            dropdownToggle.style.visibility = 'visible';
+            dropdownToggle.style.opacity = '1';
+            dropdownToggle.style.pointerEvents = 'auto';
+            
+            // Ajustar posición del dropdown menu cuando se abra
+            dropdownToggle.addEventListener('click', function() {
+                setTimeout(() => {
+                    if (dropdownMenu.classList.contains('show')) {
+                        dropdownMenu.style.position = 'absolute';
+                        dropdownMenu.style.top = '100%';
+                        dropdownMenu.style.right = '0';
+                        dropdownMenu.style.left = 'auto';
+                        dropdownMenu.style.zIndex = '1050';
+                    }
+                }, 10);
+            });
         });
 
         // Función para detectar si el sidebar menu tiene scroll disponible

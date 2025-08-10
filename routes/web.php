@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     
     // Authentication
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
 
     // === MÓDULO DE REPARACIONES ===
     

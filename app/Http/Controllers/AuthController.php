@@ -84,4 +84,10 @@ class AuthController extends Controller
     {
         return view('dashboard');
     }
+
+    public function perfil()
+    {
+        $usuario = auth()->user();
+        return view('auth.perfil', compact('usuario'));
+    }
 } 
