@@ -27,9 +27,9 @@
             left: 0;
             height: 100vh;
             width: 280px;
-            background: rgba(18, 147, 252, 0.95);
+            background: rgba(255, 165, 0, 0.95);
             backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(18, 147, 252, 0.2);
+            border-right: 1px solid rgba(255, 165, 0, 0.2);
             z-index: 1000;
             transition: transform 0.3s ease;
             display: flex;
@@ -87,13 +87,16 @@
             text-decoration: none;
         }
         .sidebar-item.active {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
             color: #ffffff;
             border-left-color: #ffffff;
         }
         .sidebar-item i {
             width: 20px;
             margin-right: 10px;
+        }
+        .sidebar .text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
         }
         .main-content {
             margin-left: 280px;
