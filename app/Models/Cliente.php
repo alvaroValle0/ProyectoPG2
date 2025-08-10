@@ -76,7 +76,7 @@ class Cliente extends Model
     // Relationships
     public function reparaciones()
     {
-        return $this->hasMany(Reparacion::class);
+        return $this->hasManyThrough(Reparacion::class, Equipo::class);
     }
 
     public function equipos()
@@ -92,7 +92,7 @@ class Cliente extends Model
 
     public function getReparacionesPendientes()
     {
-        return $this->reparaciones()->where('estado', '!=', 'entregado')->count();
+        return $this->reparaciones()->whereNotIn('reparaciones.estado', ['completada', 'cancelada'])->count();
     }
 
     public function getUltimaReparacion()

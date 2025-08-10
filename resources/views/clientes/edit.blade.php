@@ -258,27 +258,36 @@
 
 <!-- Modal de confirmación para eliminar -->
 @if($cliente->reparaciones->count() === 0 && $cliente->equipos->count() === 0)
-<div class="modal fade" id="eliminarModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true" style="z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="eliminarModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <p>¿Estás seguro de que deseas eliminar al cliente <strong id="clienteNombre"></strong>?</p>
-                <div class="alert alert-warning">
+                <div class="text-center mb-3">
+                    <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                    <h6>¿Estás seguro de que deseas eliminar al cliente?</h6>
+                    <p class="fw-bold text-danger">{{ $cliente->nombre_completo }}</p>
+                </div>
+                <div class="alert alert-warning border-0">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    Esta acción no se puede deshacer y se perderá toda la información del cliente.
+                    <strong>Advertencia:</strong> Esta acción no se puede deshacer y eliminará permanentemente toda la información del cliente.
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form id="eliminarForm" method="POST" style="display: inline;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <form id="eliminarForm" method="POST" action="{{ route('clientes.destroy', $cliente) }}" class="d-inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Confirmar Eliminación
+                    <button type="submit" class="btn btn-danger" id="btnEliminar">
+                        <i class="fas fa-trash me-2"></i>Eliminar Cliente
                     </button>
                 </form>
             </div>
@@ -366,12 +375,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @if($cliente->reparaciones->count() === 0 && $cliente->equipos->count() === 0)
 function eliminarCliente(clienteId, clienteNombre) {
-    document.getElementById('clienteNombre').textContent = clienteNombre;
-    document.getElementById('eliminarForm').action = `/clientes/${clienteId}`;
-    
-    const modal = new bootstrap.Modal(document.getElementById('eliminarModal'));
-    modal.show();
+    try {
+        // Limpiar cualquier modal previo
+        const existingModal = bootstrap.Modal.getInstance(document.getElementById('eliminarModal'));
+        if (existingModal) {
+            existingModal.dispose();
+        }
+        
+        // Crear y mostrar el modal
+        const modalElement = document.getElementById('eliminarModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement, {
+                backdrop: 'static',
+                keyboard: false
+            });
+            modal.show();
+        }
+    } catch (error) {
+        console.error('Error al abrir modal de eliminación:', error);
+        // Fallback con confirm si el modal falla
+        if (confirm(`¿Estás seguro de que deseas eliminar al cliente "${clienteNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+            document.getElementById('eliminarForm').submit();
+        }
+    }
 }
+
+// Mejorar el manejo del formulario de eliminación
+document.addEventListener('DOMContentLoaded', function() {
+    const eliminarForm = document.getElementById('eliminarForm');
+    if (eliminarForm) {
+        eliminarForm.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Eliminando...';
+                
+                // Prevenir doble click
+                setTimeout(() => {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Eliminar Cliente';
+                    }
+                }, 5000);
+            }
+        });
+    }
+});
 @endif
 </script>
 @endsection

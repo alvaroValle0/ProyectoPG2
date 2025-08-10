@@ -293,7 +293,7 @@
                                         </small>
                                     </td>
                                     <td>
-                                        <small>{{ Str::limit($reparacion->problema_reportado, 30) }}</small>
+                                        <small>{{ Str::limit($reparacion->descripcion_problema, 30) }}</small>
                                     </td>
                                     <td>
                                         <span class="badge bg-{{ $reparacion->estado === 'entregado' ? 'success' : 'warning' }}">

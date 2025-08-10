@@ -43,7 +43,7 @@ class Equipo extends Model
 
     public function reparacionActual()
     {
-        return $this->hasOne(Reparacion::class)->whereIn('estado', ['pendiente', 'en_proceso']);
+        return $this->hasOne(Reparacion::class)->whereIn('reparaciones.estado', ['pendiente', 'en_proceso']);
     }
 
     public function ultimaReparacion()

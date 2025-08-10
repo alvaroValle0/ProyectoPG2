@@ -39,8 +39,9 @@ class ClienteController extends Controller
             }
         }
 
-        // Ordenar por nombre completo
-        $clientes = $query->orderBy('nombres', 'asc')
+        // Ordenar por nombre completo y cargar relaciones
+        $clientes = $query->with(['reparaciones', 'equipos'])
+                         ->orderBy('nombres', 'asc')
                          ->orderBy('apellidos', 'asc')
                          ->paginate(15);
 

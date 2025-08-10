@@ -244,12 +244,21 @@
                                                 title="{{ $cliente->activo ? 'Desactivar' : 'Activar' }}">
                                             <i class="fas fa-{{ $cliente->activo ? 'times' : 'check' }}"></i>
                                         </button>
+                                        @if($cliente->reparaciones->count() === 0 && $cliente->equipos->count() === 0)
                                         <button type="button" 
                                                 class="btn btn-sm btn-outline-danger" 
                                                 onclick="eliminarCliente({{ $cliente->id }}, '{{ $cliente->nombre_completo }}')"
-                                                title="Eliminar">
+                                                title="Eliminar cliente">
                                             <i class="fas fa-trash"></i>
                                         </button>
+                                        @else
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-secondary disabled" 
+                                                onclick="mostrarAdvertenciaEliminacion('{{ $cliente->nombre_completo }}', {{ $cliente->reparaciones->count() }}, {{ $cliente->equipos->count() }})"
+                                                title="No se puede eliminar: tiene datos asociados">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -281,27 +290,36 @@
 </div>
 
 <!-- Modal de confirmación para eliminar -->
-<div class="modal fade" id="eliminarModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true" style="z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="eliminarModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <p>¿Estás seguro de que deseas eliminar al cliente <strong id="clienteNombre"></strong>?</p>
-                <div class="alert alert-warning">
+                <div class="text-center mb-3">
+                    <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                    <h6>¿Estás seguro de que deseas eliminar al cliente?</h6>
+                    <p class="fw-bold text-danger" id="clienteNombre"></p>
+                </div>
+                <div class="alert alert-warning border-0">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    Esta acción no se puede deshacer.
+                    <strong>Advertencia:</strong> Esta acción no se puede deshacer y eliminará permanentemente toda la información del cliente.
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form id="eliminarForm" method="POST" style="display: inline;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <form id="eliminarForm" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Eliminar
+                    <button type="submit" class="btn btn-danger" id="btnEliminar">
+                        <i class="fas fa-trash me-2"></i>Eliminar Cliente
                     </button>
                 </form>
             </div>
@@ -335,12 +353,115 @@ function toggleClienteStatus(clienteId) {
 }
 
 function eliminarCliente(clienteId, clienteNombre) {
-    document.getElementById('clienteNombre').textContent = clienteNombre;
-    document.getElementById('eliminarForm').action = `/clientes/${clienteId}`;
-    
-    const modal = new bootstrap.Modal(document.getElementById('eliminarModal'));
-    modal.show();
+    try {
+        // Asignar el nombre del cliente al modal
+        const nombreElement = document.getElementById('clienteNombre');
+        if (nombreElement) {
+            nombreElement.textContent = clienteNombre;
+        }
+        
+        // Configurar la acción del formulario
+        const formElement = document.getElementById('eliminarForm');
+        if (formElement) {
+            formElement.action = `/clientes/${clienteId}`;
+        }
+        
+        // Limpiar cualquier modal previo
+        const existingModal = bootstrap.Modal.getInstance(document.getElementById('eliminarModal'));
+        if (existingModal) {
+            existingModal.dispose();
+        }
+        
+        // Crear y mostrar el modal
+        const modalElement = document.getElementById('eliminarModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement, {
+                backdrop: 'static',
+                keyboard: false
+            });
+            modal.show();
+        }
+    } catch (error) {
+        console.error('Error al abrir modal de eliminación:', error);
+        // Fallback con confirm si el modal falla
+        if (confirm(`¿Estás seguro de que deseas eliminar al cliente "${clienteNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/clientes/${clienteId}`;
+            
+            // Agregar token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = csrfToken;
+            
+            // Agregar método DELETE
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            
+            form.appendChild(csrfInput);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 }
+
+// Función para mostrar advertencia cuando no se puede eliminar
+function mostrarAdvertenciaEliminacion(clienteNombre, totalReparaciones, totalEquipos) {
+    let mensaje = `No se puede eliminar el cliente "${clienteNombre}" porque tiene:\n`;
+    if (totalReparaciones > 0) {
+        mensaje += `• ${totalReparaciones} reparación(es) asociada(s)\n`;
+    }
+    if (totalEquipos > 0) {
+        mensaje += `• ${totalEquipos} equipo(s) registrado(s)\n`;
+    }
+    mensaje += `\nPuede desactivar el cliente en su lugar.`;
+    
+    alert(mensaje);
+}
+
+// Mejorar el manejo del formulario de eliminación
+document.addEventListener('DOMContentLoaded', function() {
+    const eliminarForm = document.getElementById('eliminarForm');
+    if (eliminarForm) {
+        eliminarForm.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Eliminando...';
+                
+                // Prevenir doble click
+                setTimeout(() => {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Eliminar Cliente';
+                    }
+                }, 5000);
+            }
+        });
+    }
+    
+    // Limpiar modales al cargar la página
+    const modalElement = document.getElementById('eliminarModal');
+    if (modalElement) {
+        modalElement.addEventListener('hidden.bs.modal', function () {
+            // Limpiar el contenido del modal cuando se cierre
+            const nombreElement = document.getElementById('clienteNombre');
+            if (nombreElement) {
+                nombreElement.textContent = '';
+            }
+            
+            const formElement = document.getElementById('eliminarForm');
+            if (formElement) {
+                formElement.action = '';
+            }
+        });
+    }
+});
 </script>
 @endsection
 
@@ -370,6 +491,45 @@ function eliminarCliente(clienteId, clienteNombre) {
 
 .table-hover tbody tr:hover {
     background-color: rgba(0,0,0,.075) !important;
+}
+
+/* Estilos específicos para el modal de eliminación */
+#eliminarModal {
+    z-index: 1055 !important;
+}
+
+#eliminarModal .modal-backdrop {
+    z-index: 1054 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+#eliminarModal .modal-dialog {
+    z-index: 1056 !important;
+}
+
+/* Asegurar que el modal esté por encima de todo */
+.modal-open {
+    padding-right: 0 !important;
+}
+
+.modal-backdrop.show {
+    opacity: 0.5 !important;
+}
+
+/* Animación mejorada para el modal */
+#eliminarModal.fade.show .modal-dialog {
+    transform: translate(0, 0) scale(1);
+}
+
+#eliminarModal.fade .modal-dialog {
+    transform: translate(0, -50px) scale(0.95);
+    transition: transform 0.3s ease-out;
+}
+
+/* Botón de eliminar con estado de carga */
+#btnEliminar:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 </style>
 @endsection

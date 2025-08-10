@@ -45,12 +45,12 @@ class Tecnico extends Model
 
     public function reparacionesActivas()
     {
-        return $this->hasMany(Reparacion::class)->whereIn('estado', ['pendiente', 'en_proceso']);
+        return $this->hasMany(Reparacion::class)->whereIn('reparaciones.estado', ['pendiente', 'en_proceso']);
     }
 
     public function reparacionesCompletadas()
     {
-        return $this->hasMany(Reparacion::class)->where('estado', 'completada');
+        return $this->hasMany(Reparacion::class)->where('reparaciones.estado', 'completada');
     }
 
     // Scopes
