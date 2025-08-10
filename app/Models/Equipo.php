@@ -82,10 +82,10 @@ class Equipo extends Model
     {
         return match($this->estado) {
             'recibido' => 'blue',
-            'en_reparacion' => 'yellow',
-            'reparado' => 'green',
-            'entregado' => 'gray',
-            default => 'gray'
+            'en_reparacion' => 'warning',
+            'reparado' => 'success',
+            'entregado' => 'secondary',
+            default => 'secondary'
         };
     }
 

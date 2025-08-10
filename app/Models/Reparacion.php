@@ -96,11 +96,11 @@ class Reparacion extends Model
     public function getEstadoColorAttribute()
     {
         return match($this->estado) {
-            'pendiente' => 'red',
-            'en_proceso' => 'yellow',
-            'completada' => 'green',
-            'cancelada' => 'gray',
-            default => 'gray'
+            'pendiente' => 'danger',
+            'en_proceso' => 'warning',
+            'completada' => 'success',
+            'cancelada' => 'secondary',
+            default => 'secondary'
         };
     }
 

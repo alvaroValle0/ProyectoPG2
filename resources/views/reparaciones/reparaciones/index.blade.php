@@ -286,30 +286,33 @@
                             
                             <!-- Estado Actual -->
                             <td>
-                                <span class="badge bg-{{ $reparacion->estado_color }} text-white fs-6">
-                                    @switch($reparacion->estado)
-                                        @case('pendiente')
-                                            <i class="fas fa-clock me-1"></i>Pendiente
-                                            @break
-                                        @case('en_proceso')
-                                            <i class="fas fa-cogs me-1"></i>En Proceso
-                                            @break
-                                        @case('completada')
-                                            <i class="fas fa-check-circle me-1"></i>Completada
-                                            @break
-                                        @case('cancelada')
-                                            <i class="fas fa-times-circle me-1"></i>Cancelada
-                                            @break
-                                        @default
-                                            {{ ucfirst($reparacion->estado) }}
-                                    @endswitch
-                                </span>
-                                @if($reparacion->progreso_porcentaje > 0 && $reparacion->estado !== 'completada')
-                                    <div class="progress mt-1" style="height: 4px;">
-                                        <div class="progress-bar bg-{{ $reparacion->estado_color }}" 
-                                             style="width: {{ $reparacion->progreso_porcentaje }}%"></div>
-                                    </div>
-                                @endif
+                                <div class="estado-reparacion">
+                                    <span class="badge bg-{{ $reparacion->estado_color }} text-white fs-6 estado-badge">
+                                        @switch($reparacion->estado)
+                                            @case('pendiente')
+                                                <i class="fas fa-clock me-1"></i>Pendiente
+                                                @break
+                                            @case('en_proceso')
+                                                <i class="fas fa-cogs me-1"></i>En Proceso
+                                                @break
+                                            @case('completada')
+                                                <i class="fas fa-check-circle me-1"></i>Completada
+                                                @break
+                                            @case('cancelada')
+                                                <i class="fas fa-times-circle me-1"></i>Cancelada
+                                                @break
+                                            @default
+                                                {{ ucfirst($reparacion->estado) }}
+                                        @endswitch
+                                    </span>
+                                    @if($reparacion->progreso_porcentaje > 0 && $reparacion->estado !== 'completada')
+                                        <div class="progress mt-2" style="height: 6px;">
+                                            <div class="progress-bar bg-{{ $reparacion->estado_color }}" 
+                                                 style="width: {{ $reparacion->progreso_porcentaje }}%"></div>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">{{ $reparacion->progreso_porcentaje }}% completado</small>
+                                    @endif
+                                </div>
                             </td>
                             
                             <!-- Acciones -->
@@ -493,6 +496,83 @@ document.addEventListener('keydown', function(e) {
     .btn-group-sm > .btn {
         padding: 0.25rem 0.375rem;
         font-size: 0.8rem;
+    }
+}
+
+/* Estilos mejorados para badges de estado de reparaciones */
+.estado-badge {
+    font-weight: 600 !important;
+    padding: 8px 12px !important;
+    font-size: 0.875rem !important;
+    border-radius: 6px !important;
+    min-width: 100px;
+    text-align: center;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Colores específicos para estados con mejor contraste */
+.bg-danger {
+    background-color: #dc3545 !important;
+    border: 2px solid #b02a37 !important;
+}
+
+.bg-warning {
+    background-color: #fd7e14 !important;
+    border: 2px solid #fd7e14 !important;
+    color: white !important;
+}
+
+.bg-success {
+    background-color: #198754 !important;
+    border: 2px solid #157347 !important;
+}
+
+.bg-secondary {
+    background-color: #6c757d !important;
+    border: 2px solid #5c636a !important;
+}
+
+/* Contenedor de estado mejorado */
+.estado-reparacion {
+    text-align: center;
+    min-width: 120px;
+}
+
+/* Barra de progreso con mejor visibilidad */
+.progress {
+    border-radius: 4px;
+    background-color: #e9ecef;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* Hover effect para badges */
+.estado-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+}
+
+/* Iconos en badges */
+.estado-badge i {
+    margin-right: 4px;
+}
+
+/* Responsive mejorado para estados */
+@media (max-width: 768px) {
+    .estado-badge {
+        min-width: 80px;
+        padding: 6px 8px !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .estado-reparacion {
+        min-width: 90px;
     }
 }
 </style>

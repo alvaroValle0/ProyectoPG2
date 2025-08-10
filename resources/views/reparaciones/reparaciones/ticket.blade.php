@@ -101,10 +101,34 @@
             font-weight: bold;
         }
         
-        .estado-pendiente { background: #ffebee; }
-        .estado-en-proceso { background: #fff3e0; }
-        .estado-completada { background: #e8f5e8; }
-        .estado-cancelada { background: #f5f5f5; }
+        .estado-pendiente { 
+            background: #dc3545; 
+            color: white; 
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        .estado-en-proceso { 
+            background: #fd7e14; 
+            color: white; 
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        .estado-completada { 
+            background: #212529; 
+            color: white; 
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        .estado-cancelada { 
+            background: #6c757d; 
+            color: white; 
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
         
         .footer {
             text-align: center;
