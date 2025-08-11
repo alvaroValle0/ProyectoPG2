@@ -256,11 +256,13 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h4 class="mb-0">
-                <i class="fas fa-tools text-primary"></i>
-                <span class="ms-2">Reparaciones</span>
-            </h4>
-            <small class="text-muted">Sistema de Gestión</small>
+            <div class="d-flex align-items-center justify-content-center mb-2">
+                <img src="{{ asset('images/Imagen_de_WhatsApp_2025-08-10_a_las_17.56.17_0b0e759c-removebg-preview.png') }}" 
+                     alt="Logo" 
+                     style="max-height: 50px; max-width: 200px; object-fit: contain;">
+            </div>
+            <h5 class="mb-0 text-center text-white">Tu Empresa</h5>
+            <small class="text-muted d-block text-center">Sistema de Gestión</small>
         </div>
         
         <div class="sidebar-menu">
