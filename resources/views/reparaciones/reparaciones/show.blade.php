@@ -19,6 +19,11 @@
             <button type="button" class="btn btn-info" onclick="imprimirTicket({{ $reparacion->id }})">
                 <i class="fas fa-print me-2"></i>Imprimir
             </button>
+            @if(in_array($reparacion->estado, ['pendiente', 'en_proceso']))
+            <button type="button" class="btn btn-danger" onclick="cancelarReparacionDirecta({{ $reparacion->id }})">
+                <i class="fas fa-ban me-2"></i>Cancelar
+            </button>
+            @endif
             <a href="{{ route('reparaciones.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Volver
             </a>
@@ -201,15 +206,15 @@
                             <tr>
                                 <td>{{ $repuesto['nombre'] ?? 'N/A' }}</td>
                                 <td>{{ $repuesto['cantidad'] ?? 1 }}</td>
-                                <td>${{ number_format($repuesto['precio'] ?? 0, 2) }}</td>
-                                <td><strong>${{ number_format($subtotal, 2) }}</strong></td>
+                                <td>Q{{ number_format($repuesto['precio'] ?? 0, 2) }}</td>
+                                <td><strong>Q{{ number_format($subtotal, 2) }}</strong></td>
                             </tr>
                             @endforeach
                         </tbody>
                         <tfoot>
                             <tr class="table-active">
                                 <th colspan="3">Total en Repuestos</th>
-                                <th>${{ number_format($totalRepuestos, 2) }}</th>
+                                <th>Q{{ number_format($totalRepuestos, 2) }}</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -322,7 +327,7 @@
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="fas fa-dollar-sign text-success me-2"></i>
+                    <i class="fas fa-coins text-success me-2"></i>
                     Información de Costos
                 </h5>
             </div>
@@ -330,21 +335,21 @@
                 @if($reparacion->equipo->costo_estimado)
                 <div class="mb-3">
                     <label class="text-muted small">Costo Estimado Inicial</label>
-                    <h6 class="mb-0">${{ number_format($reparacion->equipo->costo_estimado, 2) }}</h6>
+                    <h6 class="mb-0">Q{{ number_format($reparacion->equipo->costo_estimado, 2) }}</h6>
                 </div>
                 @endif
                 @if($reparacion->costo)
                 <div class="mb-3">
                     <label class="text-muted small">Costo Final de Reparación</label>
-                    <h4 class="mb-0 text-success">${{ number_format($reparacion->costo, 2) }}</h4>
+                    <h4 class="mb-0 text-success">Q{{ number_format($reparacion->costo, 2) }}</h4>
                     @if($reparacion->equipo->costo_estimado)
                         @php 
                             $diferencia = $reparacion->costo - $reparacion->equipo->costo_estimado;
                         @endphp
                         @if($diferencia > 0)
-                            <small class="text-danger">+${{ number_format($diferencia, 2) }} sobre estimado</small>
+                            <small class="text-danger">+Q{{ number_format($diferencia, 2) }} sobre estimado</small>
                         @elseif($diferencia < 0)
-                            <small class="text-success">${{ number_format(abs($diferencia), 2) }} menos que estimado</small>
+                            <small class="text-success">Q{{ number_format(abs($diferencia), 2) }} menos que estimado</small>
                         @else
                             <small class="text-success">Exacto al estimado</small>
                         @endif
@@ -440,6 +445,171 @@ function cambiarEstado(reparacionId, nuevoEstado) {
             alert('Error al cambiar el estado de la reparación');
         });
     }
+}
+
+// Cancelar reparación directamente desde la vista de detalles
+function cancelarReparacionDirecta(reparacionId) {
+    // Crear modal dinámico
+    const modalId = 'cancelarModalDirecta';
+    
+    // Remover modal existente si hay uno
+    const existingModal = document.getElementById(modalId);
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Crear nuevo modal
+    const modalHTML = `
+        <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-ban me-2"></i>
+                            Cancelar Reparación #${reparacionId}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-exclamation-triangle fa-4x text-warning mb-3"></i>
+                            <h5>¿Está seguro de que desea cancelar esta reparación?</h5>
+                            <p class="text-muted">Esta acción no se puede deshacer</p>
+                        </div>
+                        <div class="alert alert-warning border-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Efectos de la cancelación:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>El estado cambiará a "Cancelada"</li>
+                                <li>Se establecerá la fecha de finalización automáticamente</li>
+                                <li>No se podrá revertir esta acción</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-arrow-left me-2"></i>No, volver atrás
+                        </button>
+                        <button type="button" class="btn btn-danger" id="btnConfirmarCancelarDirecta" onclick="confirmarCancelacionDirecta(${reparacionId})">
+                            <span class="btn-text">
+                                <i class="fas fa-ban me-2"></i>Sí, cancelar reparación
+                            </span>
+                            <span class="btn-spinner d-none">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Cancelando...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Agregar modal al DOM
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.show();
+    
+    // Limpiar modal cuando se cierre
+    document.getElementById(modalId).addEventListener('hidden.bs.modal', function() {
+        this.remove();
+    });
+}
+
+// Confirmar cancelación directa
+function confirmarCancelacionDirecta(reparacionId) {
+    const btnConfirmar = document.getElementById('btnConfirmarCancelarDirecta');
+    const btnText = btnConfirmar.querySelector('.btn-text');
+    const btnSpinner = btnConfirmar.querySelector('.btn-spinner');
+    
+    // Mostrar estado de carga
+    btnConfirmar.disabled = true;
+    btnText.classList.add('d-none');
+    btnSpinner.classList.remove('d-none');
+    
+    // Hacer petición AJAX
+    fetch(`/reparaciones/${reparacionId}/cambiar-estado`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            estado: 'cancelada',
+            observaciones: 'Reparación cancelada desde la vista de detalles'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Cerrar modal
+            const modalElement = document.getElementById('cancelarModalDirecta');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+            
+            // Mostrar mensaje de éxito
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 400px;';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>¡Reparación cancelada!</strong> La reparación #${reparacionId} ha sido cancelada exitosamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // Agregar a la página
+            document.body.appendChild(alertDiv);
+            
+            // Recargar después de 3 segundos
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+            
+            // Auto-dismiss alert
+            setTimeout(() => {
+                if (alertDiv && alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 8000);
+            
+        } else {
+            throw new Error(data.message || 'Error desconocido');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+        // Mostrar mensaje de error
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 400px;';
+        alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> No se pudo cancelar la reparación. ${error.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto-dismiss error alert
+        setTimeout(() => {
+            if (alertDiv && alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 10000);
+    })
+    .finally(() => {
+        // Restaurar estado del botón
+        btnConfirmar.disabled = false;
+        btnText.classList.remove('d-none');
+        btnSpinner.classList.add('d-none');
+    });
 }
 
 function imprimirTicket(reparacionId) {

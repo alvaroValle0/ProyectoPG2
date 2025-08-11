@@ -350,7 +350,7 @@
             
             <!-- Facturación -->
             <a href="#" class="sidebar-item" onclick="mostrarProximamente('Facturación')">
-                <i class="fas fa-file-invoice-dollar"></i>
+                <i class="fas fa-file-invoice"></i>
                 Facturación
             </a>
             

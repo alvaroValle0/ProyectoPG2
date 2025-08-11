@@ -242,7 +242,7 @@
             @if($reparacion->costo)
             <div class="fila">
                 <span class="etiqueta">Costo:</span>
-                <span class="valor">${{ number_format($reparacion->costo, 2) }}</span>
+                <span class="valor">Q{{ number_format($reparacion->costo, 2) }}</span>
             </div>
             @endif
         </div>
@@ -285,7 +285,7 @@
                 <span class="valor">
                     Cant: {{ $repuesto['cantidad'] ?? 1 }}
                     @if(isset($repuesto['precio']))
-                        - ${{ number_format($repuesto['precio'], 2) }}
+                        - Q{{ number_format($repuesto['precio'], 2) }}
                     @endif
                 </span>
             </div>

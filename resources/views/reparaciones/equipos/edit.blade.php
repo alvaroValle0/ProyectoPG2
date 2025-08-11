@@ -177,7 +177,7 @@
                     <div class="mb-3">
                         <label for="costo_estimado" class="form-label">Costo Estimado</label>
                         <div class="input-group">
-                            <span class="input-group-text">$</span>
+                            <span class="input-group-text">Q</span>
                             <input type="number" 
                                    class="form-control @error('costo_estimado') is-invalid @enderror" 
                                    id="costo_estimado" 

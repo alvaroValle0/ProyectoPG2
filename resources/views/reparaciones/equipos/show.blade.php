@@ -192,7 +192,7 @@
                 @if($equipo->costo_estimado)
                 <div class="mb-3">
                     <label class="text-muted small">Costo Estimado</label>
-                    <h6 class="mb-0 text-success">${{ number_format($equipo->costo_estimado, 2) }}</h6>
+                    <h6 class="mb-0 text-success">Q{{ number_format($equipo->costo_estimado, 2) }}</h6>
                 </div>
                 @endif
             </div>
@@ -269,7 +269,7 @@
                         <small class="text-muted">Completadas</small>
                     </div>
                     <div class="col-12">
-                        <h4 class="text-info">${{ number_format($equipo->reparaciones->sum('costo'), 2) }}</h4>
+                        <h4 class="text-info">Q{{ number_format($equipo->reparaciones->sum('costo'), 2) }}</h4>
                         <small class="text-muted">Costo Total</small>
                     </div>
                 </div>

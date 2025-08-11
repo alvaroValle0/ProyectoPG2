@@ -226,7 +226,7 @@
                                     Costo Total
                                 </label>
                                 <div class="input-group">
-                                    <span class="input-group-text">$</span>
+                                    <span class="input-group-text">Q</span>
                                     <input type="number" 
                                            class="form-control @error('costo') is-invalid @enderror" 
                                            id="costo" 
@@ -430,7 +430,14 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, mantener</button>
-                <button type="button" class="btn btn-danger" onclick="cancelarReparacion()">Sí, cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnCancelarReparacion" onclick="cancelarReparacion()">
+                    <span class="btn-text">
+                        <i class="fas fa-times-circle me-2"></i>Sí, cancelar
+                    </span>
+                    <span class="btn-spinner d-none">
+                        <i class="fas fa-spinner fa-spin me-2"></i>Cancelando...
+                    </span>
+                </button>
             </div>
         </div>
     </div>
@@ -494,10 +501,121 @@ function confirmarCancelacion() {
 
 // Cancelar reparación
 function cancelarReparacion() {
-    document.getElementById('estado').value = 'cancelada';
-    document.getElementById('fecha_fin').value = new Date().toISOString().split('T')[0];
-    bootstrap.Modal.getInstance(document.getElementById('cancelarModal')).hide();
-    document.getElementById('reparacionForm').submit();
+    const reparacionId = {{ $reparacion->id }};
+    const btnCancelar = document.getElementById('btnCancelarReparacion');
+    const btnText = btnCancelar.querySelector('.btn-text');
+    const btnSpinner = btnCancelar.querySelector('.btn-spinner');
+    
+    // Mostrar estado de carga
+    btnCancelar.disabled = true;
+    btnText.classList.add('d-none');
+    btnSpinner.classList.remove('d-none');
+    
+    // Hacer llamada AJAX al endpoint correcto
+    fetch(`/reparaciones/${reparacionId}/cambiar-estado`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            estado: 'cancelada',
+            observaciones: 'Reparación cancelada desde el formulario de edición'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Cerrar modal
+            bootstrap.Modal.getInstance(document.getElementById('cancelarModal')).hide();
+            
+            // Mostrar mensaje de éxito
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>¡Éxito!</strong> La reparación #{{ $reparacion->id }} ha sido cancelada exitosamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // Insertar el alert al inicio del contenido
+            const container = document.querySelector('.container-fluid');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Actualizar el estado en la página
+            document.getElementById('estado').value = 'cancelada';
+            document.getElementById('fecha_fin').value = new Date().toISOString().split('T')[0];
+            
+            // Actualizar el badge de estado en el panel lateral
+            const estadoBadge = document.querySelector('.badge');
+            if (estadoBadge) {
+                estadoBadge.className = 'badge bg-secondary fs-6 mb-3';
+                estadoBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Cancelada';
+            }
+            
+            // Deshabilitar el botón de cancelar en el formulario principal
+            const cancelarBtn = document.querySelector('button[onclick="confirmarCancelacion()"]');
+            if (cancelarBtn) {
+                cancelarBtn.style.display = 'none';
+            }
+            
+            // Actualizar progress bar si existe
+            const progressBar = document.querySelector('.progress-bar');
+            if (progressBar) {
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+                progressBar.className = 'progress-bar bg-secondary';
+            }
+            
+            // Auto-dismiss alert después de 5 segundos
+            setTimeout(() => {
+                if (alertDiv && alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+            
+            // Scroll al alert
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+        } else {
+            throw new Error(data.message || 'Error desconocido');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+        // Mostrar mensaje de error
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> No se pudo cancelar la reparación. ${error.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const container = document.querySelector('.container-fluid');
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        // Auto-dismiss alert después de 7 segundos
+        setTimeout(() => {
+            if (alertDiv && alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 7000);
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .finally(() => {
+        // Restaurar estado del botón
+        btnCancelar.disabled = false;
+        btnText.classList.remove('d-none');
+        btnSpinner.classList.add('d-none');
+    });
 }
 
 // Validación del formulario
@@ -568,6 +686,64 @@ function calcularCostoRepuestos() {
     .repuesto-row .col-md-3 {
         margin-bottom: 10px;
     }
+}
+
+/* Estilos para botón de cancelar con loading */
+.btn-spinner {
+    transition: all 0.3s ease;
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Animación suave para alerts */
+.alert {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading spinner específico */
+.fa-spinner.fa-spin {
+    animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Modal mejorado */
+#cancelarModal .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+#cancelarModal .modal-header {
+    border-radius: 12px 12px 0 0;
+}
+
+#cancelarModal .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 </style>
 @endsection
