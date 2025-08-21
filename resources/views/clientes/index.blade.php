@@ -353,57 +353,78 @@ function toggleClienteStatus(clienteId) {
 }
 
 function eliminarCliente(clienteId, clienteNombre) {
+    console.log('Ejecutando eliminarCliente para ID:', clienteId, 'Nombre:', clienteNombre);
+    
     try {
-        // Asignar el nombre del cliente al modal
+        // Verificar que los elementos existan
         const nombreElement = document.getElementById('clienteNombre');
-        if (nombreElement) {
-            nombreElement.textContent = clienteNombre;
+        const formElement = document.getElementById('eliminarForm');
+        const modalElement = document.getElementById('eliminarModal');
+        
+        if (!nombreElement || !formElement || !modalElement) {
+            console.error('Elementos del modal no encontrados');
+            throw new Error('Elementos del modal no encontrados');
         }
         
-        // Configurar la acción del formulario
-        const formElement = document.getElementById('eliminarForm');
-        if (formElement) {
-            formElement.action = `/clientes/${clienteId}`;
+        // Asignar el nombre del cliente al modal
+        nombreElement.textContent = clienteNombre;
+        
+        // Configurar la acción del formulario con la URL correcta
+        const deleteUrl = `/clientes/${clienteId}`;
+        console.log('Configurando formulario con URL:', deleteUrl);
+        formElement.action = deleteUrl;
+        
+        // Verificar que el token CSRF esté disponible
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            console.error('Token CSRF no encontrado');
+            throw new Error('Token CSRF no encontrado');
         }
         
         // Limpiar cualquier modal previo
-        const existingModal = bootstrap.Modal.getInstance(document.getElementById('eliminarModal'));
+        const existingModal = bootstrap.Modal.getInstance(modalElement);
         if (existingModal) {
             existingModal.dispose();
         }
         
         // Crear y mostrar el modal
-        const modalElement = document.getElementById('eliminarModal');
-        if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement, {
-                backdrop: 'static',
-                keyboard: false
-            });
-            modal.show();
-        }
+        const modal = new bootstrap.Modal(modalElement, {
+            backdrop: 'static',
+            keyboard: false
+        });
+        
+        console.log('Mostrando modal de confirmación');
+        modal.show();
+        
     } catch (error) {
         console.error('Error al abrir modal de eliminación:', error);
-        // Fallback con confirm si el modal falla
+        
+        // Fallback mejorado con confirm
         if (confirm(`¿Estás seguro de que deseas eliminar al cliente "${clienteNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+            console.log('Usuario confirmó eliminación, enviando formulario');
+            
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = `/clientes/${clienteId}`;
+            form.style.display = 'none';
             
             // Agregar token CSRF
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = csrfToken;
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfMeta.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
             
             // Agregar método DELETE
             const methodInput = document.createElement('input');
             methodInput.type = 'hidden';
             methodInput.name = '_method';
             methodInput.value = 'DELETE';
-            
-            form.appendChild(csrfInput);
             form.appendChild(methodInput);
+            
             document.body.appendChild(form);
             form.submit();
         }
@@ -426,9 +447,23 @@ function mostrarAdvertenciaEliminacion(clienteNombre, totalReparaciones, totalEq
 
 // Mejorar el manejo del formulario de eliminación
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado, inicializando funciones de eliminación');
+    
     const eliminarForm = document.getElementById('eliminarForm');
     if (eliminarForm) {
+        console.log('Formulario de eliminación encontrado, agregando listener');
+        
         eliminarForm.addEventListener('submit', function(e) {
+            console.log('Formulario enviado, URL de acción:', this.action);
+            
+            // Validar que el formulario tenga una acción válida
+            if (!this.action || this.action.includes('undefined')) {
+                console.error('URL de acción inválida:', this.action);
+                e.preventDefault();
+                alert('Error: No se puede eliminar el cliente. URL inválida.');
+                return;
+            }
+            
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -443,12 +478,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 5000);
             }
         });
+    } else {
+        console.warn('Formulario de eliminación no encontrado en el DOM');
     }
     
     // Limpiar modales al cargar la página
     const modalElement = document.getElementById('eliminarModal');
     if (modalElement) {
+        console.log('Modal de eliminación encontrado, agregando listeners');
+        
         modalElement.addEventListener('hidden.bs.modal', function () {
+            console.log('Modal cerrado, limpiando datos');
+            
             // Limpiar el contenido del modal cuando se cierre
             const nombreElement = document.getElementById('clienteNombre');
             if (nombreElement) {
@@ -460,6 +501,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 formElement.action = '';
             }
         });
+        
+        // Agregar evento para cuando se muestre el modal
+        modalElement.addEventListener('shown.bs.modal', function () {
+            console.log('Modal mostrado correctamente');
+        });
+    } else {
+        console.warn('Modal de eliminación no encontrado en el DOM');
     }
 });
 </script>

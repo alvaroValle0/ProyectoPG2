@@ -420,6 +420,79 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Función para eliminar cliente
+    window.eliminarCliente = function(clienteId, clienteNombre) {
+        try {
+            // Verificar que el modal existe
+            const modalElement = document.getElementById('eliminarModal');
+            if (modalElement) {
+                // Limpiar cualquier modal previo
+                const existingModal = bootstrap.Modal.getInstance(modalElement);
+                if (existingModal) {
+                    existingModal.dispose();
+                }
+                
+                // Crear y mostrar el modal
+                const modal = new bootstrap.Modal(modalElement, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                modal.show();
+            } else {
+                // Fallback con confirm si el modal no existe
+                if (confirm(`¿Estás seguro de que deseas eliminar al cliente "${clienteNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/clientes/${clienteId}`;
+                    
+                    // Agregar token CSRF
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken;
+                    
+                    // Agregar método DELETE
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    
+                    form.appendChild(csrfInput);
+                    form.appendChild(methodInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        } catch (error) {
+            console.error('Error al abrir modal de eliminación:', error);
+            // Fallback con confirm si hay cualquier error
+            if (confirm(`¿Estás seguro de que deseas eliminar al cliente "${clienteNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/clientes/${clienteId}`;
+                
+                // Agregar token CSRF
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                
+                // Agregar método DELETE
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                
+                form.appendChild(csrfInput);
+                form.appendChild(methodInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    };
 });
 @endif
 </script>

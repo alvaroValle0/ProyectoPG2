@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
+    <title>Gestión HDC - Iniciar Sesión</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -28,11 +28,11 @@
             transition: all 0.3s ease;
         }
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #F2AE4E;
+            box-shadow: 0 0 0 0.2rem rgba(242, 174, 78, 0.25);
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);
             border: none;
             border-radius: 10px;
             padding: 12px 30px;
@@ -41,7 +41,7 @@
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(242, 174, 78, 0.4);
         }
         .social-btn {
             border-radius: 10px;
@@ -71,6 +71,55 @@
             padding: 0 15px;
             color: #6c757d;
         }
+        .system-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 0.5rem;
+        }
+        .system-subtitle {
+            font-size: 0.9rem;
+            color: #6c757d !important;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .login-footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 768px) {
+            .system-title {
+                font-size: 1.8rem;
+            }
+        }
+        .company-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo-image {
+            max-height: 80px;
+            max-width: 150px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+        @media (max-width: 768px) {
+            .logo-image {
+                max-height: 60px;
+                max-width: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -79,10 +128,29 @@
             <div class="col-md-6 col-lg-4">
                 <div class="login-card p-4 p-md-5">
                     <div class="text-center mb-4">
-                        <h2 class="fw-bold text-primary mb-2">
-                            <i class="fas fa-user-circle me-2"></i>Iniciar Sesión
-                        </h2>
-                        <p class="text-muted">Bienvenido de vuelta</p>
+                        <!-- Logo/Nombre del Sistema -->
+                        <div class="mb-4">
+                            <div class="company-logo mb-3">
+                                <img src="{{ asset('images/Imagen_de_WhatsApp_2025-08-10_a_las_17.56.17_0b0e759c-removebg-preview.png') }}" 
+                                     alt="Gestión HDC Logo" 
+                                     class="img-fluid logo-image">
+                            </div>
+                            <h1 class="system-title" style="background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                Gestión HDC
+                            </h1>
+                            <p class="system-subtitle">Sistema de Gestión Integral</p>
+                            <div class="mt-2">
+                                <span class="badge" style="background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%); font-size: 0.7rem; padding: 4px 12px;">
+                                    <i class="fas fa-shield-alt me-1"></i>Acceso Seguro
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Título de Login -->
+                        <h3 class="fw-bold text-primary mb-2">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </h3>
+                        <p class="text-muted">Accede a tu cuenta para continuar</p>
                     </div>
 
                     @if ($errors->any())
@@ -159,6 +227,20 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Footer del Sistema -->
+    <div class="login-footer text-center">
+        <div class="mb-1">
+            <i class="fas fa-copyright me-1"></i>{{ date('Y') }} Gestión HDC - Sistema de Gestión Integral
+        </div>
+        <div>
+            <small>
+                <i class="fas fa-code me-1"></i>Versión 1.0 
+                <span class="mx-2">|</span>
+                <i class="fas fa-shield-alt me-1"></i>Plataforma Segura
+            </small>
         </div>
     </div>
 

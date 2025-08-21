@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistema de Reparaciones')</title>
+    <title>@yield('title', 'Gestión HDC - Sistema de Gestión Integral')</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);
             min-height: 100vh;
         }
         .navbar {
@@ -29,9 +29,9 @@
             left: 0;
             height: 100vh;
             width: 280px;
-            background: rgba(18, 147, 252, 0.95);
+            background: rgba(242, 174, 78, 0.95);
             backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(18, 147, 252, 0.2);
+            border-right: 1px solid rgba(242, 174, 78, 0.2);
             z-index: 1000;
             transition: transform 0.3s ease;
             display: flex;
@@ -124,12 +124,12 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background: linear-gradient(45deg, #007bff, #6610f2);
+            background: linear-gradient(45deg, #F2AE4E, #E89A3A);
             border: none;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+            box-shadow: 0 10px 20px rgba(242, 174, 78, 0.3);
         }
         .table-responsive {
             border-radius: 15px;
@@ -164,7 +164,7 @@
             content: '';
             display: block;
             height: 1rem;
-            background: linear-gradient(to bottom, transparent, rgba(0, 123, 255, 0.1));
+            background: linear-gradient(to bottom, transparent, rgba(242, 174, 78, 0.1));
             position: sticky;
             bottom: 0;
             pointer-events: none;
@@ -195,7 +195,7 @@
         
         .dropdown-header {
             padding: 0.75rem 1rem;
-            background: linear-gradient(45deg, #007bff, #6610f2);
+            background: linear-gradient(45deg, #F2AE4E, #E89A3A);
             margin: -0.75rem -0rem 0.5rem -0rem;
             border-radius: 10px 10px 0 0;
             color: white;
@@ -211,8 +211,8 @@
         }
         
         .dropdown-item:hover, .dropdown-item:focus {
-            background: rgba(0, 123, 255, 0.1);
-            color: #007bff;
+            background: rgba(242, 174, 78, 0.1);
+            color: #F2AE4E;
             transform: translateX(5px);
         }
         
@@ -237,17 +237,17 @@
         /* Estilos adicionales para el botón del usuario */
         .user-dropdown-btn {
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(0, 123, 255, 0.3);
-            color: #007bff;
+            border: 2px solid rgba(242, 174, 78, 0.3);
+            color: #F2AE4E;
             font-weight: 500;
             transition: all 0.3s ease;
         }
         
         .user-dropdown-btn:hover {
-            background: rgba(0, 123, 255, 0.1);
-            border-color: #007bff;
+            background: rgba(242, 174, 78, 0.1);
+            border-color: #F2AE4E;
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(242, 174, 78, 0.2);
         }
     </style>
     @yield('styles')
@@ -261,8 +261,8 @@
                      alt="Logo" 
                      style="max-height: 50px; max-width: 200px; object-fit: contain;">
             </div>
-            <h5 class="mb-0 text-center text-white">Tu Empresa</h5>
-            <small class="text-muted d-block text-center">Sistema de Gestión</small>
+            <h5 class="mb-0 text-center text-white">Gestión HDC</h5>
+            <small class="text-muted d-block text-center">Sistema de Gestión Integral</small>
         </div>
         
         <div class="sidebar-menu">
@@ -382,8 +382,8 @@
                 <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center user-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                 style="width: 32px; height: 32px; font-size: 0.875rem;">
+                            <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                 style="width: 32px; height: 32px; font-size: 0.875rem; background: linear-gradient(45deg, #F2AE4E, #E89A3A);">
                                 <i class="fas fa-user"></i>
                             </div>
                             <span class="d-none d-md-inline">{{ auth()->user()->name }}</span>
@@ -392,8 +392,8 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                             <li class="dropdown-header">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                         style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                    <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                         style="width: 24px; height: 24px; font-size: 0.75rem; background: linear-gradient(45deg, #F2AE4E, #E89A3A);">
                                         <i class="fas fa-user"></i>
                                     </div>
                                     <div>
@@ -405,20 +405,20 @@
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('perfil') }}">
-                                    <i class="fas fa-user-cog me-2 text-primary"></i> 
+                                    <i class="fas fa-user-cog me-2" style="color: #F2AE4E;"></i> 
                                     Mi Perfil
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard') }}">
-                                    <i class="fas fa-tachometer-alt me-2 text-info"></i> 
+                                    <i class="fas fa-tachometer-alt me-2" style="color: #F2AE4E;"></i> 
                                     Dashboard
                                 </a>
                             </li>
                             @if(auth()->user()->esTecnico())
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('reparaciones.mis-tareas') }}">
-                                    <i class="fas fa-tasks me-2 text-warning"></i> 
+                                    <i class="fas fa-tasks me-2" style="color: #F2AE4E;"></i> 
                                     Mis Tareas
                                 </a>
                             </li>
@@ -558,7 +558,7 @@
                 <div class="modal fade" id="proximamenteModal" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header bg-primary text-white">
+                            <div class="modal-header text-white" style="background: linear-gradient(45deg, #F2AE4E, #E89A3A);">
                                 <h5 class="modal-title">
                                     <i class="fas fa-rocket me-2"></i>
                                     Módulo en Desarrollo
@@ -567,9 +567,9 @@
                             </div>
                             <div class="modal-body text-center">
                                 <div class="mb-3">
-                                    <i class="fas fa-cogs display-1 text-primary mb-3"></i>
+                                    <i class="fas fa-cogs display-1 mb-3" style="color: #F2AE4E;"></i>
                                 </div>
-                                <h4 class="text-primary">${modulo}</h4>
+                                <h4 style="color: #F2AE4E;">${modulo}</h4>
                                 <p class="text-muted mb-3">
                                     Este módulo está siendo desarrollado y estará disponible próximamente.
                                 </p>
@@ -579,7 +579,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                                <button type="button" class="btn text-white" style="background: linear-gradient(45deg, #F2AE4E, #E89A3A);" data-bs-dismiss="modal">
                                     <i class="fas fa-check me-2"></i>Entendido
                                 </button>
                             </div>
