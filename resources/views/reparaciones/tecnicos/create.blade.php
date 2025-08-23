@@ -134,13 +134,12 @@
 
                         <!-- DPI -->
                         <div class="mb-3">
-                            <label for="dpi" class="form-label">DPI <span class="text-danger">*</span></label>
+                            <label for="dpi" class="form-label">DPI <small class="text-muted">(Opcional)</small></label>
                             <input type="text" 
                                    class="form-control @error('dpi') is-invalid @enderror" 
                                    id="dpi" 
                                    name="dpi" 
                                    value="{{ old('dpi') }}" 
-                                   required
                                    placeholder="Ej: 1234567890101">
                             @error('dpi')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -618,23 +617,23 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = value;
     });
     
-    // Validación del formulario
-    form.addEventListener('submit', function(e) {
-        let valid = true;
-        const requiredFields = [userSelect, nombresInput, apellidosInput, dpiInput, especialidadSelect];
+            // Validación del formulario
+        form.addEventListener('submit', function(e) {
+            let valid = true;
+            const requiredFields = [userSelect, nombresInput, apellidosInput, especialidadSelect];
+            
+            // Validar campos obligatorios
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    valid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
         
-        // Validar campos obligatorios
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('is-invalid');
-                valid = false;
-            } else {
-                field.classList.remove('is-invalid');
-            }
-        });
-        
-        // Validar DPI (debe tener 13 dígitos)
-        if (dpiInput.value && dpiInput.value.length !== 13) {
+        // Validar DPI (debe tener 13 dígitos si se proporciona)
+        if (dpiInput.value.trim() && dpiInput.value.length !== 13) {
             dpiInput.classList.add('is-invalid');
             valid = false;
             if (!document.querySelector('#dpi-error')) {

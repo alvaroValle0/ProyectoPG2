@@ -10,10 +10,75 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Script para aplicar colores inmediatamente -->
+    <script>
+        // Aplicar colores inmediatamente al cargar la página
+        (function() {
+            const coloresGuardados = localStorage.getItem('sistemaColores');
+            if (coloresGuardados) {
+                try {
+                    const colores = JSON.parse(coloresGuardados);
+                    
+                    // Actualizar variables CSS del sistema
+                    document.documentElement.style.setProperty('--system-primary', colores.primary);
+                    document.documentElement.style.setProperty('--system-secondary', colores.secondary);
+                    document.documentElement.style.setProperty('--system-success', colores.success);
+                    document.documentElement.style.setProperty('--system-warning', colores.warning);
+                    document.documentElement.style.setProperty('--system-danger', colores.danger);
+                    document.documentElement.style.setProperty('--system-info', colores.info);
+                    
+                    // También actualizar variables Bootstrap
+                    document.documentElement.style.setProperty('--bs-primary', colores.primary);
+                    document.documentElement.style.setProperty('--bs-secondary', colores.secondary);
+                    document.documentElement.style.setProperty('--bs-success', colores.success);
+                    document.documentElement.style.setProperty('--bs-warning', colores.warning);
+                    document.documentElement.style.setProperty('--bs-danger', colores.danger);
+                    document.documentElement.style.setProperty('--bs-info', colores.info);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        body { background: ${colores.primary} !important; }
+                        .sidebar { background: ${colores.primary} !important; }
+                        .btn-primary { background-color: ${colores.primary} !important; border-color: ${colores.primary} !important; }
+                        .btn-secondary { background-color: ${colores.secondary} !important; border-color: ${colores.secondary} !important; }
+                        .btn-success { background-color: ${colores.success} !important; border-color: ${colores.success} !important; }
+                        .btn-warning { background-color: ${colores.warning} !important; border-color: ${colores.warning} !important; }
+                        .btn-danger { background-color: ${colores.danger} !important; border-color: ${colores.danger} !important; }
+                        .btn-info { background-color: ${colores.info} !important; border-color: ${colores.info} !important; }
+                        .bg-primary { background-color: ${colores.primary} !important; }
+                        .bg-secondary { background-color: ${colores.secondary} !important; }
+                        .bg-success { background-color: ${colores.success} !important; }
+                        .bg-warning { background-color: ${colores.warning} !important; }
+                        .bg-danger { background-color: ${colores.danger} !important; }
+                        .bg-info { background-color: ${colores.info} !important; }
+                        .text-primary { color: ${colores.primary} !important; }
+                        .text-secondary { color: ${colores.secondary} !important; }
+                        .text-success { color: ${colores.success} !important; }
+                        .text-warning { color: ${colores.warning} !important; }
+                        .text-danger { color: ${colores.danger} !important; }
+                        .text-info { color: ${colores.info} !important; }
+                    `;
+                    document.head.appendChild(style);
+                } catch (e) {
+                    console.error('Error al aplicar colores iniciales:', e);
+                }
+            }
+        })();
+    </script>
+    
     <!-- Custom CSS -->
     <style>
+        :root {
+            --system-primary: #27DB9F;
+            --system-secondary: #764ba2;
+            --system-success: #28a745;
+            --system-warning: #ffc107;
+            --system-danger: #dc3545;
+            --system-info: #17a2b8;
+        }
+        
         body {
-            background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);
+            background: var(--system-primary);
             min-height: 100vh;
         }
         .navbar {
@@ -29,9 +94,9 @@
             left: 0;
             height: 100vh;
             width: 280px;
-            background: rgba(242, 174, 78, 0.95);
+            background: var(--system-primary);
             backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(242, 174, 78, 0.2);
+            border-right: 1px solid rgba(39, 219, 159, 0.2);
             z-index: 1000;
             transition: transform 0.3s ease;
             display: flex;
@@ -124,12 +189,14 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background: linear-gradient(45deg, #F2AE4E, #E89A3A);
+            background: #27DB9F;
             border: none;
+            color: #ffffff;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(242, 174, 78, 0.3);
+            box-shadow: 0 10px 20px rgba(39, 219, 159, 0.3);
+            background: #22c495;
         }
         .table-responsive {
             border-radius: 15px;
@@ -195,10 +262,11 @@
         
         .dropdown-header {
             padding: 0.75rem 1rem;
-            background: linear-gradient(45deg, #F2AE4E, #E89A3A);
+            background: #27DB9F;
             margin: -0.75rem -0rem 0.5rem -0rem;
             border-radius: 10px 10px 0 0;
-            color: white;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(39, 219, 159, 0.2);
         }
         
         .dropdown-item {
@@ -211,8 +279,8 @@
         }
         
         .dropdown-item:hover, .dropdown-item:focus {
-            background: rgba(242, 174, 78, 0.1);
-            color: #F2AE4E;
+            background: rgba(39, 219, 159, 0.1);
+            color: #27DB9F;
             transform: translateX(5px);
         }
         
@@ -237,17 +305,17 @@
         /* Estilos adicionales para el botón del usuario */
         .user-dropdown-btn {
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(242, 174, 78, 0.3);
-            color: #F2AE4E;
+            border: 2px solid rgba(39, 219, 159, 0.3);
+            color: #27DB9F;
             font-weight: 500;
             transition: all 0.3s ease;
         }
         
         .user-dropdown-btn:hover {
-            background: rgba(242, 174, 78, 0.1);
-            border-color: #F2AE4E;
+            background: rgba(39, 219, 159, 0.1);
+            border-color: #27DB9F;
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(242, 174, 78, 0.2);
+            box-shadow: 0 5px 15px rgba(39, 219, 159, 0.2);
         }
     </style>
     @yield('styles')
@@ -359,7 +427,7 @@
             </a>
             
             <!-- Configuración -->
-            <a href="#" class="sidebar-item" onclick="mostrarProximamente('Configuración')">
+            <a href="{{ route('configuracion.index') }}" class="sidebar-item {{ request()->routeIs('configuracion.*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i>
                 Configuración
             </a>
@@ -379,7 +447,7 @@
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center user-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                 style="width: 32px; height: 32px; font-size: 0.875rem; background: linear-gradient(45deg, #F2AE4E, #E89A3A);">
+                                 style="width: 32px; height: 32px; font-size: 0.875rem; background: #27DB9F;">
                                 <i class="fas fa-user"></i>
                             </div>
                             <span class="d-none d-md-inline">{{ auth()->user()->name }}</span>
@@ -389,7 +457,7 @@
                             <li class="dropdown-header">
                                 <div class="d-flex align-items-center">
                                     <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                         style="width: 24px; height: 24px; font-size: 0.75rem; background: linear-gradient(45deg, #F2AE4E, #E89A3A);">
+                                         style="width: 24px; height: 24px; font-size: 0.75rem; background: #27DB9F;">
                                         <i class="fas fa-user"></i>
                                     </div>
                                     <div>
@@ -401,20 +469,20 @@
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('perfil') }}">
-                                    <i class="fas fa-user-cog me-2" style="color: #F2AE4E;"></i> 
+                                    <i class="fas fa-user-cog me-2" style="color: #27DB9F;"></i> 
                                     Mi Perfil
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard') }}">
-                                    <i class="fas fa-tachometer-alt me-2" style="color: #F2AE4E;"></i> 
+                                    <i class="fas fa-tachometer-alt me-2" style="color: #27DB9F;"></i> 
                                     Dashboard
                                 </a>
                             </li>
                             @if(auth()->user()->esTecnico())
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('reparaciones.mis-tareas') }}">
-                                    <i class="fas fa-tasks me-2" style="color: #F2AE4E;"></i> 
+                                    <i class="fas fa-tasks me-2" style="color: #27DB9F;"></i> 
                                     Mis Tareas
                                 </a>
                             </li>
@@ -557,7 +625,7 @@
                 <div class="modal fade" id="proximamenteModal" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header text-white" style="background: linear-gradient(45deg, #F2AE4E, #E89A3A);">
+                            <div class="modal-header text-white" style="background: #27DB9F;">
                                 <h5 class="modal-title">
                                     <i class="fas fa-rocket me-2"></i>
                                     Módulo en Desarrollo
@@ -566,9 +634,9 @@
                             </div>
                             <div class="modal-body text-center">
                                 <div class="mb-3">
-                                    <i class="fas fa-cogs display-1 mb-3" style="color: #F2AE4E;"></i>
+                                    <i class="fas fa-cogs display-1 mb-3" style="color: #27DB9F;"></i>
                                 </div>
-                                <h4 style="color: #F2AE4E;">${modulo}</h4>
+                                <h4 style="color: #27DB9F;">${modulo}</h4>
                                 <p class="text-muted mb-3">
                                     Este módulo está siendo desarrollado y estará disponible próximamente.
                                 </p>
@@ -578,7 +646,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn text-white" style="background: linear-gradient(45deg, #F2AE4E, #E89A3A);" data-bs-dismiss="modal">
+                                <button type="button" class="btn text-white" style="background: #27DB9F;" data-bs-dismiss="modal">
                                     <i class="fas fa-check me-2"></i>Entendido
                                 </button>
                             </div>
@@ -646,6 +714,258 @@
         @csrf
         @method('DELETE')
     </form>
+
+    <!-- Script global para aplicación de colores del sistema -->
+    <script>
+        // Función global para aplicar colores al sistema
+        function aplicarColoresGlobales(colores) {
+            console.log('Aplicando colores globales:', colores);
+            
+            // Crear o actualizar CSS variables con aplicación global
+            const style = document.createElement('style');
+            style.id = 'global-theme-styles';
+            style.textContent = `
+                :root {
+                    --bs-primary: ${colores.primary} !important;
+                    --bs-secondary: ${colores.secondary} !important;
+                    --bs-success: ${colores.success} !important;
+                    --bs-warning: ${colores.warning} !important;
+                    --bs-danger: ${colores.danger} !important;
+                    --bs-info: ${colores.info} !important;
+                }
+                
+                /* Aplicación global de colores de fondo */
+                .bg-primary, .bg-primary * { background-color: ${colores.primary} !important; }
+                .bg-secondary, .bg-secondary * { background-color: ${colores.secondary} !important; }
+                .bg-success, .bg-success * { background-color: ${colores.success} !important; }
+                .bg-warning, .bg-warning * { background-color: ${colores.warning} !important; }
+                .bg-danger, .bg-danger * { background-color: ${colores.danger} !important; }
+                .bg-info, .bg-info * { background-color: ${colores.info} !important; }
+                
+                /* Aplicación global de colores de texto */
+                .text-primary, .text-primary * { color: ${colores.primary} !important; }
+                .text-secondary, .text-secondary * { color: ${colores.secondary} !important; }
+                .text-success, .text-success * { color: ${colores.success} !important; }
+                .text-warning, .text-warning * { color: ${colores.warning} !important; }
+                .text-danger, .text-danger * { color: ${colores.danger} !important; }
+                .text-info, .text-info * { color: ${colores.info} !important; }
+                
+                /* Aplicación global de botones */
+                .btn-primary { 
+                    background-color: ${colores.primary} !important; 
+                    border-color: ${colores.primary} !important; 
+                }
+                .btn-secondary { 
+                    background-color: ${colores.secondary} !important; 
+                    border-color: ${colores.secondary} !important; 
+                }
+                .btn-success { 
+                    background-color: ${colores.success} !important; 
+                    border-color: ${colores.success} !important; 
+                }
+                .btn-warning { 
+                    background-color: ${colores.warning} !important; 
+                    border-color: ${colores.warning} !important; 
+                }
+                .btn-danger { 
+                    background-color: ${colores.danger} !important; 
+                    border-color: ${colores.danger} !important; 
+                }
+                .btn-info { 
+                    background-color: ${colores.info} !important; 
+                    border-color: ${colores.info} !important; 
+                }
+                
+                /* Aplicación global de elementos de navegación */
+                .navbar, .navbar * { background: rgba(255, 255, 255, 0.95) !important; }
+                .sidebar, .sidebar * { background: ${colores.primary} !important; }
+                .nav-link.active, .nav-link.active * { background-color: ${colores.primary} !important; color: white !important; }
+                
+                /* Aplicación global de badges */
+                .badge.bg-primary { background-color: ${colores.primary} !important; }
+                .badge.bg-secondary { background-color: ${colores.secondary} !important; }
+                .badge.bg-success { background-color: ${colores.success} !important; }
+                .badge.bg-warning { background-color: ${colores.warning} !important; }
+                .badge.bg-danger { background-color: ${colores.danger} !important; }
+                .badge.bg-info { background-color: ${colores.info} !important; }
+                
+                /* Aplicación global de alertas */
+                .alert-primary { background-color: ${colores.primary} !important; border-color: ${colores.primary} !important; }
+                .alert-secondary { background-color: ${colores.secondary} !important; border-color: ${colores.secondary} !important; }
+                .alert-success { background-color: ${colores.success} !important; border-color: ${colores.success} !important; }
+                .alert-warning { background-color: ${colores.warning} !important; border-color: ${colores.warning} !important; }
+                .alert-danger { background-color: ${colores.danger} !important; border-color: ${colores.danger} !important; }
+                .alert-info { background-color: ${colores.info} !important; border-color: ${colores.info} !important; }
+                
+                /* Aplicación global de bordes */
+                .border-primary { border-color: ${colores.primary} !important; }
+                .border-secondary { border-color: ${colores.secondary} !important; }
+                .border-success { border-color: ${colores.success} !important; }
+                .border-warning { border-color: ${colores.warning} !important; }
+                .border-danger { border-color: ${colores.danger} !important; }
+                .border-info { border-color: ${colores.info} !important; }
+                
+                /* Aplicación global de hover effects */
+                .btn-primary:hover { background-color: ${colores.primary} !important; opacity: 0.9; }
+                .btn-secondary:hover { background-color: ${colores.secondary} !important; opacity: 0.9; }
+                .btn-success:hover { background-color: ${colores.success} !important; opacity: 0.9; }
+                .btn-warning:hover { background-color: ${colores.warning} !important; opacity: 0.9; }
+                .btn-danger:hover { background-color: ${colores.danger} !important; opacity: 0.9; }
+                .btn-info:hover { background-color: ${colores.info} !important; opacity: 0.9; }
+                
+                /* Aplicación global de elementos específicos del sistema */
+                .card-header.bg-primary { background-color: ${colores.primary} !important; }
+                .card-header.bg-secondary { background-color: ${colores.secondary} !important; }
+                .card-header.bg-success { background-color: ${colores.success} !important; }
+                .card-header.bg-warning { background-color: ${colores.warning} !important; }
+                .card-header.bg-danger { background-color: ${colores.danger} !important; }
+                .card-header.bg-info { background-color: ${colores.info} !important; }
+                
+                /* Aplicación global de progress bars */
+                .progress-bar.bg-primary { background-color: ${colores.primary} !important; }
+                .progress-bar.bg-secondary { background-color: ${colores.secondary} !important; }
+                .progress-bar.bg-success { background-color: ${colores.success} !important; }
+                .progress-bar.bg-warning { background-color: ${colores.warning} !important; }
+                .progress-bar.bg-danger { background-color: ${colores.danger} !important; }
+                .progress-bar.bg-info { background-color: ${colores.info} !important; }
+                
+                /* Aplicación global de list group items */
+                .list-group-item.list-group-item-primary { background-color: ${colores.primary} !important; color: white !important; }
+                .list-group-item.list-group-item-secondary { background-color: ${colores.secondary} !important; color: white !important; }
+                .list-group-item.list-group-item-success { background-color: ${colores.success} !important; color: white !important; }
+                .list-group-item.list-group-item-warning { background-color: ${colores.warning} !important; color: white !important; }
+                .list-group-item.list-group-item-danger { background-color: ${colores.danger} !important; color: white !important; }
+                .list-group-item.list-group-item-info { background-color: ${colores.info} !important; color: white !important; }
+                
+                /* Aplicación global de tooltips */
+                .tooltip-inner { background-color: ${colores.primary} !important; }
+                
+                /* Aplicación global de dropdowns */
+                .dropdown-item.active, .dropdown-item:active { background-color: ${colores.primary} !important; }
+                
+                /* Aplicación global de pagination */
+                .page-item.active .page-link { background-color: ${colores.primary} !important; border-color: ${colores.primary} !important; }
+                
+                /* Aplicación global de form controls */
+                .form-control:focus { border-color: ${colores.primary} !important; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important; }
+                .form-select:focus { border-color: ${colores.primary} !important; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important; }
+                
+                /* Aplicación global de custom checkboxes y radios */
+                .form-check-input:checked { background-color: ${colores.primary} !important; border-color: ${colores.primary} !important; }
+                
+                /* Aplicación global de switches */
+                .form-check-input:checked { background-color: ${colores.primary} !important; border-color: ${colores.primary} !important; }
+                
+                /* Aplicación global de spinners */
+                .spinner-border.text-primary { color: ${colores.primary} !important; }
+                .spinner-border.text-secondary { color: ${colores.secondary} !important; }
+                .spinner-border.text-success { color: ${colores.success} !important; }
+                .spinner-border.text-warning { color: ${colores.warning} !important; }
+                .spinner-border.text-danger { color: ${colores.danger} !important; }
+                .spinner-border.text-info { color: ${colores.info} !important; }
+                
+                /* Aplicación específica para el sidebar del sistema */
+                .sidebar { background: ${colores.primary} !important; }
+                .sidebar-item:hover { background: rgba(255, 255, 255, 0.2) !important; }
+                .sidebar-item.active { background: rgba(255, 255, 255, 0.25) !important; }
+                
+                /* Aplicación específica para el body */
+                body { background: ${colores.primary} !important; }
+                
+                /* Sobrescribir estilos estáticos del sistema */
+                body { background: ${colores.primary} !important; }
+                .sidebar { background: ${colores.primary} !important; }
+                .sidebar-item:hover { background: rgba(255, 255, 255, 0.2) !important; }
+                .sidebar-item.active { background: rgba(255, 255, 255, 0.25) !important; }
+                
+                /* Prevenir cambios de color durante transiciones */
+                * { transition: none !important; }
+                .btn, .card, .sidebar, .navbar, body { transition: none !important; }
+                
+                /* Forzar colores en elementos específicos del sistema */
+                .btn-custom { background-color: inherit !important; }
+                .card { background-color: inherit !important; }
+            `;
+            
+            // Remover estilos anteriores si existen
+            const existingStyle = document.getElementById('global-theme-styles');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            
+            // Agregar nuevos estilos al head del documento con alta prioridad
+            document.head.insertBefore(style, document.head.firstChild);
+            
+            // Forzar actualización de todos los elementos
+            document.querySelectorAll('*').forEach(element => {
+                element.style.setProperty('--bs-primary', colores.primary);
+                element.style.setProperty('--bs-secondary', colores.secondary);
+                element.style.setProperty('--bs-success', colores.success);
+                element.style.setProperty('--bs-warning', colores.warning);
+                element.style.setProperty('--bs-danger', colores.danger);
+                element.style.setProperty('--bs-info', colores.info);
+            });
+            
+            console.log('Colores globales aplicados correctamente');
+        }
+        
+        // Cargar colores inmediatamente al cargar la página (sin esperar DOMContentLoaded)
+        (function() {
+            console.log('Cargando colores globales del sistema inmediatamente...');
+            
+            // Intentar cargar desde localStorage primero para evitar parpadeo
+            const coloresGuardados = localStorage.getItem('sistemaColores');
+            if (coloresGuardados) {
+                try {
+                    const colores = JSON.parse(coloresGuardados);
+                    aplicarColoresGlobales(colores);
+                    console.log('Colores del localStorage aplicados inmediatamente');
+                } catch (e) {
+                    console.error('Error al parsear colores del localStorage:', e);
+                }
+            }
+            
+            // Luego intentar cargar desde el backend
+            fetch('/configuracion/colores')
+                .then(response => {
+                    console.log('Respuesta del servidor:', response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(colores => {
+                    console.log('Colores recibidos del backend:', colores);
+                    if (colores && Object.keys(colores).length > 0) {
+                        aplicarColoresGlobales(colores);
+                        localStorage.setItem('sistemaColores', JSON.stringify(colores));
+                        console.log('Colores del backend aplicados globalmente');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar colores del backend:', error);
+                });
+        })();
+        
+        // También cargar en DOMContentLoaded como respaldo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded - verificando colores...');
+            
+            // Solo aplicar si no se han aplicado ya
+            if (!document.getElementById('global-theme-styles')) {
+                const coloresGuardados = localStorage.getItem('sistemaColores');
+                if (coloresGuardados) {
+                    try {
+                        const colores = JSON.parse(coloresGuardados);
+                        aplicarColoresGlobales(colores);
+                        console.log('Colores aplicados en DOMContentLoaded');
+                    } catch (e) {
+                        console.error('Error al parsear colores:', e);
+                    }
+                }
+            }
+        });
+    </script>
 
     @yield('scripts')
 </body>

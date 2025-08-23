@@ -46,6 +46,22 @@
                         @enderror
                     </div>
 
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nombre de Usuario <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               class="form-control @error('username') is-invalid @enderror" 
+                               id="username" 
+                               name="username" 
+                               value="{{ old('username') }}" 
+                               required
+                               placeholder="Ej: juan.perez">
+                        @error('username')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Este será el nombre de usuario para iniciar sesión</small>
+                    </div>
+
                     <!-- Email -->
                     <div class="mb-3">
                         <label for="email" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
@@ -59,7 +75,7 @@
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Este será el email para iniciar sesión</small>
+                        <small class="text-muted">Correo electrónico para notificaciones y recuperación de cuenta</small>
                     </div>
 
                     <!-- Contraseña -->

@@ -74,7 +74,7 @@
                            id="buscar" 
                            name="buscar" 
                            value="{{ request('buscar') }}" 
-                           placeholder="Buscar por nombre o email...">
+                                                       placeholder="Buscar por nombre, usuario o email...">
                 </div>
             </div>
 
@@ -134,24 +134,28 @@
                     <tbody>
                         @foreach($usuarios as $usuario)
                         <tr>
-                            <!-- Nombre -->
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                         style="width: 40px; height: 40px;">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div>
-                                        <strong>{{ $usuario->name }}</strong>
-                                        @if($usuario->tecnico)
-                                            <br>
-                                            <small class="text-info">
-                                                <i class="fas fa-tools me-1"></i>Perfil Técnico
-                                            </small>
-                                        @endif
-                                    </div>
-                                </div>
-                            </td>
+                                                         <!-- Nombre -->
+                             <td>
+                                 <div class="d-flex align-items-center">
+                                     <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                          style="width: 40px; height: 40px;">
+                                         <i class="fas fa-user"></i>
+                                     </div>
+                                     <div>
+                                         <strong>{{ $usuario->name }}</strong>
+                                         <br>
+                                         <small class="text-muted">
+                                             <i class="fas fa-at me-1"></i>{{ $usuario->username }}
+                                         </small>
+                                         @if($usuario->tecnico)
+                                             <br>
+                                             <small class="text-info">
+                                                 <i class="fas fa-tools me-1"></i>Perfil Técnico
+                                             </small>
+                                         @endif
+                                     </div>
+                                 </div>
+                             </td>
                             
                             <!-- Correo -->
                             <td>

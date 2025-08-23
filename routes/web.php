@@ -9,6 +9,7 @@ use App\Http\Controllers\ReparacionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\ConfiguracionController;
 
 // Public routes
 Route::get('/', function () {
@@ -144,5 +145,26 @@ Route::middleware('auth')->group(function () {
         
         // API para búsquedas AJAX
         Route::get('/api/search', [TicketController::class, 'api'])->name('api');
+    });
+
+    // === MÓDULO DE CONFIGURACIÓN ===
+    Route::prefix('configuracion')->name('configuracion.')->group(function () {
+        Route::get('/', [ConfiguracionController::class, 'index'])->name('index');
+        Route::get('/general', [ConfiguracionController::class, 'general'])->name('general');
+        Route::post('/general', [ConfiguracionController::class, 'actualizarGeneral'])->name('actualizar-general');
+        Route::get('/sistema', [ConfiguracionController::class, 'sistema'])->name('sistema');
+        Route::post('/sistema', [ConfiguracionController::class, 'actualizarSistema'])->name('actualizar-sistema');
+        Route::get('/notificaciones', [ConfiguracionController::class, 'notificaciones'])->name('notificaciones');
+        Route::post('/notificaciones', [ConfiguracionController::class, 'actualizarNotificaciones'])->name('actualizar-notificaciones');
+        Route::get('/backup', [ConfiguracionController::class, 'backup'])->name('backup');
+        Route::post('/backup/crear', [ConfiguracionController::class, 'crearBackup'])->name('crear-backup');
+        Route::get('/backup/descargar/{filename}', [ConfiguracionController::class, 'descargarBackup'])->name('descargar-backup');
+        Route::delete('/backup/{filename}', [ConfiguracionController::class, 'eliminarBackup'])->name('eliminar-backup');
+        Route::get('/logs', [ConfiguracionController::class, 'logs'])->name('logs');
+        Route::post('/logs/limpiar', [ConfiguracionController::class, 'limpiarLogs'])->name('limpiar-logs');
+                       Route::get('/logs/descargar/{filename}', [ConfiguracionController::class, 'descargarLog'])->name('descargar-log');
+               Route::delete('/logs/{filename}', [ConfiguracionController::class, 'eliminarLog'])->name('eliminar-log');
+               Route::post('/colores', [ConfiguracionController::class, 'guardarColores'])->name('guardar-colores');
+               Route::get('/colores', [ConfiguracionController::class, 'obtenerColores'])->name('obtener-colores');
     });
 });

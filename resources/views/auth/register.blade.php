@@ -197,6 +197,22 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-at me-2"></i>Nombre de Usuario
+                            </label>
+                            <input type="text" 
+                                   class="form-control @error('username') is-invalid @enderror" 
+                                   id="username" 
+                                   name="username" 
+                                   value="{{ old('username') }}" 
+                                   required
+                                   placeholder="Ej: juan123">
+                            @error('username')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="email" class="form-label">
                                 <i class="fas fa-envelope me-2"></i>Correo Electrónico
                             </label>

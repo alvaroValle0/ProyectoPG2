@@ -167,17 +167,18 @@
                         @csrf
                         
                         <div class="mb-3">
-                            <label for="email" class="form-label">
-                                <i class="fas fa-envelope me-2"></i>Correo Electrónico
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user me-2"></i>Nombre de Usuario
                             </label>
-                            <input type="email" 
-                                   class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" 
-                                   name="email" 
-                                   value="{{ old('email') }}" 
+                            <input type="text" 
+                                   class="form-control @error('username') is-invalid @enderror" 
+                                   id="username" 
+                                   name="username" 
+                                   value="{{ old('username') }}" 
                                    required 
-                                   autofocus>
-                            @error('email')
+                                   autofocus
+                                   placeholder="Ingresa tu nombre de usuario">
+                            @error('username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
