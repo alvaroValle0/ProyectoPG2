@@ -350,11 +350,7 @@
                 Reportes
             </a>
             
-            <!-- Facturación -->
-            <a href="#" class="sidebar-item" onclick="mostrarProximamente('Facturación')">
-                <i class="fas fa-file-invoice"></i>
-                Facturación
-            </a>
+
             
             <!-- Agenda -->
             <a href="#" class="sidebar-item" onclick="mostrarProximamente('Agenda')">
@@ -463,6 +459,9 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Sistema de eliminación unificado -->
+    <script src="{{ asset('js/eliminacion.js') }}"></script>
     
     <!-- Custom Scripts -->
     <script>
@@ -608,6 +607,46 @@
         }
     </script>
     
+    <!-- Modal universal de eliminación -->
+    <div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true" style="z-index: 1055;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="eliminarModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                        <h6>¿Estás seguro de que deseas eliminar este elemento?</h6>
+                        <p class="fw-bold text-danger" id="clienteNombre"></p>
+                    </div>
+                    <div class="alert alert-warning border-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Advertencia:</strong> Esta acción no se puede deshacer y eliminará permanentemente toda la información.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btnEliminarConfirmar">
+                        <i class="fas fa-trash me-2"></i>Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario oculto para eliminación -->
+    <form id="eliminarForm" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
     @yield('scripts')
 </body>
 </html>

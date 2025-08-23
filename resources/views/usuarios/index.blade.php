@@ -236,8 +236,11 @@
                                     
                                     <!-- Eliminar -->
                                     <button type="button" 
-                                            class="btn btn-outline-dark" 
-                                            onclick="confirmarEliminacion({{ $usuario->id }}, '{{ $usuario->name }}')"
+                                            class="btn btn-outline-danger btn-eliminar-item" 
+                                            data-item-id="{{ $usuario->id }}"
+                                            data-item-nombre="{{ $usuario->name }}"
+                                            data-item-tipo="usuario"
+                                            data-delete-url="{{ route('usuarios.destroy', $usuario) }}"
                                             title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -311,37 +314,7 @@
     </div>
 </div>
 
-<!-- Modal de confirmación para eliminar -->
-<div class="modal fade" id="eliminarModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Confirmar Eliminación
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro de que desea eliminar al usuario <strong id="nombre-usuario"></strong>?</p>
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Esta acción no se puede deshacer. Se eliminarán todos los datos asociados al usuario.
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form id="form-eliminar" method="POST" style="display: inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Eliminar Usuario
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+
 @endsection
 
 @section('scripts')
@@ -391,13 +364,7 @@ function toggleStatus(userId, activar) {
     });
 }
 
-function confirmarEliminacion(userId, userName) {
-    document.getElementById('nombre-usuario').textContent = userName;
-    document.getElementById('form-eliminar').action = `/usuarios/${userId}`;
-    
-    const modal = new bootstrap.Modal(document.getElementById('eliminarModal'));
-    modal.show();
-}
+
 
 function showToast(type, message) {
     // Crear toast dinámico
