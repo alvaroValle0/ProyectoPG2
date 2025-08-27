@@ -9,7 +9,7 @@
             <i class="fas fa-user-shield text-primary me-2"></i>
             Gestión de Permisos
         </h1>
-        <p class="text-muted">Configurar permisos específicos para {{ $user->name }}</p>
+        <p class="text-muted">Configurar módulos de acceso para {{ $user->name }}</p>
     </div>
     <div class="col-md-4 text-end">
         <a href="{{ route('usuarios.index') }}" class="btn btn-outline-secondary">
@@ -58,6 +58,14 @@
                     </h5>
                 </div>
                 <div class="card-body">
+                    <!-- Mensaje informativo sobre el sistema de checkboxes -->
+                    <div class="alert alert-primary mb-3">
+                        <h6><i class="fas fa-info-circle me-2"></i>Sistema de Selección de Módulos</h6>
+                        <p class="mb-0 small">
+                            <strong>Importante:</strong> Seleccione mediante checkboxes los módulos a los que desea dar acceso al usuario.
+                        </p>
+                    </div>
+                    
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-check mb-3">
@@ -166,278 +174,11 @@
                 </div>
             </div>
             
-            <!-- Permisos Específicos -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-tasks me-2"></i>
-                        Permisos Específicos
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <!-- Equipos -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="fas fa-laptop me-2"></i>Equipos
-                            </h6>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="view_equipo" id="view_equipo" 
-                                       {{ $permissions->view_equipo ? 'checked' : '' }}>
-                                <label class="form-check-label" for="view_equipo">
-                                    <i class="fas fa-eye text-info me-1"></i>Ver
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="create_equipo" id="create_equipo" 
-                                       {{ $permissions->create_equipo ? 'checked' : '' }}>
-                                <label class="form-check-label" for="create_equipo">
-                                    <i class="fas fa-plus text-success me-1"></i>Crear
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="edit_equipo" id="edit_equipo" 
-                                       {{ $permissions->edit_equipo ? 'checked' : '' }}>
-                                <label class="form-check-label" for="edit_equipo">
-                                    <i class="fas fa-edit text-warning me-1"></i>Editar
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="delete_equipo" id="delete_equipo" 
-                                       {{ $permissions->delete_equipo ? 'checked' : '' }}>
-                                <label class="form-check-label" for="delete_equipo">
-                                    <i class="fas fa-trash text-danger me-1"></i>Eliminar
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Reparaciones -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-success mb-3">
-                                <i class="fas fa-wrench me-2"></i>Reparaciones
-                            </h6>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="view_reparacion" id="view_reparacion" 
-                                       {{ $permissions->view_reparacion ? 'checked' : '' }}>
-                                <label class="form-check-label" for="view_reparacion">
-                                    <i class="fas fa-eye text-info me-1"></i>Ver
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="create_reparacion" id="create_reparacion" 
-                                       {{ $permissions->create_reparacion ? 'checked' : '' }}>
-                                <label class="form-check-label" for="create_reparacion">
-                                    <i class="fas fa-plus text-success me-1"></i>Crear
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="edit_reparacion" id="edit_reparacion" 
-                                       {{ $permissions->edit_reparacion ? 'checked' : '' }}>
-                                <label class="form-check-label" for="edit_reparacion">
-                                    <i class="fas fa-edit text-warning me-1"></i>Editar
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="delete_reparacion" id="delete_reparacion" 
-                                       {{ $permissions->delete_reparacion ? 'checked' : '' }}>
-                                <label class="form-check-label" for="delete_reparacion">
-                                    <i class="fas fa-trash text-danger me-1"></i>Eliminar
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Clientes -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-info mb-3">
-                                <i class="fas fa-users me-2"></i>Clientes
-                            </h6>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="view_cliente" id="view_cliente" 
-                                       {{ $permissions->view_cliente ? 'checked' : '' }}>
-                                <label class="form-check-label" for="view_cliente">
-                                    <i class="fas fa-eye text-info me-1"></i>Ver
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="create_cliente" id="create_cliente" 
-                                       {{ $permissions->create_cliente ? 'checked' : '' }}>
-                                <label class="form-check-label" for="create_cliente">
-                                    <i class="fas fa-plus text-success me-1"></i>Crear
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="edit_cliente" id="edit_cliente" 
-                                       {{ $permissions->edit_cliente ? 'checked' : '' }}>
-                                <label class="form-check-label" for="edit_cliente">
-                                    <i class="fas fa-edit text-warning me-1"></i>Editar
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="delete_cliente" id="delete_cliente" 
-                                       {{ $permissions->delete_cliente ? 'checked' : '' }}>
-                                <label class="form-check-label" for="delete_cliente">
-                                    <i class="fas fa-trash text-danger me-1"></i>Eliminar
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Inventario -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-secondary mb-3">
-                                <i class="fas fa-boxes me-2"></i>Inventario
-                            </h6>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="view_inventario" id="view_inventario" 
-                                       {{ $permissions->view_inventario ? 'checked' : '' }}>
-                                <label class="form-check-label" for="view_inventario">
-                                    <i class="fas fa-eye text-info me-1"></i>Ver
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="create_inventario" id="create_inventario" 
-                                       {{ $permissions->create_inventario ? 'checked' : '' }}>
-                                <label class="form-check-label" for="create_inventario">
-                                    <i class="fas fa-plus text-success me-1"></i>Crear
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="edit_inventario" id="edit_inventario" 
-                                       {{ $permissions->edit_inventario ? 'checked' : '' }}>
-                                <label class="form-check-label" for="edit_inventario">
-                                    <i class="fas fa-edit text-warning me-1"></i>Editar
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="delete_inventario" id="delete_inventario" 
-                                       {{ $permissions->delete_inventario ? 'checked' : '' }}>
-                                <label class="form-check-label" for="delete_inventario">
-                                    <i class="fas fa-trash text-danger me-1"></i>Eliminar
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tickets -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-danger mb-3">
-                                <i class="fas fa-ticket-alt me-2"></i>Tickets
-                            </h6>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="view_ticket" id="view_ticket" 
-                                       {{ $permissions->view_ticket ? 'checked' : '' }}>
-                                <label class="form-check-label" for="view_ticket">
-                                    <i class="fas fa-eye text-info me-1"></i>Ver
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="create_ticket" id="create_ticket" 
-                                       {{ $permissions->create_ticket ? 'checked' : '' }}>
-                                <label class="form-check-label" for="create_ticket">
-                                    <i class="fas fa-plus text-success me-1"></i>Crear
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="edit_ticket" id="edit_ticket" 
-                                       {{ $permissions->edit_ticket ? 'checked' : '' }}>
-                                <label class="form-check-label" for="edit_ticket">
-                                    <i class="fas fa-edit text-warning me-1"></i>Editar
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="delete_ticket" id="delete_ticket" 
-                                       {{ $permissions->delete_ticket ? 'checked' : '' }}>
-                                <label class="form-check-label" for="delete_ticket">
-                                    <i class="fas fa-trash text-danger me-1"></i>Eliminar
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Gestión -->
-                    <div class="row">
-                        <div class="col-12">
-                            <h6 class="text-dark mb-3">
-                                <i class="fas fa-cogs me-2"></i>Gestión del Sistema
-                            </h6>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="manage_users" id="manage_users" 
-                                       {{ $permissions->manage_users ? 'checked' : '' }}>
-                                <label class="form-check-label" for="manage_users">
-                                    <i class="fas fa-users-cog text-primary me-1"></i>
-                                    <strong>Gestionar Usuarios</strong>
-                                    <br><small class="text-muted">Crear, editar y eliminar usuarios</small>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="manage_tecnicos" id="manage_tecnicos" 
-                                       {{ $permissions->manage_tecnicos ? 'checked' : '' }}>
-                                <label class="form-check-label" for="manage_tecnicos">
-                                    <i class="fas fa-user-cog text-secondary me-1"></i>
-                                    <strong>Gestionar Técnicos</strong>
-                                    <br><small class="text-muted">Crear, editar y eliminar técnicos</small>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Botones de Acción -->
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
                     <button type="submit" class="btn btn-primary btn-lg me-3">
-                        <i class="fas fa-save me-2"></i>Guardar Permisos
+                        <i class="fas fa-save me-2"></i>Guardar Módulos
                     </button>
                     <a href="{{ route('usuarios.index') }}" class="btn btn-outline-secondary btn-lg">
                         <i class="fas fa-times me-2"></i>Cancelar

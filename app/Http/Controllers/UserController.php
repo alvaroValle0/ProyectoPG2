@@ -90,7 +90,7 @@ class UserController extends Controller
 
             $user = User::create($validated);
             
-            // Crear permisos para el usuario basados únicamente en los checkboxes seleccionados
+            // Crear permisos para el usuario basados ÚNICAMENTE en los checkboxes seleccionados
             $permissions = [];
             $modulePermissions = [
                 'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
@@ -98,21 +98,36 @@ class UserController extends Controller
                 'access_configuracion', 'access_reportes'
             ];
 
-            // Usar únicamente los checkboxes seleccionados por el usuario
+            // Usar ÚNICAMENTE los checkboxes seleccionados por el usuario
             foreach ($modulePermissions as $permission) {
                 $permissions[$permission] = $request->has($permission);
             }
 
-            // Si no se seleccionó ningún módulo, asignar solo dashboard por defecto
+            // Validar que al menos un módulo haya sido seleccionado
             if (!in_array(true, $permissions)) {
-                $permissions['access_dashboard'] = true;
+                return back()->withInput()
+                    ->with('error', 'Debe seleccionar al menos un módulo de acceso para el usuario.');
+            }
+
+            // Establecer todos los permisos específicos en false (no se usan)
+            $specificPermissions = [
+                'create_equipo', 'edit_equipo', 'delete_equipo', 'view_equipo',
+                'create_reparacion', 'edit_reparacion', 'delete_reparacion', 'view_reparacion',
+                'create_cliente', 'edit_cliente', 'delete_cliente', 'view_cliente',
+                'create_inventario', 'edit_inventario', 'delete_inventario', 'view_inventario',
+                'create_ticket', 'edit_ticket', 'delete_ticket', 'view_ticket',
+                'manage_users', 'manage_tecnicos'
+            ];
+
+            foreach ($specificPermissions as $permission) {
+                $permissions[$permission] = false;
             }
 
             $permissions['user_id'] = $user->id;
             UserPermission::create($permissions);
             
             return redirect()->route('usuarios.show', $user)
-                ->with('success', 'Usuario creado exitosamente con sus permisos configurados.');
+                ->with('success', 'Usuario creado exitosamente con los módulos de acceso seleccionados mediante checkboxes.');
         } catch (\Exception $e) {
             return back()->withInput()
                 ->with('error', 'Error al crear el usuario: ' . $e->getMessage());
@@ -339,93 +354,54 @@ class UserController extends Controller
                 'user_id' => $usuario->id
             ]);
 
-            // Lista de todos los permisos posibles
-            $allPermissions = [
+            // Lista de módulos principales (solo checkboxes)
+            $modulePermissions = [
                 'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
                 'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
-                'access_configuracion', 'access_reportes', 'create_equipo', 'edit_equipo',
-                'delete_equipo', 'view_equipo', 'create_reparacion', 'edit_reparacion',
-                'delete_reparacion', 'view_reparacion', 'create_cliente', 'edit_cliente',
-                'delete_cliente', 'view_cliente', 'create_inventario', 'edit_inventario',
-                'delete_inventario', 'view_inventario', 'create_ticket', 'edit_ticket',
-                'delete_ticket', 'view_ticket', 'manage_users', 'manage_tecnicos'
+                'access_configuracion', 'access_reportes'
             ];
 
-            // Actualizar cada permiso
-            foreach ($allPermissions as $permission) {
+            // Validar que al menos un módulo haya sido seleccionado mediante checkboxes
+            $hasModuleSelected = false;
+            foreach ($modulePermissions as $permission) {
+                if ($request->has($permission)) {
+                    $hasModuleSelected = true;
+                    break;
+                }
+            }
+
+            if (!$hasModuleSelected) {
+                return back()->withInput()
+                    ->with('error', 'Debe seleccionar al menos un módulo de acceso mediante checkboxes.');
+            }
+
+            // Actualizar ÚNICAMENTE los módulos principales basado en los checkboxes seleccionados
+            foreach ($modulePermissions as $permission) {
                 $permissions->$permission = $request->has($permission);
+            }
+
+            // Establecer todos los permisos específicos en false (no se usan)
+            $specificPermissions = [
+                'create_equipo', 'edit_equipo', 'delete_equipo', 'view_equipo',
+                'create_reparacion', 'edit_reparacion', 'delete_reparacion', 'view_reparacion',
+                'create_cliente', 'edit_cliente', 'delete_cliente', 'view_cliente',
+                'create_inventario', 'edit_inventario', 'delete_inventario', 'view_inventario',
+                'create_ticket', 'edit_ticket', 'delete_ticket', 'view_ticket',
+                'manage_users', 'manage_tecnicos'
+            ];
+
+            foreach ($specificPermissions as $permission) {
+                $permissions->$permission = false;
             }
 
             $permissions->save();
 
             return redirect()->route('usuarios.show', $usuario)
-                ->with('success', 'Permisos actualizados exitosamente.');
+                ->with('success', 'Módulos de acceso actualizados exitosamente mediante checkboxes.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al actualizar los permisos: ' . $e->getMessage());
+            return back()->with('error', 'Error al actualizar los módulos: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Obtener permisos por defecto según el rol
-     */
-    private function getDefaultPermissions($rol)
-    {
-        switch ($rol) {
-            case 'admin':
-                return [
-                    'access_dashboard' => true,
-                    'access_clientes' => true,
-                    'access_equipos' => true,
-                    'access_reparaciones' => true,
-                    'access_inventario' => true,
-                    'access_tickets' => true,
-                    'access_tecnicos' => true,
-                    'access_usuarios' => true,
-                    'access_configuracion' => true,
-                    'access_reportes' => true,
-                ];
 
-            case 'tecnico':
-                return [
-                    'access_dashboard' => true,
-                    'access_clientes' => true,
-                    'access_equipos' => true,
-                    'access_reparaciones' => true,
-                    'access_inventario' => true,
-                    'access_tickets' => true,
-                    'access_tecnicos' => false,
-                    'access_usuarios' => false,
-                    'access_configuracion' => false,
-                    'access_reportes' => true,
-                ];
-
-            case 'usuario':
-                return [
-                    'access_dashboard' => true,
-                    'access_clientes' => false,
-                    'access_equipos' => false,
-                    'access_reparaciones' => false,
-                    'access_inventario' => false,
-                    'access_tickets' => false,
-                    'access_tecnicos' => false,
-                    'access_usuarios' => false,
-                    'access_configuracion' => false,
-                    'access_reportes' => false,
-                ];
-
-            default:
-                return [
-                    'access_dashboard' => false,
-                    'access_clientes' => false,
-                    'access_equipos' => false,
-                    'access_reparaciones' => false,
-                    'access_inventario' => false,
-                    'access_tickets' => false,
-                    'access_tecnicos' => false,
-                    'access_usuarios' => false,
-                    'access_configuracion' => false,
-                    'access_reportes' => false,
-                ];
-        }
-    }
 }

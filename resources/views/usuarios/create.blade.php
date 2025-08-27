@@ -59,6 +59,7 @@
                         @error('username')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="text-muted">Este será el nombre de usuario para iniciar sesión</small>
                     </div>
 
                     <!-- Email -->
@@ -74,6 +75,7 @@
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="text-muted">Correo electrónico para notificaciones y recuperación de cuenta</small>
                     </div>
 
                     <!-- Contraseña -->
@@ -94,6 +96,7 @@
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="text-muted">La contraseña debe tener al menos 8 caracteres</small>
                     </div>
 
                     <!-- Confirmar Contraseña -->
@@ -161,7 +164,29 @@
                             @error('activo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <small class="text-muted d-block">El usuario podrá iniciar sesión en el sistema</small>
                         </div>
+                    </div>
+
+                    <!-- Información sobre roles -->
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Información sobre Roles</h6>
+                        <p class="mb-0 small">
+                            <strong>Nota:</strong> Los módulos de acceso se configuran ÚNICAMENTE mediante checkboxes, independientemente del rol seleccionado.
+                        </p>
+                    </div>
+
+                    <!-- Información adicional para técnicos -->
+                    <div class="alert alert-warning" id="info-tecnico" style="display: none;">
+                        <h6><i class="fas fa-tools me-2"></i>Usuarios Técnicos</h6>
+                        <p class="mb-2 small">
+                            Si selecciona el rol "Técnico", después de crear el usuario podrá:
+                        </p>
+                        <ul class="mb-0 small">
+                            <li>Crear un perfil técnico completo con información personal</li>
+                            <li>Asignar especialidades y habilidades</li>
+                            <li>Configurar información de contacto y emergencia</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -189,6 +214,14 @@
                         </div>
                     </div>
                     
+                    <!-- Mensaje informativo sobre el sistema de checkboxes -->
+                    <div class="alert alert-primary mb-3">
+                        <h6><i class="fas fa-info-circle me-2"></i>Sistema de Selección de Módulos</h6>
+                        <p class="mb-0 small">
+                            <strong>Importante:</strong> Seleccione mediante checkboxes los módulos a los que desea dar acceso al usuario.
+                        </p>
+                    </div>
+                    
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-check mb-3">
@@ -197,6 +230,7 @@
                                 <label class="form-check-label" for="access_dashboard">
                                     <i class="fas fa-tachometer-alt text-primary me-2"></i>
                                     <strong>Dashboard</strong>
+                                    <br><small class="text-muted">Panel principal y estadísticas</small>
                                 </label>
                             </div>
                             
@@ -206,6 +240,7 @@
                                 <label class="form-check-label" for="access_clientes">
                                     <i class="fas fa-users text-info me-2"></i>
                                     <strong>Clientes</strong>
+                                    <br><small class="text-muted">Gestión de clientes</small>
                                 </label>
                             </div>
                             
@@ -215,6 +250,7 @@
                                 <label class="form-check-label" for="access_equipos">
                                     <i class="fas fa-laptop text-warning me-2"></i>
                                     <strong>Equipos</strong>
+                                    <br><small class="text-muted">Gestión de equipos</small>
                                 </label>
                             </div>
                             
@@ -224,6 +260,7 @@
                                 <label class="form-check-label" for="access_reparaciones">
                                     <i class="fas fa-wrench text-success me-2"></i>
                                     <strong>Reparaciones</strong>
+                                    <br><small class="text-muted">Gestión de reparaciones</small>
                                 </label>
                             </div>
                             
@@ -233,6 +270,7 @@
                                 <label class="form-check-label" for="access_inventario">
                                     <i class="fas fa-boxes text-secondary me-2"></i>
                                     <strong>Inventario</strong>
+                                    <br><small class="text-muted">Gestión de inventario</small>
                                 </label>
                             </div>
                         </div>
@@ -244,6 +282,7 @@
                                 <label class="form-check-label" for="access_tickets">
                                     <i class="fas fa-ticket-alt text-danger me-2"></i>
                                     <strong>Tickets</strong>
+                                    <br><small class="text-muted">Gestión de tickets</small>
                                 </label>
                             </div>
                             
@@ -253,6 +292,7 @@
                                 <label class="form-check-label" for="access_tecnicos">
                                     <i class="fas fa-users-cog text-dark me-2"></i>
                                     <strong>Técnicos</strong>
+                                    <br><small class="text-muted">Gestión de técnicos</small>
                                 </label>
                             </div>
                             
@@ -262,6 +302,7 @@
                                 <label class="form-check-label" for="access_usuarios">
                                     <i class="fas fa-users text-primary me-2"></i>
                                     <strong>Usuarios</strong>
+                                    <br><small class="text-muted">Gestión de usuarios</small>
                                 </label>
                             </div>
                             
@@ -271,6 +312,7 @@
                                 <label class="form-check-label" for="access_configuracion">
                                     <i class="fas fa-cog text-secondary me-2"></i>
                                     <strong>Configuración</strong>
+                                    <br><small class="text-muted">Configuración del sistema</small>
                                 </label>
                             </div>
                             
@@ -280,7 +322,49 @@
                                 <label class="form-check-label" for="access_reportes">
                                     <i class="fas fa-chart-line text-info me-2"></i>
                                     <strong>Reportes</strong>
+                                    <br><small class="text-muted">Acceso a reportes</small>
                                 </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Información de Seguridad -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="mb-3">
+                        <i class="fas fa-shield-alt text-success me-2"></i>
+                        Configuración de Seguridad
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-key text-success display-6 mb-2"></i>
+                                    <h6>Contraseña Segura</h6>
+                                    <small class="text-muted">Mínimo 8 caracteres con combinación de letras y números</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-envelope text-info display-6 mb-2"></i>
+                                    <h6>Email Único</h6>
+                                    <small class="text-muted">El email debe ser único en el sistema</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-check-square text-warning display-6 mb-2"></i>
+                                    <h6>Módulos por Checkboxes</h6>
+                                    <small class="text-muted">Acceso mediante checkboxes</small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -330,6 +414,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
     const passwordConfirmation = document.getElementById('password_confirmation');
     const rolSelect = document.getElementById('rol');
+    const infoTecnico = document.getElementById('info-tecnico');
+    
+    // Mostrar información para técnicos (sin configurar módulos automáticamente)
+    rolSelect.addEventListener('change', function() {
+        if (this.value === 'tecnico') {
+            infoTecnico.style.display = 'block';
+        } else {
+            infoTecnico.style.display = 'none';
+        }
+        
+        // NO configurar módulos automáticamente - el usuario debe seleccionar ÚNICAMENTE mediante checkboxes
+    });
     
     // Función para seleccionar todos los módulos
     window.selectAllModules = function() {
@@ -440,8 +536,36 @@ document.addEventListener('DOMContentLoaded', function() {
             valid = false;
         }
         
+        // Validar que al menos un módulo haya sido seleccionado mediante checkboxes
+        const moduleCheckboxes = [
+            'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+            'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+            'access_configuracion', 'access_reportes'
+        ];
+        
+        let moduleSelected = false;
+        moduleCheckboxes.forEach(id => {
+            const checkbox = document.getElementById(id);
+            if (checkbox && checkbox.checked) {
+                moduleSelected = true;
+            }
+        });
+        
+        if (!moduleSelected) {
+            valid = false;
+            alert('Debe seleccionar al menos un módulo de acceso mediante checkboxes.');
+            // Scroll a la sección de módulos
+            const modulesSection = document.querySelector('.row.mb-4');
+            if (modulesSection) {
+                modulesSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
         if (!valid) {
             e.preventDefault();
+            if (!moduleSelected) {
+                return; // Ya se mostró el mensaje específico para módulos
+            }
             alert('Por favor, complete todos los campos obligatorios correctamente.');
             // Scroll al primer campo con error
             const firstError = document.querySelector('.is-invalid');
@@ -499,6 +623,14 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 8px;
     padding: 8px;
     margin: -8px;
+}
+
+.alert ul {
+    padding-left: 1.2rem;
+}
+
+.alert li {
+    margin-bottom: 0.2rem;
 }
 
 @media (max-width: 768px) {
