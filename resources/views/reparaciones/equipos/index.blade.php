@@ -12,9 +12,11 @@
         <p class="text-muted">Lista completa de equipos registrados en el sistema</p>
     </div>
     <div class="col-md-4 text-end">
+        @if(\App\Helpers\PermissionHelper::can('create_equipo'))
         <a href="{{ route('equipos.create') }}" class="btn btn-primary btn-custom">
             <i class="fas fa-plus me-2"></i>Nuevo Equipo
         </a>
+        @endif
     </div>
 </div>
 
@@ -159,13 +161,24 @@
                                     <a href="{{ route('equipos.show', $equipo) }}" class="btn btn-outline-primary" title="Ver detalles">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @if(\App\Helpers\PermissionHelper::can('edit_equipo'))
                                     <a href="{{ route('equipos.edit', $equipo) }}" class="btn btn-outline-warning" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    @if(in_array($equipo->estado, ['recibido', 'en_reparacion']))
+                                    @endif
+                                    @if(\App\Helpers\PermissionHelper::can('create_reparacion') && in_array($equipo->estado, ['recibido', 'en_reparacion']))
                                         <a href="{{ route('reparaciones.create', ['equipo_id' => $equipo->id]) }}" class="btn btn-outline-success" title="Nueva reparación">
                                             <i class="fas fa-wrench"></i>
                                         </a>
+                                    @endif
+                                    @if(\App\Helpers\PermissionHelper::can('delete_equipo'))
+                                    <form action="{{ route('equipos.destroy', $equipo) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de eliminar el equipo {{ $equipo->marca }} {{ $equipo->modelo }} ({{ $equipo->numero_serie }})?\n\nEsta acción no se puede deshacer.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger" title="Eliminar equipo">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                     @endif
                                 </div>
                             </td>
@@ -191,6 +204,63 @@
         @endif
     </div>
 </div>
+@endsection
+
+@section('styles')
+<style>
+.btn-outline-danger {
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    transform: scale(1.05);
+}
+
+.btn-group-sm > .btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.table-responsive {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.table th {
+    border: none;
+    padding: 1rem 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.8rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+</style>
 @endsection
 
 @section('scripts')
@@ -222,5 +292,7 @@ function cambiarEstado(equipoId, nuevoEstado) {
         });
     }
 }
+
+// El botón de eliminar ahora usa un formulario inline con confirmación nativa
 </script>
 @endsection

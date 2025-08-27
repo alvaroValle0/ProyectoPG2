@@ -219,6 +219,13 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     
+                                    <!-- Permisos -->
+                                    <a href="{{ route('usuarios.permissions', $usuario) }}" 
+                                       class="btn btn-outline-info" 
+                                       title="Gestionar Permisos">
+                                        <i class="fas fa-user-shield"></i>
+                                    </a>
+                                    
                                     <!-- Activar/Desactivar -->
                                     @if($usuario->activo)
                                         <button type="button" 

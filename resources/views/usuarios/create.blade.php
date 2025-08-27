@@ -176,6 +176,7 @@
                             <li><strong>Técnico:</strong> Gestión de reparaciones, equipos y sus tareas</li>
                             <li><strong>Usuario:</strong> Acceso de solo lectura a información básica</li>
                         </ul>
+                        <p class="mb-0 mt-2 small"><strong>Nota:</strong> Los permisos de acceso se configuran independientemente del rol seleccionado.</p>
                     </div>
 
                     <!-- Información adicional para técnicos -->
@@ -189,6 +190,137 @@
                             <li>Asignar especialidades y habilidades</li>
                             <li>Configurar información de contacto y emergencia</li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Acceso a Módulos -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="mb-1">
+                                <i class="fas fa-th-large text-primary me-2"></i>
+                                Acceso a Módulos
+                            </h5>
+                            <p class="text-muted mb-0">Selecciona los módulos a los que tendrá acceso el usuario</p>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="selectAllModules()">
+                                <i class="fas fa-check-square me-1"></i>Seleccionar Todos
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAllModules()">
+                                <i class="fas fa-square me-1"></i>Deseleccionar Todos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_dashboard" id="access_dashboard" 
+                                       {{ old('access_dashboard', true) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_dashboard">
+                                    <i class="fas fa-tachometer-alt text-primary me-2"></i>
+                                    <strong>Dashboard</strong>
+                                    <br><small class="text-muted">Panel principal y estadísticas</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_clientes" id="access_clientes" 
+                                       {{ old('access_clientes') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_clientes">
+                                    <i class="fas fa-users text-info me-2"></i>
+                                    <strong>Clientes</strong>
+                                    <br><small class="text-muted">Gestión de clientes</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_equipos" id="access_equipos" 
+                                       {{ old('access_equipos') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_equipos">
+                                    <i class="fas fa-laptop text-warning me-2"></i>
+                                    <strong>Equipos</strong>
+                                    <br><small class="text-muted">Gestión de equipos</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_reparaciones" id="access_reparaciones" 
+                                       {{ old('access_reparaciones') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_reparaciones">
+                                    <i class="fas fa-wrench text-success me-2"></i>
+                                    <strong>Reparaciones</strong>
+                                    <br><small class="text-muted">Gestión de reparaciones</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_inventario" id="access_inventario" 
+                                       {{ old('access_inventario') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_inventario">
+                                    <i class="fas fa-boxes text-secondary me-2"></i>
+                                    <strong>Inventario</strong>
+                                    <br><small class="text-muted">Gestión de inventario</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_tickets" id="access_tickets" 
+                                       {{ old('access_tickets') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_tickets">
+                                    <i class="fas fa-ticket-alt text-danger me-2"></i>
+                                    <strong>Tickets</strong>
+                                    <br><small class="text-muted">Gestión de tickets</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_tecnicos" id="access_tecnicos" 
+                                       {{ old('access_tecnicos') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_tecnicos">
+                                    <i class="fas fa-users-cog text-dark me-2"></i>
+                                    <strong>Técnicos</strong>
+                                    <br><small class="text-muted">Gestión de técnicos</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_usuarios" id="access_usuarios" 
+                                       {{ old('access_usuarios') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_usuarios">
+                                    <i class="fas fa-users text-primary me-2"></i>
+                                    <strong>Usuarios</strong>
+                                    <br><small class="text-muted">Gestión de usuarios</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_configuracion" id="access_configuracion" 
+                                       {{ old('access_configuracion') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_configuracion">
+                                    <i class="fas fa-cog text-secondary me-2"></i>
+                                    <strong>Configuración</strong>
+                                    <br><small class="text-muted">Configuración del sistema</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_reportes" id="access_reportes" 
+                                       {{ old('access_reportes') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_reportes">
+                                    <i class="fas fa-chart-line text-info me-2"></i>
+                                    <strong>Reportes</strong>
+                                    <br><small class="text-muted">Acceso a reportes</small>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -225,8 +357,8 @@
                             <div class="card border-warning">
                                 <div class="card-body text-center">
                                     <i class="fas fa-user-shield text-warning display-6 mb-2"></i>
-                                    <h6>Permisos por Rol</h6>
-                                    <small class="text-muted">Los permisos se asignan automáticamente según el rol</small>
+                                    <h6>Permisos Manuales</h6>
+                                    <small class="text-muted">Los permisos se configuran manualmente con checkboxes</small>
                                 </div>
                             </div>
                         </div>
@@ -279,14 +411,48 @@ document.addEventListener('DOMContentLoaded', function() {
     const rolSelect = document.getElementById('rol');
     const infoTecnico = document.getElementById('info-tecnico');
     
-    // Mostrar información para técnicos
+    // Mostrar información para técnicos (sin configurar permisos automáticamente)
     rolSelect.addEventListener('change', function() {
         if (this.value === 'tecnico') {
             infoTecnico.style.display = 'block';
         } else {
             infoTecnico.style.display = 'none';
         }
+        
+        // NO configurar permisos automáticamente - el usuario debe seleccionar manualmente
     });
+    
+    // Función para seleccionar todos los módulos
+    window.selectAllModules = function() {
+        const moduleCheckboxes = [
+            'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+            'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+            'access_configuracion', 'access_reportes'
+        ];
+        
+        moduleCheckboxes.forEach(id => {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    };
+    
+    // Función para deseleccionar todos los módulos
+    window.deselectAllModules = function() {
+        const moduleCheckboxes = [
+            'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+            'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+            'access_configuracion', 'access_reportes'
+        ];
+        
+        moduleCheckboxes.forEach(id => {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+        });
+    };
     
     // Validación de confirmación de contraseña
     passwordConfirmation.addEventListener('input', function() {
@@ -397,8 +563,33 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .form-check-input:checked {
-    background-color: #198754;
-    border-color: #198754;
+    background-color: #27DB9F;
+    border-color: #27DB9F;
+}
+
+.form-check-input:focus {
+    border-color: #27DB9F;
+    box-shadow: 0 0 0 0.2rem rgba(39, 219, 159, 0.25);
+}
+
+.form-check-label {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-check-label:hover {
+    transform: translateX(5px);
+}
+
+.form-check {
+    transition: all 0.3s ease;
+}
+
+.form-check:hover {
+    background-color: rgba(39, 219, 159, 0.05);
+    border-radius: 8px;
+    padding: 8px;
+    margin: -8px;
 }
 
 .alert ul {

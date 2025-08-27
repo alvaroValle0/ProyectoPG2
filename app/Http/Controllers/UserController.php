@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -89,8 +90,29 @@ class UserController extends Controller
 
             $user = User::create($validated);
             
+            // Crear permisos para el usuario basados únicamente en los checkboxes seleccionados
+            $permissions = [];
+            $modulePermissions = [
+                'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+                'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+                'access_configuracion', 'access_reportes'
+            ];
+
+            // Usar únicamente los checkboxes seleccionados por el usuario
+            foreach ($modulePermissions as $permission) {
+                $permissions[$permission] = $request->has($permission);
+            }
+
+            // Si no se seleccionó ningún módulo, asignar solo dashboard por defecto
+            if (!in_array(true, $permissions)) {
+                $permissions['access_dashboard'] = true;
+            }
+
+            $permissions['user_id'] = $user->id;
+            UserPermission::create($permissions);
+            
             return redirect()->route('usuarios.show', $user)
-                ->with('success', 'Usuario creado exitosamente.');
+                ->with('success', 'Usuario creado exitosamente con sus permisos configurados.');
         } catch (\Exception $e) {
             return back()->withInput()
                 ->with('error', 'Error al crear el usuario: ' . $e->getMessage());
@@ -258,6 +280,152 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'Error al crear el usuario: ' . $e->getMessage()
             ], 422);
+        }
+    }
+
+    /**
+     * Show the permissions management form for a user.
+     */
+    public function permissions(User $usuario)
+    {
+        // Obtener o crear permisos para el usuario
+        $permissions = $usuario->permissions ?? UserPermission::create([
+            'user_id' => $usuario->id,
+            'access_dashboard' => false,
+            'access_clientes' => false,
+            'access_equipos' => false,
+            'access_reparaciones' => false,
+            'access_inventario' => false,
+            'access_tickets' => false,
+            'access_tecnicos' => false,
+            'access_usuarios' => false,
+            'access_configuracion' => false,
+            'access_reportes' => false,
+            'create_equipo' => false,
+            'edit_equipo' => false,
+            'delete_equipo' => false,
+            'view_equipo' => false,
+            'create_reparacion' => false,
+            'edit_reparacion' => false,
+            'delete_reparacion' => false,
+            'view_reparacion' => false,
+            'create_cliente' => false,
+            'edit_cliente' => false,
+            'delete_cliente' => false,
+            'view_cliente' => false,
+            'create_inventario' => false,
+            'edit_inventario' => false,
+            'delete_inventario' => false,
+            'view_inventario' => false,
+            'create_ticket' => false,
+            'edit_ticket' => false,
+            'delete_ticket' => false,
+            'view_ticket' => false,
+            'manage_users' => false,
+            'manage_tecnicos' => false,
+        ]);
+
+        return view('usuarios.permissions', compact('usuario', 'permissions'));
+    }
+
+    /**
+     * Update user permissions.
+     */
+    public function updatePermissions(Request $request, User $usuario)
+    {
+        try {
+            // Obtener o crear permisos para el usuario
+            $permissions = $usuario->permissions ?? UserPermission::create([
+                'user_id' => $usuario->id
+            ]);
+
+            // Lista de todos los permisos posibles
+            $allPermissions = [
+                'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+                'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+                'access_configuracion', 'access_reportes', 'create_equipo', 'edit_equipo',
+                'delete_equipo', 'view_equipo', 'create_reparacion', 'edit_reparacion',
+                'delete_reparacion', 'view_reparacion', 'create_cliente', 'edit_cliente',
+                'delete_cliente', 'view_cliente', 'create_inventario', 'edit_inventario',
+                'delete_inventario', 'view_inventario', 'create_ticket', 'edit_ticket',
+                'delete_ticket', 'view_ticket', 'manage_users', 'manage_tecnicos'
+            ];
+
+            // Actualizar cada permiso
+            foreach ($allPermissions as $permission) {
+                $permissions->$permission = $request->has($permission);
+            }
+
+            $permissions->save();
+
+            return redirect()->route('usuarios.show', $usuario)
+                ->with('success', 'Permisos actualizados exitosamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al actualizar los permisos: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Obtener permisos por defecto según el rol
+     */
+    private function getDefaultPermissions($rol)
+    {
+        switch ($rol) {
+            case 'admin':
+                return [
+                    'access_dashboard' => true,
+                    'access_clientes' => true,
+                    'access_equipos' => true,
+                    'access_reparaciones' => true,
+                    'access_inventario' => true,
+                    'access_tickets' => true,
+                    'access_tecnicos' => true,
+                    'access_usuarios' => true,
+                    'access_configuracion' => true,
+                    'access_reportes' => true,
+                ];
+
+            case 'tecnico':
+                return [
+                    'access_dashboard' => true,
+                    'access_clientes' => true,
+                    'access_equipos' => true,
+                    'access_reparaciones' => true,
+                    'access_inventario' => true,
+                    'access_tickets' => true,
+                    'access_tecnicos' => false,
+                    'access_usuarios' => false,
+                    'access_configuracion' => false,
+                    'access_reportes' => true,
+                ];
+
+            case 'usuario':
+                return [
+                    'access_dashboard' => true,
+                    'access_clientes' => false,
+                    'access_equipos' => false,
+                    'access_reparaciones' => false,
+                    'access_inventario' => false,
+                    'access_tickets' => false,
+                    'access_tecnicos' => false,
+                    'access_usuarios' => false,
+                    'access_configuracion' => false,
+                    'access_reportes' => false,
+                ];
+
+            default:
+                return [
+                    'access_dashboard' => false,
+                    'access_clientes' => false,
+                    'access_equipos' => false,
+                    'access_reparaciones' => false,
+                    'access_inventario' => false,
+                    'access_tickets' => false,
+                    'access_tecnicos' => false,
+                    'access_usuarios' => false,
+                    'access_configuracion' => false,
+                    'access_reportes' => false,
+                ];
         }
     }
 }

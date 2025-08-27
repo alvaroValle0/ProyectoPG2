@@ -65,6 +65,8 @@ class AuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'rol' => 'usuario', // Rol por defecto para usuarios registrados
+            'activo' => true, // Usuario activo por defecto
         ]);
 
         Auth::login($user);

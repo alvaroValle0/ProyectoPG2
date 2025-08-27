@@ -334,71 +334,94 @@
         </div>
         
         <div class="sidebar-menu">
+            @php
+                $modules = \App\Helpers\PermissionHelper::getAvailableModules();
+            @endphp
+            
             <!-- Dashboard -->
+            @if(isset($modules['dashboard']))
             <a href="{{ route('dashboard') }}" class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <i class="fas fa-tachometer-alt"></i>
                 Dashboard
             </a>
+            @endif
             
             <!-- Clientes -->
+            @if(isset($modules['clientes']))
             <a href="{{ route('clientes.index') }}" class="sidebar-item {{ request()->routeIs('clientes.*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i>
                 Clientes
             </a>
+            @endif
             
             <!-- Equipos y Reparaciones -->
+            @if(isset($modules['equipos']) || isset($modules['reparaciones']))
             <div class="sidebar-item text-muted small fw-bold mt-3 mb-2">
                 <i class="fas fa-laptop me-2"></i>EQUIPOS Y REPARACIONES
             </div>
+            @endif
+            
+            @if(isset($modules['equipos']))
             <a href="{{ route('equipos.index') }}" class="sidebar-item {{ request()->routeIs('equipos.*') ? 'active' : '' }}">
                 <i class="fas fa-laptop"></i>
                 Gestión de Equipos
             </a>
+            @if(\App\Helpers\PermissionHelper::can('create_equipo'))
             <a href="{{ route('equipos.create') }}" class="sidebar-item {{ request()->routeIs('equipos.create') ? 'active' : '' }}">
                 <i class="fas fa-plus-circle"></i>
                 Nuevo Equipo
             </a>
+            @endif
+            @endif
+            
+            @if(isset($modules['reparaciones']))
             <a href="{{ route('reparaciones.index') }}" class="sidebar-item {{ request()->routeIs('reparaciones.*') ? 'active' : '' }}">
                 <i class="fas fa-wrench"></i>
                 Gestión de Reparaciones
             </a>
+            @if(\App\Helpers\PermissionHelper::can('create_reparacion'))
             <a href="{{ route('reparaciones.create') }}" class="sidebar-item {{ request()->routeIs('reparaciones.create') ? 'active' : '' }}">
                 <i class="fas fa-tools"></i>
                 Nueva Reparación
             </a>
+            @endif
             @if(auth()->user()->esTecnico())
             <a href="{{ route('reparaciones.mis-tareas') }}" class="sidebar-item {{ request()->routeIs('reparaciones.mis-tareas') ? 'active' : '' }}">
                 <i class="fas fa-tasks"></i>
                 Mis Tareas
             </a>
             @endif
+            @endif
             
             <!-- Inventario -->
-            <a href="#" class="sidebar-item" onclick="mostrarProximamente('Inventario')">
+            @if(isset($modules['inventario']))
+            <a href="{{ route('inventario.index') }}" class="sidebar-item {{ request()->routeIs('inventario.*') ? 'active' : '' }}">
                 <i class="fas fa-boxes"></i>
                 Inventario
             </a>
-            
-            <!-- Proveedores -->
-            <a href="#" class="sidebar-item" onclick="mostrarProximamente('Proveedores')">
-                <i class="fas fa-truck"></i>
-                Proveedores
-            </a>
+            @endif
             
             <!-- Tickets -->
+            @if(isset($modules['tickets']))
             <a href="{{ route('tickets.index') }}" class="sidebar-item {{ request()->routeIs('tickets.*') ? 'active' : '' }}">
                 <i class="fas fa-ticket-alt"></i>
                 Tickets
             </a>
+            @endif
             
             <!-- Técnicos / Usuarios -->
+            @if(isset($modules['tecnicos']) || isset($modules['usuarios']))
             <div class="sidebar-item text-muted small fw-bold mt-3 mb-2">
                 <i class="fas fa-user-cog me-2"></i>TÉCNICOS / USUARIOS
             </div>
+            @endif
+            
+            @if(isset($modules['tecnicos']))
             <a href="{{ route('tecnicos.index') }}" class="sidebar-item {{ request()->routeIs('tecnicos.*') ? 'active' : '' }}">
                 <i class="fas fa-users-cog"></i>
                 Gestión de Técnicos
             </a>
+            @if(\App\Helpers\PermissionHelper::can('manage_tecnicos'))
             <a href="{{ route('tecnicos.create') }}" class="sidebar-item {{ request()->routeIs('tecnicos.create') ? 'active' : '' }}">
                 <i class="fas fa-user-plus"></i>
                 Nuevo Técnico
@@ -407,30 +430,31 @@
                 <i class="fas fa-chart-bar"></i>
                 Carga de Trabajo
             </a>
+            @endif
+            @endif
+            
+            @if(isset($modules['usuarios']))
             <a href="{{ route('usuarios.index') }}" class="sidebar-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i>
                 Gestión de Usuarios
             </a>
+            @endif
             
             <!-- Reportes -->
+            @if(\App\Helpers\PermissionHelper::can('view_reports'))
             <a href="#" class="sidebar-item" onclick="mostrarProximamente('Reportes')">
                 <i class="fas fa-chart-line"></i>
                 Reportes
             </a>
-            
-
-            
-            <!-- Agenda -->
-            <a href="#" class="sidebar-item" onclick="mostrarProximamente('Agenda')">
-                <i class="fas fa-calendar-alt"></i>
-                Agenda
-            </a>
+            @endif
             
             <!-- Configuración -->
+            @if(isset($modules['configuracion']))
             <a href="{{ route('configuracion.index') }}" class="sidebar-item {{ request()->routeIs('configuracion.*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i>
                 Configuración
             </a>
+            @endif
         </div>
     </div>
 

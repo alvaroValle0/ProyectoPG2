@@ -56,6 +56,12 @@ class User extends Authenticatable
         return $this->hasOne(Tecnico::class);
     }
 
+    // Relación con permisos
+    public function permissions()
+    {
+        return $this->hasOne(UserPermission::class);
+    }
+
     public function esTecnico()
     {
         return $this->tecnico !== null && $this->tecnico->activo;
