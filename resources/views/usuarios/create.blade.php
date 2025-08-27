@@ -59,7 +59,6 @@
                         @error('username')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Este será el nombre de usuario para iniciar sesión</small>
                     </div>
 
                     <!-- Email -->
@@ -75,7 +74,6 @@
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Correo electrónico para notificaciones y recuperación de cuenta</small>
                     </div>
 
                     <!-- Contraseña -->
@@ -96,7 +94,6 @@
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">La contraseña debe tener al menos 8 caracteres</small>
                     </div>
 
                     <!-- Confirmar Contraseña -->
@@ -135,13 +132,13 @@
                                 required>
                             <option value="">Seleccione un rol</option>
                             <option value="admin" {{ old('rol') == 'admin' ? 'selected' : '' }}>
-                                Administrador - Acceso completo al sistema
+                                Administrador
                             </option>
                             <option value="tecnico" {{ old('rol') == 'tecnico' ? 'selected' : '' }}>
-                                Técnico - Gestión de reparaciones y equipos
+                                Técnico
                             </option>
                             <option value="usuario" {{ old('rol') == 'usuario' ? 'selected' : '' }}>
-                                Usuario - Acceso limitado al sistema
+                                Usuario
                             </option>
                         </select>
                         @error('rol')
@@ -164,32 +161,7 @@
                             @error('activo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted d-block">El usuario podrá iniciar sesión en el sistema</small>
                         </div>
-                    </div>
-
-                    <!-- Información sobre roles -->
-                    <div class="alert alert-info">
-                        <h6><i class="fas fa-info-circle me-2"></i>Información sobre Roles</h6>
-                        <ul class="mb-0 small">
-                            <li><strong>Administrador:</strong> Acceso completo, gestión de usuarios y configuración</li>
-                            <li><strong>Técnico:</strong> Gestión de reparaciones, equipos y sus tareas</li>
-                            <li><strong>Usuario:</strong> Acceso de solo lectura a información básica</li>
-                        </ul>
-                        <p class="mb-0 mt-2 small"><strong>Nota:</strong> Los permisos de acceso se configuran independientemente del rol seleccionado.</p>
-                    </div>
-
-                    <!-- Información adicional para técnicos -->
-                    <div class="alert alert-warning" id="info-tecnico" style="display: none;">
-                        <h6><i class="fas fa-tools me-2"></i>Usuarios Técnicos</h6>
-                        <p class="mb-2 small">
-                            Si selecciona el rol "Técnico", después de crear el usuario podrá:
-                        </p>
-                        <ul class="mb-0 small">
-                            <li>Crear un perfil técnico completo con información personal</li>
-                            <li>Asignar especialidades y habilidades</li>
-                            <li>Configurar información de contacto y emergencia</li>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -225,7 +197,6 @@
                                 <label class="form-check-label" for="access_dashboard">
                                     <i class="fas fa-tachometer-alt text-primary me-2"></i>
                                     <strong>Dashboard</strong>
-                                    <br><small class="text-muted">Panel principal y estadísticas</small>
                                 </label>
                             </div>
                             
@@ -235,7 +206,6 @@
                                 <label class="form-check-label" for="access_clientes">
                                     <i class="fas fa-users text-info me-2"></i>
                                     <strong>Clientes</strong>
-                                    <br><small class="text-muted">Gestión de clientes</small>
                                 </label>
                             </div>
                             
@@ -245,7 +215,6 @@
                                 <label class="form-check-label" for="access_equipos">
                                     <i class="fas fa-laptop text-warning me-2"></i>
                                     <strong>Equipos</strong>
-                                    <br><small class="text-muted">Gestión de equipos</small>
                                 </label>
                             </div>
                             
@@ -255,7 +224,6 @@
                                 <label class="form-check-label" for="access_reparaciones">
                                     <i class="fas fa-wrench text-success me-2"></i>
                                     <strong>Reparaciones</strong>
-                                    <br><small class="text-muted">Gestión de reparaciones</small>
                                 </label>
                             </div>
                             
@@ -265,7 +233,6 @@
                                 <label class="form-check-label" for="access_inventario">
                                     <i class="fas fa-boxes text-secondary me-2"></i>
                                     <strong>Inventario</strong>
-                                    <br><small class="text-muted">Gestión de inventario</small>
                                 </label>
                             </div>
                         </div>
@@ -277,7 +244,6 @@
                                 <label class="form-check-label" for="access_tickets">
                                     <i class="fas fa-ticket-alt text-danger me-2"></i>
                                     <strong>Tickets</strong>
-                                    <br><small class="text-muted">Gestión de tickets</small>
                                 </label>
                             </div>
                             
@@ -287,7 +253,6 @@
                                 <label class="form-check-label" for="access_tecnicos">
                                     <i class="fas fa-users-cog text-dark me-2"></i>
                                     <strong>Técnicos</strong>
-                                    <br><small class="text-muted">Gestión de técnicos</small>
                                 </label>
                             </div>
                             
@@ -297,7 +262,6 @@
                                 <label class="form-check-label" for="access_usuarios">
                                     <i class="fas fa-users text-primary me-2"></i>
                                     <strong>Usuarios</strong>
-                                    <br><small class="text-muted">Gestión de usuarios</small>
                                 </label>
                             </div>
                             
@@ -307,7 +271,6 @@
                                 <label class="form-check-label" for="access_configuracion">
                                     <i class="fas fa-cog text-secondary me-2"></i>
                                     <strong>Configuración</strong>
-                                    <br><small class="text-muted">Configuración del sistema</small>
                                 </label>
                             </div>
                             
@@ -317,49 +280,7 @@
                                 <label class="form-check-label" for="access_reportes">
                                     <i class="fas fa-chart-line text-info me-2"></i>
                                     <strong>Reportes</strong>
-                                    <br><small class="text-muted">Acceso a reportes</small>
                                 </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <hr class="my-4">
-
-            <!-- Información de Seguridad -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h5 class="mb-3">
-                        <i class="fas fa-shield-alt text-success me-2"></i>
-                        Configuración de Seguridad
-                    </h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="card border-success">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-key text-success display-6 mb-2"></i>
-                                    <h6>Contraseña Segura</h6>
-                                    <small class="text-muted">Mínimo 8 caracteres con combinación de letras y números</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card border-info">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-envelope text-info display-6 mb-2"></i>
-                                    <h6>Email Único</h6>
-                                    <small class="text-muted">El email debe ser único en el sistema</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card border-warning">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-user-shield text-warning display-6 mb-2"></i>
-                                    <h6>Permisos Manuales</h6>
-                                    <small class="text-muted">Los permisos se configuran manualmente con checkboxes</small>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -409,18 +330,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
     const passwordConfirmation = document.getElementById('password_confirmation');
     const rolSelect = document.getElementById('rol');
-    const infoTecnico = document.getElementById('info-tecnico');
-    
-    // Mostrar información para técnicos (sin configurar permisos automáticamente)
-    rolSelect.addEventListener('change', function() {
-        if (this.value === 'tecnico') {
-            infoTecnico.style.display = 'block';
-        } else {
-            infoTecnico.style.display = 'none';
-        }
-        
-        // NO configurar permisos automáticamente - el usuario debe seleccionar manualmente
-    });
     
     // Función para seleccionar todos los módulos
     window.selectAllModules = function() {
@@ -590,14 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 8px;
     padding: 8px;
     margin: -8px;
-}
-
-.alert ul {
-    padding-left: 1.2rem;
-}
-
-.alert li {
-    margin-bottom: 0.2rem;
 }
 
 @media (max-width: 768px) {
