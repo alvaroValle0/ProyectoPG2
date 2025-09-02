@@ -172,7 +172,7 @@
                     <div class="alert alert-info">
                         <h6><i class="fas fa-info-circle me-2"></i>Información sobre Roles</h6>
                         <p class="mb-0 small">
-                            <strong>Nota:</strong> Los módulos de acceso se configuran ÚNICAMENTE mediante checkboxes, independientemente del rol seleccionado.
+                            <strong>Nota:</strong> Los permisos se asignan automáticamente según el rol seleccionado. Los checkboxes permiten modificar permisos adicionales.
                         </p>
                     </div>
 
@@ -188,12 +188,20 @@
                             <li>Configurar información de contacto y emergencia</li>
                         </ul>
                     </div>
+
+                    <!-- Información de permisos por rol -->
+                    <div class="alert alert-success" id="info-permisos" style="display: none;">
+                        <h6><i class="fas fa-shield-alt me-2"></i>Permisos por Rol</h6>
+                        <div id="permisos-detalle" class="small">
+                            <!-- Se llenará dinámicamente -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <hr class="my-4">
 
-            <!-- Acceso a Módulos -->
+            <!-- Acceso a Módulos (Opcional) -->
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -214,11 +222,11 @@
                         </div>
                     </div>
                     
-                    <!-- Mensaje informativo sobre el sistema de checkboxes -->
+                    <!-- Mensaje informativo sobre el sistema de permisos -->
                     <div class="alert alert-primary mb-3">
-                        <h6><i class="fas fa-info-circle me-2"></i>Sistema de Selección de Módulos</h6>
+                        <h6><i class="fas fa-info-circle me-2"></i>Sistema de Permisos por Rol y Módulos</h6>
                         <p class="mb-0 small">
-                            <strong>Importante:</strong> Seleccione mediante checkboxes los módulos a los que desea dar acceso al usuario.
+                            <strong>Importante:</strong> Selecciona el rol del usuario y luego los módulos específicos a los que tendrá acceso. Los permisos específicos (crear, editar, eliminar) se asignan según el rol seleccionado.
                         </p>
                     </div>
                     
@@ -226,7 +234,7 @@
                         <div class="col-md-6">
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" name="access_dashboard" id="access_dashboard" 
-                                       {{ old('access_dashboard', true) ? 'checked' : '' }}>
+                                       {{ old('access_dashboard') ? 'checked' : '' }}>
                                 <label class="form-check-label" for="access_dashboard">
                                     <i class="fas fa-tachometer-alt text-primary me-2"></i>
                                     <strong>Dashboard</strong>
@@ -415,17 +423,101 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordConfirmation = document.getElementById('password_confirmation');
     const rolSelect = document.getElementById('rol');
     const infoTecnico = document.getElementById('info-tecnico');
+    const infoPermisos = document.getElementById('info-permisos');
+    const permisosDetalle = document.getElementById('permisos-detalle');
     
-    // Mostrar información para técnicos (sin configurar módulos automáticamente)
+    // Mostrar información según el rol seleccionado
     rolSelect.addEventListener('change', function() {
-        if (this.value === 'tecnico') {
-            infoTecnico.style.display = 'block';
-        } else {
-            infoTecnico.style.display = 'none';
-        }
+        const rol = this.value;
         
-        // NO configurar módulos automáticamente - el usuario debe seleccionar ÚNICAMENTE mediante checkboxes
+        // Ocultar todas las alertas primero
+        infoTecnico.style.display = 'none';
+        infoPermisos.style.display = 'none';
+        
+        if (rol === 'tecnico') {
+            infoTecnico.style.display = 'block';
+        } else if (rol) {
+            // Mostrar información de permisos automáticos
+            mostrarPermisosAutomaticos(rol);
+        }
     });
+    
+    // Función para mostrar permisos por rol y sugerir módulos
+    function mostrarPermisosAutomaticos(rol) {
+        const permisosPorRol = {
+            'admin': {
+                titulo: '👑 Administrador',
+                descripcion: 'Permisos completos en todos los módulos',
+                permisos: [
+                    '✅ Crear, editar y eliminar en todos los módulos',
+                    '✅ Gestionar usuarios y técnicos',
+                    '✅ Acceso completo a configuración y reportes',
+                    '📋 Selecciona los módulos que tendrá acceso'
+                ],
+                modulos: ['access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones', 'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios', 'access_configuracion', 'access_reportes']
+            },
+            'tecnico': {
+                titulo: '🔧 Técnico',
+                descripcion: 'Permisos de trabajo técnico en módulos seleccionados',
+                permisos: [
+                    '✅ Crear y editar (sin eliminar) en módulos de trabajo',
+                    '❌ No puede gestionar usuarios o técnicos',
+                    '❌ No puede acceder a configuración',
+                    '📋 Selecciona los módulos que tendrá acceso'
+                ],
+                modulos: ['access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones', 'access_inventario', 'access_tickets', 'access_reportes']
+            },
+            'usuario': {
+                titulo: '👤 Usuario',
+                descripcion: 'Permisos limitados en módulos seleccionados',
+                permisos: [
+                    '✅ Ver equipos e inventario (sin crear, editar o eliminar)',
+                    '✅ Crear y editar clientes (sin eliminar)',
+                    '✅ Crear tickets (sin editar o eliminar)',
+                    '❌ No puede gestionar usuarios o técnicos',
+                    '📋 Selecciona los módulos que tendrá acceso'
+                ],
+                modulos: ['access_dashboard', 'access_clientes', 'access_equipos', 'access_inventario', 'access_tickets']
+            }
+        };
+        
+        const info = permisosPorRol[rol];
+        if (info) {
+            permisosDetalle.innerHTML = `
+                <div class="mb-2">
+                    <strong>${info.titulo}</strong><br>
+                    <small class="text-muted">${info.descripcion}</small>
+                </div>
+                <div class="mt-2">
+                    ${info.permisos.map(permiso => `<div>${permiso}</div>`).join('')}
+                </div>
+            `;
+            infoPermisos.style.display = 'block';
+            
+            // Sugerir módulos según el rol (marcar automáticamente)
+            const allCheckboxes = [
+                'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+                'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+                'access_configuracion', 'access_reportes'
+            ];
+            
+            // Desmarcar todos los checkboxes primero
+            allCheckboxes.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+            });
+            
+            // Marcar los módulos sugeridos para el rol
+            info.modulos.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+    }
     
     // Función para seleccionar todos los módulos
     window.selectAllModules = function() {
@@ -536,7 +628,7 @@ document.addEventListener('DOMContentLoaded', function() {
             valid = false;
         }
         
-        // Validar que al menos un módulo haya sido seleccionado mediante checkboxes
+        // Validar que al menos un módulo haya sido seleccionado
         const moduleCheckboxes = [
             'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
             'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
@@ -553,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!moduleSelected) {
             valid = false;
-            alert('Debe seleccionar al menos un módulo de acceso mediante checkboxes.');
+            alert('Debe seleccionar al menos un módulo de acceso para el usuario.');
             // Scroll a la sección de módulos
             const modulesSection = document.querySelector('.row.mb-4');
             if (modulesSection) {

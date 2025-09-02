@@ -22,5 +22,10 @@ class DatabaseSeeder extends Seeder
             'rol' => 'admin',
             'activo' => true,
         ]);
+
+        // Ejecutar el seeder de permisos para asignar permisos a todos los usuarios
+        $this->call([
+            UserPermissionsSeeder::class,
+        ]);
     }
 }

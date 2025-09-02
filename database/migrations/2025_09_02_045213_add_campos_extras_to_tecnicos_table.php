@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        schema::table('tecnicos', function (Blueprint $table) {
-            $table->string('cui');
+        Schema::table('tecnicos', function (Blueprint $table) {
+            //
         });
     }
 
@@ -21,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropColumn('dpi_tecnico', 'cui');
+        Schema::table('tecnicos', function (Blueprint $table) {
+            //
+        });
     }
 };

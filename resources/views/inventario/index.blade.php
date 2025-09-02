@@ -69,7 +69,7 @@
         <div class="card border-0 bg-secondary text-white h-100">
             <div class="card-body text-center">
                 <i class="fas fa-dollar-sign display-6 mb-2"></i>
-                <h4>${{ number_format($estadisticas['valor_total'], 2) }}</h4>
+                <h4>Q{{ number_format($estadisticas['valor_total'], 2) }}</h4>
                 <p class="mb-0">Valor Total</p>
             </div>
         </div>
@@ -240,13 +240,13 @@
                             <td>
                                 <div>
                                     @if($item->precio_compra)
-                                        <strong class="text-success">${{ number_format($item->precio_compra, 2) }}</strong>
+                                        <strong class="text-success">Q{{ number_format($item->precio_compra, 2) }}</strong>
                                         <br>
                                         <small class="text-muted">Compra</small>
                                     @endif
                                     @if($item->precio_venta)
                                         <br>
-                                        <strong class="text-primary">${{ number_format($item->precio_venta, 2) }}</strong>
+                                        <strong class="text-primary">Q{{ number_format($item->precio_venta, 2) }}</strong>
                                         <br>
                                         <small class="text-muted">Venta</small>
                                     @endif

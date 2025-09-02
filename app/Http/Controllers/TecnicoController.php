@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tecnico;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TecnicoController extends Controller
 {
@@ -34,13 +35,15 @@ class TecnicoController extends Controller
             'apellidos' => 'required|string|max:255',
             'telefono' => 'nullable|string|max:20',
             'email_personal' => 'nullable|email|max:255',
-            'direccion' => 'nullable|string',
             'dpi' => 'nullable|string|max:20|unique:tecnicos,dpi',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'direccion' => 'nullable|string',
             'fecha_nacimiento' => 'nullable|date|before:today',
             'genero' => 'nullable|in:masculino,femenino,otro',
             'estado_civil' => 'nullable|string|max:255',
             'contacto_emergencia' => 'nullable|string',
+            'fecha_contratacion' => 'nullable|date|before_or_equal:today',
+            'nivel_experiencia' => 'nullable|in:principiante,intermedio,avanzado,experto',
             'especialidad' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'activo' => 'boolean'
@@ -50,17 +53,37 @@ class TecnicoController extends Controller
             // Manejar la carga de foto
             if ($request->hasFile('foto')) {
                 $foto = $request->file('foto');
-                $nombreFoto = time() . '_' . uniqid() . '.' . $foto->getClientOriginalExtension();
                 
-                // Crear directorio si no existe
-                $rutaDirectorio = storage_path('app/public/tecnicos/fotos');
-                if (!file_exists($rutaDirectorio)) {
-                    mkdir($rutaDirectorio, 0755, true);
+                // Verificación completa del archivo
+                if ($foto && $foto->isValid() && $foto->getSize() > 0 && !empty($foto->getClientOriginalName())) {
+                    $nombre = $request->nombres ?? 'tecnico';
+                    $nombreSlug = Str::slug($nombre);
+                    if (empty($nombreSlug)) {
+                        $nombreSlug = 'tecnico';
+                    }
+                    
+                    $extension = $foto->getClientOriginalExtension();
+                    if (empty($extension)) {
+                        $extension = $foto->guessExtension() ?: 'jpg';
+                    }
+                    
+                    $nombreFoto = time() . '_' . $nombreSlug . '.' . $extension;
+                    
+                    // Crear directorio físico si no existe
+                    $destinationPath = storage_path('app/public/tecnicos/fotos');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    
+                    // Usar move en lugar de Storage para evitar problemas
+                    if ($foto->move($destinationPath, $nombreFoto)) {
+                        $validated['foto'] = $nombreFoto;
+                    } else {
+                        unset($validated['foto']);
+                    }
+                } else {
+                    unset($validated['foto']);
                 }
-                
-                // Guardar la foto
-                $foto->move($rutaDirectorio, $nombreFoto);
-                $validated['foto'] = $nombreFoto;
             }
 
             $tecnico = Tecnico::create($validated);
@@ -111,13 +134,15 @@ class TecnicoController extends Controller
             'apellidos' => 'required|string|max:255',
             'telefono' => 'nullable|string|max:20',
             'email_personal' => 'nullable|email|max:255',
-            'direccion' => 'nullable|string',
             'dpi' => 'nullable|string|max:20|unique:tecnicos,dpi,' . $tecnico->id,
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'direccion' => 'nullable|string',
             'fecha_nacimiento' => 'nullable|date|before:today',
             'genero' => 'nullable|in:masculino,femenino,otro',
             'estado_civil' => 'nullable|string|max:255',
             'contacto_emergencia' => 'nullable|string',
+            'fecha_contratacion' => 'nullable|date|before_or_equal:today',
+            'nivel_experiencia' => 'nullable|in:principiante,intermedio,avanzado,experto',
             'especialidad' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'activo' => 'boolean'
@@ -129,21 +154,44 @@ class TecnicoController extends Controller
             // Manejar la carga de nueva foto
             if ($request->hasFile('foto')) {
                 $foto = $request->file('foto');
-                $nombreFoto = time() . '_' . uniqid() . '.' . $foto->getClientOriginalExtension();
                 
-                // Crear directorio si no existe
-                $rutaDirectorio = storage_path('app/public/tecnicos/fotos');
-                if (!file_exists($rutaDirectorio)) {
-                    mkdir($rutaDirectorio, 0755, true);
-                }
-                
-                // Guardar la nueva foto
-                $foto->move($rutaDirectorio, $nombreFoto);
-                $validated['foto'] = $nombreFoto;
-                
-                // Eliminar foto anterior si existe
-                if ($fotoAnterior && file_exists(storage_path('app/public/tecnicos/fotos/' . $fotoAnterior))) {
-                    unlink(storage_path('app/public/tecnicos/fotos/' . $fotoAnterior));
+                // Verificación completa del archivo
+                if ($foto && $foto->isValid() && $foto->getSize() > 0 && !empty($foto->getClientOriginalName())) {
+                    // Eliminar foto anterior si existe
+                    if ($fotoAnterior && !empty($fotoAnterior)) {
+                        $oldImagePath = storage_path('app/public/tecnicos/fotos/' . $fotoAnterior);
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath);
+                        }
+                    }
+
+                    $nombre = $request->nombres ?? 'tecnico';
+                    $nombreSlug = Str::slug($nombre);
+                    if (empty($nombreSlug)) {
+                        $nombreSlug = 'tecnico';
+                    }
+                    
+                    $extension = $foto->getClientOriginalExtension();
+                    if (empty($extension)) {
+                        $extension = $foto->guessExtension() ?: 'jpg';
+                    }
+                    
+                    $nombreFoto = time() . '_' . $nombreSlug . '.' . $extension;
+                    
+                    // Crear directorio físico si no existe
+                    $destinationPath = storage_path('app/public/tecnicos/fotos');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    
+                    // Usar move en lugar de Storage para evitar problemas
+                    if ($foto->move($destinationPath, $nombreFoto)) {
+                        $validated['foto'] = $nombreFoto;
+                    } else {
+                        unset($validated['foto']);
+                    }
+                } else {
+                    unset($validated['foto']);
                 }
             }
 
@@ -171,8 +219,15 @@ class TecnicoController extends Controller
             }
 
             // Eliminar foto si existe
-            if ($tecnico->foto && file_exists(storage_path('app/public/tecnicos/fotos/' . $tecnico->foto))) {
-                unlink(storage_path('app/public/tecnicos/fotos/' . $tecnico->foto));
+            if ($tecnico->foto && !empty($tecnico->foto)) {
+                try {
+                    $imagePath = storage_path('app/public/tecnicos/fotos/' . $tecnico->foto);
+                    if (file_exists($imagePath)) {
+                        unlink($imagePath);
+                    }
+                } catch (\Exception $e) {
+                    // Log del error pero continuar con la eliminación
+                }
             }
 
             $tecnico->delete();

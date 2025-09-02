@@ -15,13 +15,15 @@ class Tecnico extends Model
         'apellidos',
         'telefono',
         'email_personal',
-        'direccion',
         'dpi',
         'foto',
+        'direccion',
         'fecha_nacimiento',
         'genero',
         'estado_civil',
         'contacto_emergencia',
+        'fecha_contratacion',
+        'nivel_experiencia',
         'especialidad',
         'activo',
         'descripcion'
@@ -29,7 +31,8 @@ class Tecnico extends Model
 
     protected $casts = [
         'activo' => 'boolean',
-        'fecha_nacimiento' => 'date'
+        'fecha_nacimiento' => 'date',
+        'fecha_contratacion' => 'date'
     ];
 
     // Relaciones
@@ -92,6 +95,26 @@ class Tecnico extends Model
     public function getEmailPrincipalAttribute()
     {
         return $this->email_personal ?: $this->user->email;
+    }
+
+    public function getNivelExperienciaLabelAttribute()
+    {
+        $labels = [
+            'principiante' => 'Principiante',
+            'intermedio' => 'Intermedio',
+            'avanzado' => 'Avanzado',
+            'experto' => 'Experto'
+        ];
+        
+        return $labels[$this->nivel_experiencia] ?? 'No especificado';
+    }
+
+    public function getAntiguedadAttribute()
+    {
+        if ($this->fecha_contratacion) {
+            return $this->fecha_contratacion->diffForHumans();
+        }
+        return null;
     }
 
     public function getCargaTrabajoAttribute()

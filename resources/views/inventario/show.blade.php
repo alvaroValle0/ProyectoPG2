@@ -127,13 +127,13 @@
                     @if($inventario->precio_compra)
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold text-muted">Precio de Compra</label>
-                        <h4 class="text-success mb-1">${{ number_format($inventario->precio_compra, 2) }}</h4>
+                        <h4 class="text-success mb-1">Q{{ number_format($inventario->precio_compra, 2) }}</h4>
                     </div>
                     @endif
                     @if($inventario->precio_venta)
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold text-muted">Precio de Venta</label>
-                        <h4 class="text-primary mb-1">${{ number_format($inventario->precio_venta, 2) }}</h4>
+                        <h4 class="text-primary mb-1">Q{{ number_format($inventario->precio_venta, 2) }}</h4>
                         @if($inventario->precio_compra)
                         <small class="text-info">+{{ number_format($inventario->margen_ganancia, 1) }}% margen</small>
                         @endif
@@ -143,7 +143,7 @@
                 @if($inventario->precio_compra)
                 <div class="mt-3">
                     <label class="form-label fw-bold text-muted">Valor Total en Inventario</label>
-                    <h4 class="text-secondary">${{ number_format($inventario->valor_total, 2) }}</h4>
+                    <h4 class="text-secondary">Q{{ number_format($inventario->valor_total, 2) }}</h4>
                 </div>
                 @endif
             </div>

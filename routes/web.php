@@ -39,14 +39,14 @@ Route::middleware('auth')->group(function () {
     // === MÓDULO DE REPARACIONES ===
     
     // Equipos
-    Route::prefix('equipos')->name('equipos.')->middleware('role:admin,tecnico')->group(function () {
+    Route::prefix('equipos')->name('equipos.')->group(function () {
         Route::get('/', [EquipoController::class, 'index'])->name('index');
         Route::get('/create', [EquipoController::class, 'create'])->name('create');
         Route::post('/', [EquipoController::class, 'store'])->name('store');
         Route::get('/{equipo}', [EquipoController::class, 'show'])->name('show');
         Route::get('/{equipo}/edit', [EquipoController::class, 'edit'])->name('edit');
         Route::put('/{equipo}', [EquipoController::class, 'update'])->name('update');
-        Route::delete('/{equipo}', [EquipoController::class, 'destroy'])->middleware('role:admin')->name('destroy');
+        Route::delete('/{equipo}', [EquipoController::class, 'destroy'])->name('destroy');
         
         // Acciones especiales
         Route::patch('/{equipo}/cambiar-estado', [EquipoController::class, 'cambiarEstado'])->name('cambiar-estado');
@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Técnicos
-    Route::prefix('tecnicos')->name('tecnicos.')->middleware('role:admin')->group(function () {
+    Route::prefix('tecnicos')->name('tecnicos.')->group(function () {
         Route::get('/', [TecnicoController::class, 'index'])->name('index');
         Route::get('/create', [TecnicoController::class, 'create'])->name('create');
         Route::post('/', [TecnicoController::class, 'store'])->name('store');
@@ -72,14 +72,14 @@ Route::middleware('auth')->group(function () {
     });
 
     // Reparaciones
-    Route::prefix('reparaciones')->name('reparaciones.')->middleware('role:admin,tecnico')->group(function () {
+    Route::prefix('reparaciones')->name('reparaciones.')->group(function () {
         Route::get('/', [ReparacionController::class, 'index'])->name('index');
         Route::get('/create', [ReparacionController::class, 'create'])->name('create');
         Route::post('/', [ReparacionController::class, 'store'])->name('store');
         Route::get('/{reparacion}', [ReparacionController::class, 'show'])->name('show');
         Route::get('/{reparacion}/edit', [ReparacionController::class, 'edit'])->name('edit');
         Route::put('/{reparacion}', [ReparacionController::class, 'update'])->name('update');
-        Route::delete('/{reparacion}', [ReparacionController::class, 'destroy'])->middleware('role:admin')->name('destroy');
+        Route::delete('/{reparacion}', [ReparacionController::class, 'destroy'])->name('destroy');
         
         // Acciones especiales
         Route::patch('/{reparacion}/cambiar-estado', [ReparacionController::class, 'cambiarEstado'])->name('cambiar-estado');
@@ -91,7 +91,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Usuarios (Gestión de Usuarios)
-    Route::prefix('usuarios')->name('usuarios.')->middleware('role:admin')->group(function () {
+    Route::prefix('usuarios')->name('usuarios.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::post('/', [UserController::class, 'store'])->name('store');
@@ -112,14 +112,14 @@ Route::middleware('auth')->group(function () {
     });
 
     // Clientes (Gestión de Clientes)
-    Route::prefix('clientes')->name('clientes.')->middleware('role:admin,tecnico')->group(function () {
+    Route::prefix('clientes')->name('clientes.')->group(function () {
         Route::get('/', [ClienteController::class, 'index'])->name('index');
         Route::get('/create', [ClienteController::class, 'create'])->name('create');
         Route::post('/', [ClienteController::class, 'store'])->name('store');
         Route::get('/{cliente}', [ClienteController::class, 'show'])->name('show');
         Route::get('/{cliente}/edit', [ClienteController::class, 'edit'])->name('edit');
         Route::put('/{cliente}', [ClienteController::class, 'update'])->name('update');
-        Route::delete('/{cliente}', [ClienteController::class, 'destroy'])->middleware('role:admin')->name('destroy');
+        Route::delete('/{cliente}', [ClienteController::class, 'destroy'])->name('destroy');
         
         // Acciones especiales
         Route::patch('/{cliente}/toggle-status', [ClienteController::class, 'toggleStatus'])->name('toggle-status');
@@ -129,14 +129,14 @@ Route::middleware('auth')->group(function () {
     });
 
     // Tickets (Gestión de Tickets)
-    Route::prefix('tickets')->name('tickets.')->middleware('role:admin,tecnico')->group(function () {
+    Route::prefix('tickets')->name('tickets.')->group(function () {
         Route::get('/', [TicketController::class, 'index'])->name('index');
         Route::get('/create', [TicketController::class, 'create'])->name('create');
         Route::post('/', [TicketController::class, 'store'])->name('store');
         Route::get('/{ticket}', [TicketController::class, 'show'])->name('show');
         Route::get('/{ticket}/edit', [TicketController::class, 'edit'])->name('edit');
         Route::put('/{ticket}', [TicketController::class, 'update'])->name('update');
-        Route::delete('/{ticket}', [TicketController::class, 'destroy'])->middleware('role:admin')->name('destroy');
+        Route::delete('/{ticket}', [TicketController::class, 'destroy'])->name('destroy');
         
         // Acciones especiales para tickets
         Route::get('/{ticket}/imprimir', [TicketController::class, 'imprimir'])->name('imprimir');
@@ -153,14 +153,14 @@ Route::middleware('auth')->group(function () {
     });
 
     // === MÓDULO DE INVENTARIO ===
-    Route::prefix('inventario')->name('inventario.')->middleware('role:admin,tecnico')->group(function () {
+    Route::prefix('inventario')->name('inventario.')->group(function () {
         Route::get('/', [InventarioController::class, 'index'])->name('index');
         Route::get('/create', [InventarioController::class, 'create'])->name('create');
         Route::post('/', [InventarioController::class, 'store'])->name('store');
         Route::get('/{inventario}', [InventarioController::class, 'show'])->name('show');
         Route::get('/{inventario}/edit', [InventarioController::class, 'edit'])->name('edit');
         Route::put('/{inventario}', [InventarioController::class, 'update'])->name('update');
-        Route::delete('/{inventario}', [InventarioController::class, 'destroy'])->middleware('role:admin')->name('destroy');
+        Route::delete('/{inventario}', [InventarioController::class, 'destroy'])->name('destroy');
         
         // Acciones especiales
         Route::patch('/{inventario}/cambiar-estado', [InventarioController::class, 'cambiarEstado'])->name('cambiar-estado');
@@ -173,7 +173,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // === MÓDULO DE CONFIGURACIÓN ===
-    Route::prefix('configuracion')->name('configuracion.')->middleware('role:admin')->group(function () {
+    Route::prefix('configuracion')->name('configuracion.')->group(function () {
         Route::get('/', [ConfiguracionController::class, 'index'])->name('index');
         Route::get('/general', [ConfiguracionController::class, 'general'])->name('general');
         Route::post('/general', [ConfiguracionController::class, 'actualizarGeneral'])->name('actualizar-general');
@@ -187,9 +187,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/backup/{filename}', [ConfiguracionController::class, 'eliminarBackup'])->name('eliminar-backup');
         Route::get('/logs', [ConfiguracionController::class, 'logs'])->name('logs');
         Route::post('/logs/limpiar', [ConfiguracionController::class, 'limpiarLogs'])->name('limpiar-logs');
-                       Route::get('/logs/descargar/{filename}', [ConfiguracionController::class, 'descargarLog'])->name('descargar-log');
-               Route::delete('/logs/{filename}', [ConfiguracionController::class, 'eliminarLog'])->name('eliminar-log');
-               Route::post('/colores', [ConfiguracionController::class, 'guardarColores'])->name('guardar-colores');
-               Route::get('/colores', [ConfiguracionController::class, 'obtenerColores'])->name('obtener-colores');
+        Route::get('/logs/descargar/{filename}', [ConfiguracionController::class, 'descargarLog'])->name('descargar-log');
+        Route::delete('/logs/{filename}', [ConfiguracionController::class, 'eliminarLog'])->name('eliminar-log');
+        Route::post('/colores', [ConfiguracionController::class, 'guardarColores'])->name('guardar-colores');
+        Route::get('/colores', [ConfiguracionController::class, 'obtenerColores'])->name('obtener-colores');
     });
 });

@@ -15,32 +15,13 @@ class PermissionHelper
 
         $user = auth()->user();
         
-        // Los administradores tienen acceso a todo
-        if ($user->esAdmin()) {
-            return true;
+        // Si el usuario no tiene permisos, verificar por rol
+        if (!$user->permissions) {
+            return self::canAccessByRole($user->rol, $module);
         }
 
-        // Si el usuario tiene permisos personalizados, verificar esos
-        if ($user->permissions) {
-            $permissionField = 'access_' . $module;
-            return $user->permissions->hasPermission($permissionField);
-        }
-
-        // Fallback al sistema de roles (para compatibilidad)
-        $permissions = [
-            'dashboard' => ['admin', 'tecnico', 'usuario'],
-            'clientes' => ['admin', 'tecnico'],
-            'equipos' => ['admin', 'tecnico'],
-            'reparaciones' => ['admin', 'tecnico'],
-            'inventario' => ['admin', 'tecnico'],
-            'tickets' => ['admin', 'tecnico'],
-            'tecnicos' => ['admin'],
-            'usuarios' => ['admin'],
-            'configuracion' => ['admin'],
-            'reportes' => ['admin', 'tecnico'],
-        ];
-
-        return in_array($user->rol, $permissions[$module] ?? []);
+        $permissionKey = 'access_' . $module;
+        return $user->permissions->$permissionKey ?? false;
     }
 
     /**
@@ -54,34 +35,65 @@ class PermissionHelper
 
         $user = auth()->user();
         
-        // Los administradores pueden hacer todo
-        if ($user->esAdmin()) {
-            return true;
+        // Si el usuario no tiene permisos, verificar por rol
+        if (!$user->permissions) {
+            return self::canActionByRole($user->rol, $action);
         }
 
-        // Si el usuario tiene permisos personalizados, verificar esos
-        if ($user->permissions) {
-            return $user->permissions->hasPermission($action);
-        }
+        return $user->permissions->$action ?? false;
+    }
 
-        // Fallback al sistema de roles (para compatibilidad)
-        $permissions = [
-            'create_equipo' => ['admin', 'tecnico'],
-            'edit_equipo' => ['admin', 'tecnico'],
-            'delete_equipo' => ['admin'],
-            'create_reparacion' => ['admin', 'tecnico'],
-            'edit_reparacion' => ['admin', 'tecnico'],
-            'delete_reparacion' => ['admin'],
-            'create_cliente' => ['admin', 'tecnico'],
-            'edit_cliente' => ['admin', 'tecnico'],
-            'delete_cliente' => ['admin'],
-            'manage_users' => ['admin'],
-            'manage_tecnicos' => ['admin'],
-            'view_reports' => ['admin', 'tecnico'],
-            'manage_inventory' => ['admin', 'tecnico'],
+    /**
+     * Verificar acceso por rol (fallback cuando no hay permisos específicos)
+     */
+    private static function canAccessByRole($rol, $module)
+    {
+        $permissionsByRole = [
+            'admin' => [
+                'dashboard', 'clientes', 'equipos', 'reparaciones', 'inventario', 
+                'tickets', 'tecnicos', 'usuarios', 'configuracion', 'reportes'
+            ],
+            'tecnico' => [
+                'dashboard', 'clientes', 'equipos', 'reparaciones', 'inventario', 
+                'tickets', 'reportes'
+            ],
+            'usuario' => [
+                'dashboard', 'clientes', 'equipos', 'inventario', 'tickets'
+            ]
         ];
 
-        return in_array($user->rol, $permissions[$action] ?? []);
+        return in_array($module, $permissionsByRole[$rol] ?? []);
+    }
+
+    /**
+     * Verificar acción por rol (fallback cuando no hay permisos específicos)
+     */
+    private static function canActionByRole($rol, $action)
+    {
+        $actionsByRole = [
+            'admin' => [
+                'create_equipo', 'edit_equipo', 'delete_equipo', 'view_equipo',
+                'create_reparacion', 'edit_reparacion', 'delete_reparacion', 'view_reparacion',
+                'create_cliente', 'edit_cliente', 'delete_cliente', 'view_cliente',
+                'create_inventario', 'edit_inventario', 'delete_inventario', 'view_inventario',
+                'create_ticket', 'edit_ticket', 'delete_ticket', 'view_ticket',
+                'manage_users', 'manage_tecnicos', 'view_reports'
+            ],
+            'tecnico' => [
+                'create_equipo', 'edit_equipo', 'view_equipo',
+                'create_reparacion', 'edit_reparacion', 'view_reparacion',
+                'create_cliente', 'edit_cliente', 'view_cliente',
+                'create_inventario', 'edit_inventario', 'view_inventario',
+                'create_ticket', 'edit_ticket', 'view_ticket',
+                'view_reports'
+            ],
+            'usuario' => [
+                'view_equipo', 'create_cliente', 'edit_cliente', 'view_cliente',
+                'view_inventario', 'create_ticket', 'view_ticket'
+            ]
+        ];
+
+        return in_array($action, $actionsByRole[$rol] ?? []);
     }
 
     /**
@@ -94,69 +106,60 @@ class PermissionHelper
         }
 
         $user = auth()->user();
-        
+        $availableModules = [];
+
         $allModules = [
             'dashboard' => [
                 'name' => 'Dashboard',
                 'icon' => 'fas fa-tachometer-alt',
                 'route' => 'dashboard',
-                'roles' => ['admin', 'tecnico', 'usuario']
             ],
             'clientes' => [
                 'name' => 'Clientes',
                 'icon' => 'fas fa-users',
                 'route' => 'clientes.index',
-                'roles' => ['admin', 'tecnico']
             ],
             'equipos' => [
                 'name' => 'Gestión de Equipos',
                 'icon' => 'fas fa-laptop',
                 'route' => 'equipos.index',
-                'roles' => ['admin', 'tecnico']
             ],
             'reparaciones' => [
                 'name' => 'Gestión de Reparaciones',
                 'icon' => 'fas fa-wrench',
                 'route' => 'reparaciones.index',
-                'roles' => ['admin', 'tecnico']
             ],
             'inventario' => [
                 'name' => 'Inventario',
                 'icon' => 'fas fa-boxes',
                 'route' => 'inventario.index',
-                'roles' => ['admin', 'tecnico']
             ],
             'tickets' => [
                 'name' => 'Tickets',
                 'icon' => 'fas fa-ticket-alt',
                 'route' => 'tickets.index',
-                'roles' => ['admin', 'tecnico']
             ],
             'tecnicos' => [
                 'name' => 'Gestión de Técnicos',
                 'icon' => 'fas fa-users-cog',
                 'route' => 'tecnicos.index',
-                'roles' => ['admin']
             ],
             'usuarios' => [
                 'name' => 'Gestión de Usuarios',
                 'icon' => 'fas fa-users',
                 'route' => 'usuarios.index',
-                'roles' => ['admin']
             ],
             'configuracion' => [
                 'name' => 'Configuración',
                 'icon' => 'fas fa-cog',
                 'route' => 'configuracion.index',
-                'roles' => ['admin']
             ],
         ];
 
-        $availableModules = [];
-        
-        foreach ($allModules as $key => $module) {
-            if (in_array($user->rol, $module['roles'])) {
-                $availableModules[$key] = $module;
+        // Verificar cada módulo
+        foreach ($allModules as $moduleKey => $moduleInfo) {
+            if (self::canAccess($moduleKey)) {
+                $availableModules[$moduleKey] = $moduleInfo;
             }
         }
 

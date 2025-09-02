@@ -213,7 +213,7 @@
                                 <i class="fas fa-dollar-sign me-1"></i>Precio de Compra
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">Q</span>
                                 <input type="number" 
                                        class="form-control @error('precio_compra') is-invalid @enderror" 
                                        id="precio_compra" 
@@ -233,7 +233,7 @@
                                 <i class="fas fa-tags me-1"></i>Precio de Venta
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">Q</span>
                                 <input type="number" 
                                        class="form-control @error('precio_venta') is-invalid @enderror" 
                                        id="precio_venta" 

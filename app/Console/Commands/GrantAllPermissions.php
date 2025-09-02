@@ -1,38 +1,38 @@
 <?php
 
-namespace Database\Seeders;
+namespace App\Console\Commands;
 
 use App\Models\User;
 use App\Models\UserPermission;
-use Illuminate\Database\Seeder;
+use Illuminate\Console\Command;
 
-class UserPermissionsSeeder extends Seeder
+class GrantAllPermissions extends Command
 {
     /**
-     * Run the database seeds.
+     * The name and signature of the console command.
+     *
+     * @var string
      */
-    public function run(): void
-    {
-        $users = User::all();
-
-        foreach ($users as $user) {
-            // Crear permisos según el rol del usuario
-            $permissions = $this->getDefaultPermissions($user->rol);
-            
-            UserPermission::updateOrCreate(
-                ['user_id' => $user->id],
-                $permissions
-            );
-        }
-    }
+    protected $signature = 'users:grant-all-permissions';
 
     /**
-     * Obtener permisos por defecto según el rol
+     * The console command description.
+     *
+     * @var string
      */
-    private function getDefaultPermissions($rol)
+    protected $description = 'Otorga todos los permisos a todos los usuarios del sistema';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
     {
-        // Todos los usuarios tendrán acceso completo a todos los módulos
-        return [
+        $this->info('Iniciando proceso de otorgamiento de permisos...');
+
+        $users = User::all();
+        $this->info("Encontrados {$users->count()} usuarios.");
+
+        $allPermissions = [
             'access_dashboard' => true,
             'access_clientes' => true,
             'access_equipos' => true,
@@ -66,5 +66,22 @@ class UserPermissionsSeeder extends Seeder
             'manage_users' => true,
             'manage_tecnicos' => true,
         ];
+
+        $bar = $this->output->createProgressBar($users->count());
+        $bar->start();
+
+        foreach ($users as $user) {
+            UserPermission::updateOrCreate(
+                ['user_id' => $user->id],
+                $allPermissions
+            );
+            $bar->advance();
+        }
+
+        $bar->finish();
+        $this->newLine();
+        $this->info('¡Todos los permisos han sido otorgados exitosamente!');
+        
+        return Command::SUCCESS;
     }
 }

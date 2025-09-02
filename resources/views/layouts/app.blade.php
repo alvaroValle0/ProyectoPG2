@@ -385,12 +385,10 @@
                 Nueva Reparación
             </a>
             @endif
-            @if(auth()->user()->esTecnico())
             <a href="{{ route('reparaciones.mis-tareas') }}" class="sidebar-item {{ request()->routeIs('reparaciones.mis-tareas') ? 'active' : '' }}">
                 <i class="fas fa-tasks"></i>
                 Mis Tareas
             </a>
-            @endif
             @endif
             
             <!-- Inventario -->
@@ -503,14 +501,12 @@
                                     Dashboard
                                 </a>
                             </li>
-                            @if(auth()->user()->esTecnico())
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('reparaciones.mis-tareas') }}">
                                     <i class="fas fa-tasks me-2" style="color: #27DB9F;"></i> 
                                     Mis Tareas
                                 </a>
                             </li>
-                            @endif
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">

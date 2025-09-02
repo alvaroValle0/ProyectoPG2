@@ -35,18 +35,18 @@
                         <!-- Código -->
                         <div class="col-md-6 mb-3">
                             <label for="codigo" class="form-label">
-                                <i class="fas fa-barcode me-1"></i>Código <span class="text-danger">*</span>
+                                <i class="fas fa-barcode me-1"></i>Código
                             </label>
                             <input type="text" 
                                    class="form-control @error('codigo') is-invalid @enderror" 
                                    id="codigo" 
                                    name="codigo" 
                                    value="{{ old('codigo') }}" 
-                                   placeholder="Ej: INV-001, COMP-2024-001">
+                                   placeholder="Ej: INV-001, COMP-2024-001 (opcional - se genera automáticamente)">
                             @error('codigo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">Código único para identificar el item</small>
+                            <small class="form-text text-muted">Opcional - Si no se proporciona, se generará automáticamente</small>
                         </div>
 
                         <!-- Nombre -->
@@ -209,7 +209,7 @@
                                 <i class="fas fa-dollar-sign me-1"></i>Precio de Compra
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">Q</span>
                                 <input type="number" 
                                        class="form-control @error('precio_compra') is-invalid @enderror" 
                                        id="precio_compra" 
@@ -229,7 +229,7 @@
                                 <i class="fas fa-tags me-1"></i>Precio de Venta
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">Q</span>
                                 <input type="number" 
                                        class="form-control @error('precio_venta') is-invalid @enderror" 
                                        id="precio_venta" 

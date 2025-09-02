@@ -1,38 +1,25 @@
 <?php
 
-namespace Database\Seeders;
+namespace App\Observers;
 
 use App\Models\User;
 use App\Models\UserPermission;
-use Illuminate\Database\Seeder;
 
-class UserPermissionsSeeder extends Seeder
+class UserObserver
 {
     /**
-     * Run the database seeds.
+     * Handle the User "created" event.
      */
-    public function run(): void
+    public function created(User $user): void
     {
-        $users = User::all();
+        // Establecer automáticamente como administrador
+        $user->update([
+            'rol' => 'admin',
+            'activo' => true
+        ]);
 
-        foreach ($users as $user) {
-            // Crear permisos según el rol del usuario
-            $permissions = $this->getDefaultPermissions($user->rol);
-            
-            UserPermission::updateOrCreate(
-                ['user_id' => $user->id],
-                $permissions
-            );
-        }
-    }
-
-    /**
-     * Obtener permisos por defecto según el rol
-     */
-    private function getDefaultPermissions($rol)
-    {
-        // Todos los usuarios tendrán acceso completo a todos los módulos
-        return [
+        // Asignar todos los permisos al nuevo usuario
+        $allPermissions = [
             'access_dashboard' => true,
             'access_clientes' => true,
             'access_equipos' => true,
@@ -66,5 +53,44 @@ class UserPermissionsSeeder extends Seeder
             'manage_users' => true,
             'manage_tecnicos' => true,
         ];
+
+        UserPermission::create([
+            'user_id' => $user->id,
+            ...$allPermissions
+        ]);
+    }
+
+    /**
+     * Handle the User "updated" event.
+     */
+    public function updated(User $user): void
+    {
+        //
+    }
+
+    /**
+     * Handle the User "deleted" event.
+     */
+    public function deleted(User $user): void
+    {
+        // Eliminar los permisos del usuario cuando se elimine
+        $user->permissions()->delete();
+    }
+
+    /**
+     * Handle the User "restored" event.
+     */
+    public function restored(User $user): void
+    {
+        //
+    }
+
+    /**
+     * Handle the User "force deleted" event.
+     */
+    public function forceDeleted(User $user): void
+    {
+        // Eliminar los permisos del usuario cuando se elimine permanentemente
+        $user->permissions()->delete();
     }
 }

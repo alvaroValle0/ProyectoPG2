@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Inventario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class InventarioController extends Controller
@@ -91,7 +92,7 @@ class InventarioController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'codigo' => 'required|unique:inventario,codigo|max:50',
+            'codigo' => 'nullable|unique:inventario,codigo|max:50',
             'nombre' => 'required|max:255',
             'descripcion' => 'nullable|max:1000',
             'categoria' => 'required|max:100',
@@ -113,17 +114,99 @@ class InventarioController extends Controller
 
         $data = $request->all();
 
-        // Manejo de imagen
+        // Limpiar campos vacíos que puedan causar problemas
+        $data = array_filter($data, function($value) {
+            return $value !== '' && $value !== null;
+        });
+
+        // Manejo de imagen - simplificado para evitar errores
         if ($request->hasFile('imagen')) {
             $imagen = $request->file('imagen');
-            $nombreImagen = time() . '_' . Str::slug($request->nombre) . '.' . $imagen->getClientOriginalExtension();
-            $imagen->storeAs('public/inventario', $nombreImagen);
-            $data['imagen'] = $nombreImagen;
+            
+            // Verificación completa del archivo
+            if ($imagen && $imagen->isValid() && $imagen->getSize() > 0 && !empty($imagen->getClientOriginalName())) {
+                try {
+                    $nombre = $request->nombre ?? 'inventario';
+                    $nombreSlug = Str::slug($nombre);
+                    if (empty($nombreSlug)) {
+                        $nombreSlug = 'inventario';
+                    }
+                    
+                    $extension = $imagen->getClientOriginalExtension();
+                    if (empty($extension)) {
+                        $extension = $imagen->guessExtension() ?: 'jpg';
+                    }
+                    
+                    $nombreImagen = time() . '_' . $nombreSlug . '.' . $extension;
+                    
+                    // Crear directorio físico si no existe
+                    $destinationPath = storage_path('app/public/inventario');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    
+                    // Usar move en lugar de Storage para evitar problemas
+                    if ($imagen->move($destinationPath, $nombreImagen)) {
+                        $data['imagen'] = $nombreImagen;
+                        Log::info('Imagen guardada exitosamente: ' . $nombreImagen);
+                    } else {
+                        Log::warning('No se pudo mover la imagen');
+                        unset($data['imagen']);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error al procesar imagen: ' . $e->getMessage());
+                    // Si hay error con la imagen, continuar sin ella
+                    unset($data['imagen']);
+                }
+            } else {
+                // Archivo no válido o vacío
+                Log::warning('Archivo de imagen no válido, vacío o sin nombre');
+                unset($data['imagen']);
+            }
+        } else {
+            // No hay archivo de imagen
+            unset($data['imagen']);
         }
 
         // Generar código automático si no se proporciona
         if (empty($data['codigo'])) {
-            $data['codigo'] = 'INV-' . strtoupper(Str::random(8));
+            $intentos = 0;
+            do {
+                $codigo = 'INV-' . strtoupper(Str::random(8));
+                $intentos++;
+                if ($intentos > 10) {
+                    $codigo = 'INV-' . time() . '-' . rand(1000, 9999);
+                    break;
+                }
+            } while (Inventario::where('codigo', $codigo)->exists());
+            $data['codigo'] = $codigo;
+        }
+        
+        // Asegurar que los campos de fecha sean null si están vacíos
+        if (empty($data['fecha_compra'])) {
+            $data['fecha_compra'] = null;
+        }
+        if (empty($data['fecha_vencimiento'])) {
+            $data['fecha_vencimiento'] = null;
+        }
+        
+        // Asegurar que los campos numéricos sean null si están vacíos
+        if (empty($data['precio_compra'])) {
+            $data['precio_compra'] = null;
+        }
+        if (empty($data['precio_venta'])) {
+            $data['precio_venta'] = null;
+        }
+
+        // Validar que los datos estén completos antes de crear
+        if (empty($data['codigo']) || empty($data['nombre']) || empty($data['categoria']) || 
+            !isset($data['stock_minimo']) || !isset($data['stock_actual']) || empty($data['estado'])) {
+            return back()->withErrors(['error' => 'Faltan campos obligatorios'])->withInput();
+        }
+
+        // Asegurar que el código sea único
+        if (Inventario::where('codigo', $data['codigo'])->exists()) {
+            return back()->withErrors(['codigo' => 'El código ya existe en el sistema'])->withInput();
         }
 
         Inventario::create($data);
@@ -187,17 +270,94 @@ class InventarioController extends Controller
 
         $data = $request->all();
 
-        // Manejo de imagen
-        if ($request->hasFile('imagen')) {
-            // Eliminar imagen anterior si existe
-            if ($inventario->imagen) {
-                Storage::delete('public/inventario/' . $inventario->imagen);
-            }
+        // Limpiar campos vacíos que puedan causar problemas
+        $data = array_filter($data, function($value) {
+            return $value !== '' && $value !== null;
+        });
 
+        // Manejo de imagen - simplificado para evitar errores
+        if ($request->hasFile('imagen')) {
             $imagen = $request->file('imagen');
-            $nombreImagen = time() . '_' . Str::slug($request->nombre) . '.' . $imagen->getClientOriginalExtension();
-            $imagen->storeAs('public/inventario', $nombreImagen);
-            $data['imagen'] = $nombreImagen;
+            
+            // Verificación completa del archivo
+            if ($imagen && $imagen->isValid() && $imagen->getSize() > 0 && !empty($imagen->getClientOriginalName())) {
+                try {
+                    // Eliminar imagen anterior si existe
+                    if ($inventario->imagen && !empty($inventario->imagen)) {
+                        $oldImagePath = storage_path('app/public/inventario/' . $inventario->imagen);
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath);
+                            Log::info('Imagen anterior eliminada: ' . $inventario->imagen);
+                        }
+                    }
+
+                    $nombre = $request->nombre ?? 'inventario';
+                    $nombreSlug = Str::slug($nombre);
+                    if (empty($nombreSlug)) {
+                        $nombreSlug = 'inventario';
+                    }
+                    
+                    $extension = $imagen->getClientOriginalExtension();
+                    if (empty($extension)) {
+                        $extension = $imagen->guessExtension() ?: 'jpg';
+                    }
+                    
+                    $nombreImagen = time() . '_' . $nombreSlug . '.' . $extension;
+                    
+                    // Crear directorio físico si no existe
+                    $destinationPath = storage_path('app/public/inventario');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    
+                    // Usar move en lugar de Storage para evitar problemas
+                    if ($imagen->move($destinationPath, $nombreImagen)) {
+                        $data['imagen'] = $nombreImagen;
+                        Log::info('Imagen actualizada exitosamente: ' . $nombreImagen);
+                    } else {
+                        Log::warning('No se pudo mover la imagen en update');
+                        unset($data['imagen']);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error al procesar imagen en update: ' . $e->getMessage());
+                    // Si hay error con la imagen, no modificar el campo
+                    unset($data['imagen']);
+                }
+            } else {
+                // Archivo no válido o vacío
+                Log::warning('Archivo de imagen no válido, vacío o sin nombre en update');
+                unset($data['imagen']);
+            }
+        } else {
+            // No modificar el campo imagen si no se sube una nueva
+            unset($data['imagen']);
+        }
+
+        // Asegurar que los campos de fecha sean null si están vacíos
+        if (empty($data['fecha_compra'])) {
+            $data['fecha_compra'] = null;
+        }
+        if (empty($data['fecha_vencimiento'])) {
+            $data['fecha_vencimiento'] = null;
+        }
+        
+        // Asegurar que los campos numéricos sean null si están vacíos
+        if (empty($data['precio_compra'])) {
+            $data['precio_compra'] = null;
+        }
+        if (empty($data['precio_venta'])) {
+            $data['precio_venta'] = null;
+        }
+
+        // Validar que los datos estén completos antes de actualizar
+        if (empty($data['codigo']) || empty($data['nombre']) || empty($data['categoria']) || 
+            !isset($data['stock_minimo']) || !isset($data['stock_actual']) || empty($data['estado'])) {
+            return back()->withErrors(['error' => 'Faltan campos obligatorios'])->withInput();
+        }
+
+        // Asegurar que el código sea único (excluyendo el item actual)
+        if (Inventario::where('codigo', $data['codigo'])->where('id', '!=', $inventario->id)->exists()) {
+            return back()->withErrors(['codigo' => 'El código ya existe en el sistema'])->withInput();
         }
 
         $inventario->update($data);
@@ -212,8 +372,17 @@ class InventarioController extends Controller
     public function destroy(Inventario $inventario)
     {
         // Eliminar imagen si existe
-        if ($inventario->imagen) {
-            Storage::delete('public/inventario/' . $inventario->imagen);
+        if ($inventario->imagen && !empty($inventario->imagen)) {
+            try {
+                $imagePath = storage_path('app/public/inventario/' . $inventario->imagen);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                    Log::info('Imagen eliminada: ' . $inventario->imagen);
+                }
+            } catch (\Exception $e) {
+                // Log del error pero continuar con la eliminación
+                Log::warning('No se pudo eliminar la imagen: ' . $e->getMessage());
+            }
         }
 
         $inventario->delete();
@@ -355,7 +524,7 @@ class InventarioController extends Controller
         ];
 
         $callback = function() use ($inventario) {
-            $file = fopen('php://output', 'w');
+            $file = fopen('php://temp', 'w+');
             
             // Headers del CSV
             fputcsv($file, [
@@ -383,7 +552,11 @@ class InventarioController extends Controller
                 ]);
             }
 
+            rewind($file);
+            $csv = stream_get_contents($file);
             fclose($file);
+            
+            echo $csv;
         };
 
         return response()->stream($callback, 200, $headers);

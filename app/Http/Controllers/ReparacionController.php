@@ -251,11 +251,8 @@ class ReparacionController extends Controller
     {
         $user = auth()->user();
         
-        if (!$user->esTecnico()) {
-            abort(403, 'Solo los técnicos pueden acceder a esta sección.');
-        }
-
-        $query = $user->tecnico->reparaciones()->with(['equipo']);
+        // Permitir acceso a cualquier usuario autenticado
+        $query = Reparacion::with(['equipo', 'tecnico']);
 
         // Filtros
         if ($request->filled('estado')) {
