@@ -181,15 +181,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card border-warning text-center">
-                                <div class="card-body">
-                                    <i class="fas fa-clock text-warning display-6 mb-2"></i>
-                                    <h4 class="text-warning">{{ $tecnico->carga_trabajo ?? 0 }}</h4>
-                                    <p class="text-muted mb-0">Carga Actual</p>
-                                </div>
-                            </div>
-                        </div>
+
                         <div class="col-md-3">
                             <div class="card border-info text-center">
                                 <div class="card-body">
@@ -314,11 +306,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function confirmarEliminacion() {
-    if (confirm('¿Está seguro de que desea eliminar este técnico?\n\nEsta acción no se puede deshacer y eliminará todo el historial relacionado.')) {
-        if (confirm('Confirme nuevamente: ¿Realmente desea eliminar el técnico {{ $tecnico->nombre_completo }}?')) {
-            document.getElementById('eliminarForm').submit();
-        }
-    }
+    confirmarEliminacionDoble(
+        '¿Está seguro de que desea eliminar este técnico?\n\nEsta acción no se puede deshacer y eliminará todo el historial relacionado.',
+        'Confirme nuevamente: ¿Realmente desea eliminar el técnico {{ $tecnico->nombre_completo }}?',
+        'eliminarForm'
+    );
 }
 </script>
 @endsection

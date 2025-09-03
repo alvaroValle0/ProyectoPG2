@@ -58,19 +58,30 @@
                                     @endforeach
                                 </select>
                                 <button type="button" 
-                                        class="btn btn-outline-success" 
+                                        class="btn btn-success btn-lg px-3" 
                                         onclick="abrirModalCrearUsuario()"
-                                        title="Crear nuevo usuario">
-                                    <i class="fas fa-plus"></i>
+                                        title="Crear nuevo usuario del sistema"
+                                        style="min-width: 50px;">
+                                    <i class="fas fa-user-plus fa-lg"></i>
                                 </button>
                             </div>
                             @error('user_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">
-                                Usuario para acceso al sistema 
-                                <strong class="text-success">- ¡Puedes crear uno nuevo con el botón +!</strong>
-                            </small>
+                            
+                            <!-- Mensaje informativo mejorado -->
+                            <div class="alert alert-info border-0 mt-2 mb-0" style="background-color: rgba(13, 202, 240, 0.1);">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-lightbulb text-info me-2 mt-1"></i>
+                                    </div>
+                                    <div>
+                                        <strong>¿No tienes un usuario?</strong> 
+                                        Haz clic en el botón <i class="fas fa-user-plus text-success"></i> para crear uno nuevo directamente desde aquí.
+                                        <br><small class="text-muted">El usuario se creará automáticamente con rol de "Técnico" y se seleccionará en el formulario.</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Nombres -->
@@ -357,7 +368,7 @@
                                 <div class="alert alert-success">
                                     <i class="fas fa-chart-line me-2"></i>
                                     <strong>Seguimiento</strong><br>
-                                    <small>Se registrarán estadísticas de rendimiento y carga de trabajo.</small>
+                                    <small>Se registrarán estadísticas de rendimiento.</small>
                                 </div>
                             </div>
                         </div>
@@ -381,134 +392,66 @@
     </div>
 </div>
 
-<!-- Modal para Crear Usuario - MEJORADO -->
-<div class="modal fade" id="crearUsuarioModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content shadow-lg">
+<!-- Modal para Crear Usuario - SIMPLIFICADO Y CENTRADO -->
+<div class="modal fade" id="crearUsuarioModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
             <!-- Header del Modal -->
-            <div class="modal-header bg-gradient-success text-white">
-                <h4 class="modal-title" id="modalLabel">
-                    <i class="fas fa-user-plus me-3"></i>
-                    Crear Nuevo Usuario del Sistema
-                </h4>
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalLabel">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Crear Nuevo Usuario
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
             <!-- Cuerpo del Modal -->
-            <div class="modal-body p-4">
-                <!-- Header Visual -->
-                <div class="text-center mb-4">
-                    <div class="user-icon-container mb-3">
-                        <div class="user-icon">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                    </div>
-                    <h5 class="text-primary mb-2">Información Básica del Usuario</h5>
-                    <p class="text-muted mb-0">Complete los datos para crear el acceso al sistema</p>
-                </div>
-
-                <!-- Formulario -->
-                <form id="formCrearUsuario" novalidate>
-                    <div class="row">
-                        <!-- Columna Izquierda -->
-                        <div class="col-md-6">
-                            <!-- Nombre Completo -->
-                            <div class="form-floating mb-3">
-                                <input type="text" 
-                                       class="form-control form-control-lg border-2" 
-                                       id="modal_name" 
-                                       name="name" 
-                                       placeholder="Nombre completo"
-                                       required>
-                                <label for="modal_name">
-                                    <i class="fas fa-user text-primary me-2"></i>
-                                    Nombre Completo <span class="text-danger">*</span>
-                                </label>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <!-- Correo Electrónico -->
-                            <div class="form-floating mb-3">
-                                <input type="email" 
-                                       class="form-control form-control-lg border-2" 
-                                       id="modal_email" 
-                                       name="email" 
-                                       placeholder="correo@empresa.com"
-                                       required>
-                                <label for="modal_email">
-                                    <i class="fas fa-envelope text-info me-2"></i>
-                                    Correo Electrónico <span class="text-danger">*</span>
-                                </label>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
-
-                        <!-- Columna Derecha -->
-                        <div class="col-md-6">
-                            <!-- Contraseña -->
-                            <div class="form-floating mb-3">
-                                <div class="input-group">
-                                    <div class="form-floating flex-grow-1">
-                                        <input type="password" 
-                                               class="form-control form-control-lg border-2" 
-                                               id="modal_password" 
-                                               name="password" 
-                                               placeholder="Contraseña"
-                                               minlength="8"
-                                               required>
-                                        <label for="modal_password">
-                                            <i class="fas fa-lock text-warning me-2"></i>
-                                            Contraseña <span class="text-danger">*</span>
-                                        </label>
-                                    </div>
-                                    <button type="button" 
-                                            class="btn btn-outline-secondary btn-lg" 
-                                            onclick="toggleModalPassword()"
-                                            tabindex="-1">
-                                        <i class="fas fa-eye" id="modal-password-icon"></i>
-                                    </button>
-                                </div>
-                                <div class="invalid-feedback"></div>
-                                <small class="text-muted mt-1">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Mínimo 8 caracteres
-                                </small>
-                            </div>
-
-                            <!-- Rol del Usuario -->
-                            <div class="form-floating mb-3">
-                                <select class="form-select form-select-lg border-2" 
-                                        id="modal_rol" 
-                                        name="rol" 
-                                        required>
-                                    <option value="">Seleccione un rol</option>
-                                    <option value="admin">👑 Administrador</option>
-                                    <option value="tecnico" selected>🔧 Técnico</option>
-                                    <option value="usuario">👤 Usuario</option>
-                                </select>
-                                <label for="modal_rol">
-                                    <i class="fas fa-user-cog text-success me-2"></i>
-                                    Rol del Usuario <span class="text-danger">*</span>
-                                </label>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
+            <div class="modal-body">
+                <form id="formCrearUsuario">
+                    <!-- Nombre Completo -->
+                    <div class="mb-3">
+                        <label for="modal_name" class="form-label fw-bold">Nombre Completo <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="modal_name" 
+                               name="name" 
+                               placeholder="Ingrese el nombre completo"
+                               required>
                     </div>
 
-                    <!-- Información Adicional -->
-                    <div class="alert alert-info border-0 mt-4">
-                        <div class="d-flex align-items-start">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-lightbulb fa-lg text-warning me-3 mt-1"></i>
-                            </div>
-                            <div>
-                                <h6 class="alert-heading mb-2">¡Importante!</h6>
-                                <p class="mb-0">
-                                    Una vez creado el usuario, podrás completar toda la información personal 
-                                    del técnico (teléfono, dirección, DPI, fotografía, etc.) en el formulario principal.
-                                </p>
-                            </div>
-                        </div>
+                    <!-- Correo Electrónico -->
+                    <div class="mb-3">
+                        <label for="modal_email" class="form-label fw-bold">Correo Electrónico <span class="text-danger">*</span></label>
+                        <input type="email" 
+                               class="form-control form-control-lg" 
+                               id="modal_email" 
+                               name="email" 
+                               placeholder="correo@empresa.com"
+                               required>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="mb-3">
+                        <label for="modal_password" class="form-label fw-bold">Contraseña <span class="text-danger">*</span></label>
+                        <input type="password" 
+                               class="form-control form-control-lg" 
+                               id="modal_password" 
+                               name="password" 
+                               placeholder="Mínimo 8 caracteres"
+                               minlength="8"
+                               required>
+                        <div class="form-text">Mínimo 8 caracteres</div>
+                    </div>
+
+                    <!-- Rol del Usuario -->
+                    <div class="mb-3">
+                        <label for="modal_rol" class="form-label fw-bold">Rol del Usuario <span class="text-danger">*</span></label>
+                        <select class="form-select form-select-lg" id="modal_rol" name="rol" required>
+                            <option value="">Seleccione un rol</option>
+                            <option value="admin">👑 Administrador</option>
+                            <option value="tecnico" selected>🔧 Técnico</option>
+                            <option value="usuario">👤 Usuario</option>
+                        </select>
                     </div>
 
                     <!-- Área de Mensajes -->
@@ -517,17 +460,22 @@
             </div>
             
             <!-- Footer del Modal -->
-            <div class="modal-footer bg-light border-top-0 p-4">
-                <button type="button" 
-                        class="btn btn-outline-secondary btn-lg px-4" 
-                        data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Cancelar
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancelar
                 </button>
-                <button type="button" 
-                        class="btn btn-success btn-lg px-4" 
-                        onclick="crearUsuarioMejorado()" 
-                        id="btnCrearUsuario">
-                    <i class="fas fa-user-plus me-2"></i>Crear Usuario
+                <button type="button" class="btn btn-success btn-lg" onclick="crearUsuarioSimple()" id="btnCrearUsuario">
+                    <i class="fas fa-user-plus me-1"></i>Crear Usuario
+                </button>
+                
+                <!-- Botón de prueba -->
+                <button type="button" class="btn btn-info btn-sm" onclick="probarModal()" title="Probar modal">
+                    <i class="fas fa-bug"></i>
+                </button>
+                
+                <!-- Botón de prueba de campos -->
+                <button type="button" class="btn btn-warning btn-sm" onclick="probarCampos()" title="Probar campos">
+                    <i class="fas fa-keyboard"></i>
                 </button>
             </div>
         </div>
@@ -687,77 +635,60 @@ function abrirModalCrearUsuario() {
     console.log('🚀 Abriendo modal de crear usuario...');
     
     try {
+        // Verificar que Bootstrap esté disponible
+        if (typeof bootstrap === 'undefined') {
+            console.error('❌ Bootstrap no está disponible');
+            alert('Error: Bootstrap no está disponible. Por favor, recarga la página.');
+            return;
+        }
+        
         // Limpiar formulario
-        const form = document.getElementById('formCrearUsuario');
-        if (form) {
-            form.reset();
-        }
-        
-        // Limpiar mensajes de error y validaciones
-        limpiarValidacionesModal();
-        
-        // Establecer valores por defecto
-        const rolSelect = document.getElementById('modal_rol');
-        if (rolSelect) {
-            rolSelect.value = 'tecnico';
-        }
+        document.getElementById('formCrearUsuario').reset();
+        document.getElementById('modal_rol').value = 'tecnico';
+        document.getElementById('mensaje-area').innerHTML = '';
         
         // Restaurar botón
         restaurarBotonCrear();
         
-        // Limpiar área de mensajes
-        const mensajeArea = document.getElementById('mensaje-area');
-        if (mensajeArea) {
-            mensajeArea.innerHTML = '';
-        }
-        
-        // Mostrar modal con configuración mejorada
+        // Mostrar modal de forma simple
         const modalElement = document.getElementById('crearUsuarioModal');
         if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement, {
-                backdrop: 'static',
-                keyboard: true,
-                focus: true
-            });
-            
+            const modal = new bootstrap.Modal(modalElement);
             modal.show();
             
-            // Enfocar primer campo cuando se muestre
-            modalElement.addEventListener('shown.bs.modal', function() {
+            // Enfocar primer campo después de mostrar
+            setTimeout(() => {
                 const nombreField = document.getElementById('modal_name');
                 if (nombreField) {
                     nombreField.focus();
-                    nombreField.select();
+                    console.log('✅ Campo nombre enfocado');
                 }
-            }, { once: true });
+            }, 200);
             
             console.log('✅ Modal abierto exitosamente');
         } else {
-            console.error('❌ No se encontró el elemento del modal');
+            console.error('❌ No se encontró el modal');
+            alert('Error: No se pudo abrir el modal.');
         }
         
     } catch (error) {
         console.error('❌ Error al abrir modal:', error);
-        alert('Error al abrir el modal. Por favor, recarga la página e intenta nuevamente.');
+        alert('Error al abrir el modal. Por favor, recarga la página.');
     }
 }
 
-function limpiarValidacionesModal() {
-    // Remover clases de error
+// Función simple para limpiar validaciones
+function limpiarValidaciones() {
     document.querySelectorAll('#crearUsuarioModal .is-invalid').forEach(field => {
         field.classList.remove('is-invalid');
     });
-    
-    // Limpiar mensajes de error
-    document.querySelectorAll('#crearUsuarioModal .invalid-feedback').forEach(feedback => {
-        feedback.textContent = '';
-    });
-    
-    // Remover alertas previas del área de mensajes
-    const mensajeArea = document.getElementById('mensaje-area');
-    if (mensajeArea) {
-        mensajeArea.innerHTML = '';
-    }
+}
+
+// Función simplificada para limpiar formulario
+function limpiarFormulario() {
+    document.getElementById('formCrearUsuario').reset();
+    document.getElementById('modal_rol').value = 'tecnico';
+    document.getElementById('mensaje-area').innerHTML = '';
 }
 
 function restaurarBotonCrear() {
@@ -784,177 +715,115 @@ function toggleModalPassword() {
     }
 }
 
-function crearUsuarioMejorado() {
+function crearUsuarioSimple() {
     console.log('🚀 Iniciando creación de usuario...');
     
     try {
-        // Limpiar validaciones previas
-        limpiarValidacionesModal();
-        
         // Obtener campos del formulario
-        const campos = obtenerCamposFormulario();
-        if (!campos) {
-            console.error('❌ No se pudieron obtener los campos del formulario');
+        const nombre = document.getElementById('modal_name').value.trim();
+        const email = document.getElementById('modal_email').value.trim();
+        const password = document.getElementById('modal_password').value;
+        const rol = document.getElementById('modal_rol').value;
+        
+        // Validación simple
+        if (!nombre || !email || !password || !rol) {
+            alert('Por favor, complete todos los campos obligatorios.');
             return;
         }
         
-        // Validar formulario
-        const validacion = validarFormularioUsuario(campos);
-        if (!validacion.valido) {
-            console.log('❌ Validación fallida:', validacion.errores);
-            mostrarErroresValidacion(validacion.errores);
+        if (password.length < 8) {
+            alert('La contraseña debe tener al menos 8 caracteres.');
+            return;
+        }
+        
+        // Confirmación simple
+        if (!confirm(`¿Crear usuario "${nombre}" con email "${email}" y rol "${rol}"?`)) {
             return;
         }
         
         // Mostrar estado de carga
-        mostrarEstadoCarga();
+        const btnCrear = document.getElementById('btnCrearUsuario');
+        btnCrear.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Creando...';
+        btnCrear.disabled = true;
         
-        // Preparar datos para envío
-        const datosUsuario = prepararDatosUsuario(campos);
+        // Preparar datos
+        const datos = {
+            name: nombre,
+            email: email,
+            password: password,
+            rol: rol
+        };
         
-        // Enviar datos al servidor
-        enviarDatosUsuario(datosUsuario);
+        // Enviar datos
+        enviarDatosUsuarioSimple(datos);
         
     } catch (error) {
-        console.error('❌ Error inesperado:', error);
-        mostrarMensajeError('Error inesperado al crear usuario. Recarga la página e intenta nuevamente.');
+        console.error('❌ Error:', error);
+        alert('Error inesperado. Por favor, recarga la página.');
         restaurarBotonCrear();
     }
 }
 
-function obtenerCamposFormulario() {
-    const campos = {
-        nombre: document.getElementById('modal_name'),
-        email: document.getElementById('modal_email'),
-        password: document.getElementById('modal_password'),
-        rol: document.getElementById('modal_rol')
-    };
-    
-    // Verificar que todos los campos existan
-    for (const [clave, campo] of Object.entries(campos)) {
-        if (!campo) {
-            console.error(`❌ Campo ${clave} no encontrado`);
-            return null;
-        }
-    }
-    
-    return campos;
-}
-
-function validarFormularioUsuario(campos) {
-    const errores = [];
-    
-    // Validar nombre
-    if (!campos.nombre.value.trim()) {
-        errores.push({
-            campo: campos.nombre,
-            mensaje: 'El nombre completo es obligatorio'
-        });
-    } else if (campos.nombre.value.trim().length < 3) {
-        errores.push({
-            campo: campos.nombre,
-            mensaje: 'El nombre debe tener al menos 3 caracteres'
-        });
-    }
-    
-    // Validar email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!campos.email.value.trim()) {
-        errores.push({
-            campo: campos.email,
-            mensaje: 'El correo electrónico es obligatorio'
-        });
-    } else if (!emailRegex.test(campos.email.value.trim())) {
-        errores.push({
-            campo: campos.email,
-            mensaje: 'El formato del correo electrónico no es válido'
-        });
-    }
-    
-    // Validar contraseña
-    if (!campos.password.value) {
-        errores.push({
-            campo: campos.password,
-            mensaje: 'La contraseña es obligatoria'
-        });
-    } else if (campos.password.value.length < 8) {
-        errores.push({
-            campo: campos.password,
-            mensaje: 'La contraseña debe tener al menos 8 caracteres'
-        });
-    }
-    
-    // Validar rol
-    if (!campos.rol.value) {
-        errores.push({
-            campo: campos.rol,
-            mensaje: 'Debe seleccionar un rol para el usuario'
-        });
-    }
-    
+// Función simple para preparar datos
+function prepararDatos(nombre, email, password, rol) {
     return {
-        valido: errores.length === 0,
-        errores: errores
+        name: nombre.trim(),
+        email: email.trim().toLowerCase(),
+        password: password,
+        rol: rol
     };
 }
 
-function mostrarErroresValidacion(errores) {
-    errores.forEach(error => {
-        error.campo.classList.add('is-invalid');
-        const feedbackElement = error.campo.closest('.form-floating').querySelector('.invalid-feedback');
-        if (feedbackElement) {
-            feedbackElement.textContent = error.mensaje;
-        }
-    });
+function enviarDatosUsuarioSimple(datos) {
+    console.log('📤 Enviando datos:', { ...datos, password: '[OCULTA]' });
     
-    // Enfocar el primer campo con error
-    if (errores.length > 0) {
-        errores[0].campo.focus();
-        errores[0].campo.select();
+    // Verificar token CSRF
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('❌ Token CSRF no encontrado');
+        alert('Error de seguridad: Token CSRF no encontrado');
+        restaurarBotonCrear();
+        return;
     }
-}
-
-function mostrarEstadoCarga() {
-    const btnCrear = document.getElementById('btnCrearUsuario');
-    if (btnCrear) {
-        btnCrear.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creando Usuario...';
-        btnCrear.disabled = true;
-        btnCrear.classList.add('loading');
-    }
-}
-
-function prepararDatosUsuario(campos) {
-    return {
-        name: campos.nombre.value.trim(),
-        email: campos.email.value.trim().toLowerCase(),
-        password: campos.password.value,
-        rol: campos.rol.value
-    };
-}
-
-function enviarDatosUsuario(datos) {
-    console.log('📤 Enviando datos al servidor...', { ...datos, password: '[OCULTA]' });
+    
+    // Mostrar mensaje de envío
+    const mensajeArea = document.getElementById('mensaje-area');
+    mensajeArea.innerHTML = '<div class="alert alert-info">Creando usuario...</div>';
     
     fetch('{{ route("usuarios.store-modal") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'X-CSRF-TOKEN': csrfToken.content,
             'Accept': 'application/json'
         },
         body: JSON.stringify(datos)
     })
-    .then(response => {
-        console.log('📥 Respuesta recibida:', response.status);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('📋 Datos de respuesta:', data);
-        manejarRespuestaServidor(data);
+        console.log('📋 Respuesta:', data);
+        
+        if (data.success) {
+            // Éxito
+            mensajeArea.innerHTML = '<div class="alert alert-success">¡Usuario creado exitosamente!</div>';
+            
+            // Agregar al select
+            agregarUsuarioAlSelect(data.user);
+            
+            // Cerrar modal después de 2 segundos
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('crearUsuarioModal'));
+                if (modal) modal.hide();
+            }, 2000);
+            
+        } else {
+            // Error
+            mensajeArea.innerHTML = `<div class="alert alert-danger">Error: ${data.message}</div>`;
+        }
     })
     .catch(error => {
-        console.error('❌ Error de red:', error);
-        mostrarMensajeError('Error de conexión. Verifica tu conexión a internet e intenta nuevamente.');
+        console.error('❌ Error:', error);
+        mensajeArea.innerHTML = '<div class="alert alert-danger">Error de conexión</div>';
     })
     .finally(() => {
         restaurarBotonCrear();
@@ -968,14 +837,33 @@ function manejarRespuestaServidor(data) {
         // Agregar usuario al select
         agregarUsuarioAlSelect(data.user);
         
-        // Cerrar modal
-        cerrarModal();
+        // Mostrar mensaje de éxito en el modal antes de cerrarlo
+        const mensajeArea = document.getElementById('mensaje-area');
+        if (mensajeArea) {
+            mensajeArea.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>¡Éxito!</strong> ${data.user.name} ha sido registrado exitosamente.
+                    <br><small class="text-muted">Ahora completa su información como técnico en el formulario principal.</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
         
-        // Mostrar mensaje de éxito
-        mostrarMensajeExito(
-            '¡Usuario creado exitosamente!',
-            `${data.user.name} ha sido registrado. Ahora completa su información como técnico.`
-        );
+        // Limpiar formulario del modal
+        limpiarFormularioModal();
+        
+        // Esperar un momento para que el usuario vea el mensaje
+        setTimeout(() => {
+            // Cerrar modal
+            cerrarModal();
+            
+            // Mostrar mensaje de éxito global
+            mostrarMensajeExito(
+                '¡Usuario creado exitosamente!',
+                `${data.user.name} ha sido registrado. Ahora completa su información como técnico.`
+            );
+        }, 2000);
         
         // Enfocar campo siguiente
         enfocarCampoSiguiente();
@@ -989,14 +877,31 @@ function manejarRespuestaServidor(data) {
 function agregarUsuarioAlSelect(usuario) {
     const userSelect = document.getElementById('user_id');
     if (userSelect) {
+        // Crear nueva opción
         const newOption = document.createElement('option');
         newOption.value = usuario.id;
         newOption.textContent = `${usuario.name} (${usuario.email})`;
         newOption.selected = true;
+        
+        // Agregar al select
         userSelect.appendChild(newOption);
         
         // Trigger change event
         userSelect.dispatchEvent(new Event('change'));
+        
+        // Efecto visual de selección
+        userSelect.style.transition = 'all 0.3s ease';
+        userSelect.style.borderColor = '#28a745';
+        userSelect.style.boxShadow = '0 0 10px rgba(40, 167, 69, 0.3)';
+        
+        setTimeout(() => {
+            userSelect.style.borderColor = '';
+            userSelect.style.boxShadow = '';
+        }, 3000);
+        
+        console.log('✅ Usuario agregado al select:', usuario.name);
+    } else {
+        console.error('❌ Select de usuarios no encontrado');
     }
 }
 
@@ -1006,6 +911,10 @@ function cerrarModal() {
         const modal = bootstrap.Modal.getInstance(modalElement);
         if (modal) {
             modal.hide();
+            console.log('✅ Modal cerrado exitosamente');
+        } else {
+            console.log('⚠️ Modal no encontrado, usando método alternativo');
+            $(modalElement).modal('hide');
         }
     }
 }
@@ -1028,6 +937,131 @@ function enfocarCampoSiguiente() {
             }, 3000);
         }
     }, 500);
+}
+
+// ===== FUNCIÓN DE PRUEBA PARA DEBUGGING =====
+
+function probarModal() {
+    console.log('🧪 Probando funcionalidad del modal...');
+    
+    // Verificar elementos del modal
+    const elementos = {
+        modal: document.getElementById('crearUsuarioModal'),
+        form: document.getElementById('formCrearUsuario'),
+        nombre: document.getElementById('modal_name'),
+        email: document.getElementById('modal_email'),
+        password: document.getElementById('modal_password'),
+        rol: document.getElementById('modal_rol'),
+        mensajeArea: document.getElementById('mensaje-area')
+    };
+    
+    console.log('🔍 Elementos encontrados:', elementos);
+    
+    // Verificar token CSRF
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    console.log('🔑 Token CSRF:', csrfToken ? 'Encontrado' : 'No encontrado');
+    
+    // Verificar Bootstrap
+    if (typeof bootstrap !== 'undefined') {
+        console.log('✅ Bootstrap disponible');
+    } else {
+        console.log('❌ Bootstrap no disponible');
+    }
+    
+    // Mostrar mensaje de prueba
+    const mensajeArea = document.getElementById('mensaje-area');
+    if (mensajeArea) {
+        mensajeArea.innerHTML = `
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Prueba del Modal</strong> - Todos los elementos están funcionando correctamente.
+                <br><small class="text-muted">Revisa la consola del navegador para más detalles.</small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+    }
+}
+
+// Función para probar campos específicamente
+function probarCampos() {
+    console.log('⌨️ Probando campos del modal...');
+    
+    const campos = ['modal_name', 'modal_email', 'modal_password', 'modal_rol'];
+    
+    campos.forEach(campoId => {
+        const campo = document.getElementById(campoId);
+        if (campo) {
+            const computedStyle = window.getComputedStyle(campo);
+            console.log(`📊 Campo ${campoId}:`, {
+                disabled: campo.disabled,
+                readOnly: campo.readOnly,
+                background: computedStyle.background,
+                color: computedStyle.color,
+                border: computedStyle.border,
+                zIndex: computedStyle.zIndex,
+                pointerEvents: computedStyle.pointerEvents,
+                userSelect: computedStyle.userSelect,
+                opacity: computedStyle.opacity,
+                filter: computedStyle.filter,
+                transform: computedStyle.transform,
+                backdropFilter: computedStyle.backdropFilter
+            });
+            
+            // Intentar escribir en el campo
+            try {
+                campo.focus();
+                campo.value = 'PRUEBA';
+                console.log(`✅ Campo ${campoId} es editable`);
+            } catch (error) {
+                console.error(`❌ Error con campo ${campoId}:`, error);
+            }
+        } else {
+            console.error(`❌ Campo ${campoId} no encontrado`);
+        }
+    });
+    
+    alert('Revisa la consola para ver el estado de los campos');
+}
+
+// Función simplificada para verificar campos
+// Función simple para verificar campos
+function verificarCampos() {
+    const campos = ['modal_name', 'modal_email', 'modal_password', 'modal_rol'];
+    campos.forEach(id => {
+        const campo = document.getElementById(id);
+        if (campo) {
+            campo.disabled = false;
+            campo.readOnly = false;
+        }
+    });
+}
+
+function probarCreacionDirecta() {
+    console.log('🚀 Probando creación directa...');
+    
+    // Llenar campos de prueba
+    const campos = {
+        nombre: document.getElementById('modal_name'),
+        email: document.getElementById('modal_email'),
+        password: document.getElementById('modal_password'),
+        rol: document.getElementById('modal_rol')
+    };
+    
+    if (campos.nombre && campos.email && campos.password && campos.rol) {
+        // Llenar con datos de prueba
+        campos.nombre.value = 'Usuario Prueba';
+        campos.email.value = 'prueba@test.com';
+        campos.password.value = '12345678';
+        campos.rol.value = 'tecnico';
+        
+        console.log('✅ Campos llenados con datos de prueba');
+        
+        // Intentar crear usuario directamente
+        crearUsuarioMejorado();
+    } else {
+        console.error('❌ No se pudieron encontrar todos los campos');
+        alert('Error: No se pudieron encontrar todos los campos del formulario');
+    }
 }
 
 // ===== FUNCIONES HELPER PARA MENSAJES =====
@@ -1106,6 +1140,7 @@ function showSuccessToast(message) {
 @endsection
 
 @section('styles')
+<link rel="stylesheet" href="{{ asset('css/modal-fix.css') }}">
 <style>
 /* ===== ESTILOS MEJORADOS PARA EL MODAL DE CREAR USUARIO ===== */
 
@@ -1265,6 +1300,76 @@ function showSuccessToast(message) {
 
 #crearUsuarioModal .btn-success:hover {
     background: linear-gradient(135deg, #218838 0%, #1ea085 100%) !important;
+}
+
+/* ===== CORRECCIONES PARA EL MODAL BORROSO ===== */
+
+/* Asegurar que el modal esté por encima de todo */
+#crearUsuarioModal {
+    z-index: 9999 !important;
+}
+
+#crearUsuarioModal .modal-dialog {
+    z-index: 10000 !important;
+}
+
+#crearUsuarioModal .modal-content {
+    z-index: 10001 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Corregir problemas de foco y campos borrosos */
+#crearUsuarioModal .form-control,
+#crearUsuarioModal .form-select {
+    z-index: 10002 !important;
+    position: relative;
+    background: white !important;
+    color: #333 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+#crearUsuarioModal .form-control:focus,
+#crearUsuarioModal .form-select:focus {
+    z-index: 10003 !important;
+    background: white !important;
+    color: #333 !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Corregir problemas de foco */
+#crearUsuarioModal .form-floating {
+    position: relative;
+    z-index: 10002;
+}
+
+#crearUsuarioModal .form-floating > label {
+    z-index: 10003;
+    background: white;
+    padding: 0 0.5rem;
+}
+
+/* Asegurar que el modal esté por encima de todo */
+.modal-backdrop {
+    z-index: 9998 !important;
+}
+
+/* Corregir problemas de blur en campos */
+#crearUsuarioModal input,
+#crearUsuarioModal select {
+    filter: none !important;
+    -webkit-filter: none !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+}
+
+/* Asegurar que los campos sean interactivos */
+#crearUsuarioModal .form-control:not(:disabled),
+#crearUsuarioModal .form-select:not(:disabled) {
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
 }
 
 #crearUsuarioModal .btn-success.loading {

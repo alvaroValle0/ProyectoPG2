@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gestión de Permisos - ' . $user->name)
+@section('title', 'Gestión de Permisos - ' . $usuario->name)
 
 @section('content')
 <div class="row mb-4">
@@ -9,7 +9,7 @@
             <i class="fas fa-user-shield text-primary me-2"></i>
             Gestión de Permisos
         </h1>
-        <p class="text-muted">Configurar módulos de acceso para {{ $user->name }}</p>
+        <p class="text-muted">Configurar módulos de acceso para {{ $usuario->name }}</p>
     </div>
     <div class="col-md-4 text-end">
         <a href="{{ route('usuarios.index') }}" class="btn btn-outline-secondary">
@@ -29,15 +29,15 @@
                         <i class="fas fa-user"></i>
                     </div>
                 </div>
-                <h5 class="card-title">{{ $user->name }}</h5>
-                <p class="text-muted mb-2">{{ $user->email }}</p>
-                <span class="badge bg-{{ $user->estado_color }}">{{ $user->estado_label }}</span>
+                <h5 class="card-title">{{ $usuario->name }}</h5>
+                <p class="text-muted mb-2">{{ $usuario->email }}</p>
+                <span class="badge bg-{{ $usuario->estado_color }}">{{ $usuario->estado_label }}</span>
                 <hr>
                 <div class="text-start">
                     <small class="text-muted">
-                        <strong>Usuario:</strong> {{ $user->username }}<br>
-                        <strong>Rol:</strong> {{ $user->rol_label }}<br>
-                        <strong>Registrado:</strong> {{ $user->created_at->format('d/m/Y') }}
+                        <strong>Usuario:</strong> {{ $usuario->username }}<br>
+                        <strong>Rol:</strong> {{ $usuario->rol_label }}<br>
+                        <strong>Registrado:</strong> {{ $usuario->created_at->format('d/m/Y') }}
                     </small>
                 </div>
             </div>
@@ -45,7 +45,7 @@
     </div>
     
     <div class="col-md-9">
-        <form action="{{ route('usuarios.permissions.update', $user) }}" method="POST">
+        <form action="{{ route('usuarios.permissions.update', $usuario) }}" method="POST">
             @csrf
             @method('PUT')
             

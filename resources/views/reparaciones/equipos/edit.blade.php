@@ -282,11 +282,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function confirmarEliminacion() {
-    if (confirm('¿Está seguro de que desea eliminar este equipo?\n\nEsta acción no se puede deshacer y eliminará todo el historial relacionado.')) {
-        if (confirm('Confirme nuevamente: ¿Realmente desea eliminar el equipo {{ $equipo->numero_serie }}?')) {
-            document.getElementById('eliminarForm').submit();
-        }
-    }
+    confirmarEliminacionDoble(
+        '¿Está seguro de que desea eliminar este equipo?\n\nEsta acción no se puede deshacer y eliminará todo el historial relacionado.',
+        'Confirme nuevamente: ¿Realmente desea eliminar el equipo {{ $equipo->numero_serie }}?',
+        'eliminarForm'
+    );
 }
 </script>
 @endsection

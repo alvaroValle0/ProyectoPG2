@@ -67,7 +67,6 @@ Route::middleware('auth')->group(function () {
         // Acciones especiales
         Route::patch('/{tecnico}/activar', [TecnicoController::class, 'activar'])->name('activar');
         Route::patch('/{tecnico}/desactivar', [TecnicoController::class, 'desactivar'])->name('desactivar');
-        Route::get('/carga/trabajo', [TecnicoController::class, 'cargaTrabajo'])->name('carga-trabajo');
         Route::get('/{tecnico}/rendimiento', [TecnicoController::class, 'rendimiento'])->name('rendimiento');
     });
 

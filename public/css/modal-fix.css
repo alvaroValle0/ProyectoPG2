@@ -1,0 +1,65 @@
+/* CSS SIMPLE para centrar el modal de crear usuario */
+#crearUsuarioModal {
+    z-index: 9999 !important;
+}
+
+#crearUsuarioModal .modal-dialog {
+    z-index: 10000 !important;
+    margin: 1.75rem auto !important;
+    max-width: 500px !important;
+    width: 90% !important;
+}
+
+#crearUsuarioModal .modal-content {
+    z-index: 10001 !important;
+    border: none !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+}
+
+/* Asegurar que los campos sean interactivos */
+#crearUsuarioModal .form-control,
+#crearUsuarioModal .form-select {
+    z-index: 10002 !important;
+    background: white !important;
+    color: #333 !important;
+    border: 2px solid #ddd !important;
+    border-radius: 8px !important;
+    padding: 12px 15px !important;
+    font-size: 16px !important;
+}
+
+#crearUsuarioModal .form-control:focus,
+#crearUsuarioModal .form-select:focus {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+    outline: none !important;
+}
+
+#crearUsuarioModal .form-label {
+    color: #495057 !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+}
+
+#crearUsuarioModal .btn {
+    z-index: 10003 !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+}
+
+/* Centrado perfecto para el modal */
+#crearUsuarioModal .modal-dialog {
+    display: flex !important;
+    align-items: center !important;
+    min-height: calc(100% - 3.5rem) !important;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    #crearUsuarioModal .modal-dialog {
+        width: 95% !important;
+        margin: 0.5rem auto !important;
+    }
+}

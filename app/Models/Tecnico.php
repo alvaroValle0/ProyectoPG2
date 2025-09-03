@@ -117,10 +117,7 @@ class Tecnico extends Model
         return null;
     }
 
-    public function getCargaTrabajoAttribute()
-    {
-        return $this->reparacionesActivas()->count();
-    }
+
 
     public function getTotalReparacionesAttribute()
     {

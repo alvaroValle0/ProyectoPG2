@@ -170,7 +170,7 @@
     <div class="ticket">
         <!-- Header -->
         <div class="header">
-            <div class="empresa">SISTEMA DE REPARACIONES</div>
+            <div class="empresa">HDC SERVICIOS ELECTRONICOS</div>
             <div class="subtitulo">Ticket de Reparación</div>
             <div class="numero-ticket">Nº {{ str_pad($reparacion->id, 6, '0', STR_PAD_LEFT) }}</div>
             <div class="subtitulo">{{ now()->format('d/m/Y H:i:s') }}</div>
@@ -328,8 +328,8 @@
         <!-- Footer -->
         <div class="footer">
             <div><strong>¡Gracias por confiar en nosotros!</strong></div>
-            <div>Sistema de Gestión de Reparaciones</div>
-            <div>www.ejemplo.com | contacto@ejemplo.com</div>
+            <div>hdcservicioselectronicos@gmail.com</div>
+            <div>3241-1713 | Lesly Xiomara Aquino Ramírez</div>
             <div style="margin-top: 10px;">
                 <strong>IMPORTANTE:</strong> Conserve este ticket para recoger su equipo
             </div>

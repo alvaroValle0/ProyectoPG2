@@ -247,11 +247,8 @@
                                     
                                     <!-- Eliminar -->
                                     <button type="button" 
-                                            class="btn btn-outline-danger btn-eliminar-item" 
-                                            data-item-id="{{ $usuario->id }}"
-                                            data-item-nombre="{{ $usuario->name }}"
-                                            data-item-tipo="usuario"
-                                            data-delete-url="{{ route('usuarios.destroy', $usuario) }}"
+                                            class="btn btn-outline-danger" 
+                                            onclick="showDeleteConfirmation({{ $usuario->id }}, '{{ $usuario->name }}', 'Usuario', '{{ route('usuarios.destroy', $usuario) }}')"
                                             title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>

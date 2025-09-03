@@ -424,10 +424,6 @@
                 <i class="fas fa-user-plus"></i>
                 Nuevo Técnico
             </a>
-            <a href="{{ route('tecnicos.carga-trabajo') }}" class="sidebar-item {{ request()->routeIs('tecnicos.carga-trabajo') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar"></i>
-                Carga de Trabajo
-            </a>
             @endif
             @endif
             
@@ -983,6 +979,106 @@
                         console.error('Error al parsear colores:', e);
                     }
                 }
+            }
+        });
+    </script>
+
+    <!-- Modal de Confirmación Universal para Eliminación -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                        <h6>¿Estás seguro de que deseas eliminar este elemento?</h6>
+                        <p class="fw-bold text-danger" id="itemName"></p>
+                        <p class="text-muted" id="itemType"></p>
+                    </div>
+                    <div class="alert alert-warning border-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Advertencia:</strong> Esta acción no se puede deshacer y eliminará permanentemente toda la información relacionada.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <form id="deleteForm" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger" id="btnConfirmDelete">
+                            <i class="fas fa-trash me-2"></i>Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para el Modal de Confirmación Universal -->
+    <script>
+        // Función global para mostrar el modal de confirmación
+        function showDeleteConfirmation(itemId, itemName, itemType, deleteUrl) {
+            // Configurar el modal
+            document.getElementById('itemName').textContent = itemName;
+            document.getElementById('itemType').textContent = `Tipo: ${itemType}`;
+            document.getElementById('deleteForm').action = deleteUrl;
+            
+            // Mostrar el modal
+            const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        }
+
+        // Función para eliminar con confirmación simple (para casos donde no se puede eliminar)
+        function showDeleteWarning(itemName, totalReparaciones, totalEquipos) {
+            let mensaje = `No se puede eliminar "${itemName}" porque tiene:\n`;
+            if (totalReparaciones > 0) {
+                mensaje += `• ${totalReparaciones} reparación(es) asociada(s)\n`;
+            }
+            if (totalEquipos > 0) {
+                mensaje += `• ${totalEquipos} equipo(s) registrado(s)\n`;
+            }
+            mensaje += `\nPuede desactivar el elemento en su lugar.`;
+            
+            alert(mensaje);
+        }
+
+        // Función para confirmar eliminación con doble confirmación (para casos especiales)
+        function confirmarEliminacionDoble(mensaje1, mensaje2, formId) {
+            if (confirm(mensaje1)) {
+                if (confirm(mensaje2)) {
+                    document.getElementById(formId).submit();
+                }
+            }
+        }
+
+        // Inicializar el modal cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar el formulario de eliminación
+            const deleteForm = document.getElementById('deleteForm');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    const submitBtn = document.getElementById('btnConfirmDelete');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Eliminando...';
+                        
+                        // Prevenir doble envío
+                        setTimeout(() => {
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Eliminar';
+                            }
+                        }, 5000);
+                    }
+                });
             }
         });
     </script>

@@ -115,7 +115,6 @@ class TecnicoController extends Controller
         $estadisticas = [
             'total_reparaciones' => $tecnico->total_reparaciones,
             'reparaciones_completadas' => $tecnico->reparaciones_completadas_count,
-            'carga_trabajo' => $tecnico->carga_trabajo,
             'promedio_tiempo' => round($tecnico->promedio_tiempo_reparacion, 1)
         ];
 
@@ -281,23 +280,7 @@ class TecnicoController extends Controller
         }
     }
 
-    public function cargaTrabajo()
-    {
-        $tecnicos = Tecnico::activos()
-            ->with(['user', 'reparacionesActivas.equipo'])
-            ->get()
-            ->map(function ($tecnico) {
-                return [
-                    'id' => $tecnico->id,
-                    'nombre' => $tecnico->nombre_completo,
-                    'especialidad' => $tecnico->especialidad,
-                    'carga_trabajo' => $tecnico->carga_trabajo,
-                    'reparaciones_activas' => $tecnico->reparacionesActivas
-                ];
-            });
 
-        return view('reparaciones.tecnicos.carga-trabajo', compact('tecnicos'));
-    }
 
     public function rendimiento(Tecnico $tecnico)
     {

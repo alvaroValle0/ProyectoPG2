@@ -155,15 +155,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card border-warning">
-                            <div class="card-body">
-                                <i class="fas fa-clock text-warning display-6 mb-2"></i>
-                                <h3 class="text-warning">{{ $estadisticas['carga_trabajo'] }}</h3>
-                                <p class="text-muted mb-0">Carga Actual</p>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-md-3 mb-3">
                         <div class="card border-info">
                             <div class="card-body">

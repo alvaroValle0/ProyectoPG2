@@ -118,7 +118,6 @@ class UserController extends Controller
             $estadisticas = [
                 'total_reparaciones' => $usuario->tecnico->total_reparaciones,
                 'reparaciones_completadas' => $usuario->tecnico->reparaciones_completadas_count,
-                'carga_trabajo' => $usuario->tecnico->carga_trabajo,
                 'promedio_tiempo' => $usuario->tecnico->promedio_tiempo_reparacion ? round($usuario->tecnico->promedio_tiempo_reparacion, 1) : null
             ];
         }
@@ -233,6 +232,8 @@ class UserController extends Controller
      */
     public function storeFromModal(Request $request)
     {
+        \Log::info('🔔 storeFromModal llamado con datos:', $request->all());
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -241,8 +242,14 @@ class UserController extends Controller
         ]);
 
         try {
+            \Log::info('✅ Validación exitosa, creando usuario...');
+            
             $validated['password'] = Hash::make($validated['password']);
             $validated['activo'] = true; // Por defecto activo
+            
+            // Generar username único basado en el nombre
+            $validated['username'] = $this->generateUniqueUsername($validated['name']);
+            \Log::info('🔑 Username generado:', ['username' => $validated['username']]);
 
             $user = User::create($validated);
             
@@ -250,6 +257,13 @@ class UserController extends Controller
             $permissions = $this->getPermissionsByRole($validated['rol']);
             $permissions['user_id'] = $user->id;
             UserPermission::create($permissions);
+            
+            \Log::info('✅ Usuario y permisos creados exitosamente:', [
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'rol' => $user->rol
+            ]);
             
             return response()->json([
                 'success' => true,
@@ -262,6 +276,11 @@ class UserController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
+            \Log::error('❌ Error en storeFromModal:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Error al crear el usuario: ' . $e->getMessage()
@@ -274,44 +293,53 @@ class UserController extends Controller
      */
     public function permissions(User $usuario)
     {
-        // Obtener o crear permisos para el usuario
-        $permissions = $usuario->permissions ?? UserPermission::create([
-            'user_id' => $usuario->id,
-            'access_dashboard' => false,
-            'access_clientes' => false,
-            'access_equipos' => false,
-            'access_reparaciones' => false,
-            'access_inventario' => false,
-            'access_tickets' => false,
-            'access_tecnicos' => false,
-            'access_usuarios' => false,
-            'access_configuracion' => false,
-            'access_reportes' => false,
-            'create_equipo' => false,
-            'edit_equipo' => false,
-            'delete_equipo' => false,
-            'view_equipo' => false,
-            'create_reparacion' => false,
-            'edit_reparacion' => false,
-            'delete_reparacion' => false,
-            'view_reparacion' => false,
-            'create_cliente' => false,
-            'edit_cliente' => false,
-            'delete_cliente' => false,
-            'view_cliente' => false,
-            'create_inventario' => false,
-            'edit_inventario' => false,
-            'delete_inventario' => false,
-            'view_inventario' => false,
-            'create_ticket' => false,
-            'edit_ticket' => false,
-            'delete_ticket' => false,
-            'view_ticket' => false,
-            'manage_users' => false,
-            'manage_tecnicos' => false,
-        ]);
+        try {
+            // Log para debugging
+            \Log::info('Accediendo a permisos para usuario: ' . $usuario->id . ' - ' . $usuario->name);
+            
+            // Obtener o crear permisos para el usuario
+            $permissions = $usuario->permissions ?? UserPermission::create([
+                'user_id' => $usuario->id,
+                'access_dashboard' => false,
+                'access_clientes' => false,
+                'access_equipos' => false,
+                'access_reparaciones' => false,
+                'access_inventario' => false,
+                'access_tickets' => false,
+                'access_tecnicos' => false,
+                'access_usuarios' => false,
+                'access_configuracion' => false,
+                'access_reportes' => false,
+                'create_equipo' => false,
+                'edit_equipo' => false,
+                'delete_equipo' => false,
+                'view_equipo' => false,
+                'create_reparacion' => false,
+                'edit_reparacion' => false,
+                'delete_reparacion' => false,
+                'view_reparacion' => false,
+                'create_cliente' => false,
+                'edit_cliente' => false,
+                'delete_cliente' => false,
+                'view_cliente' => false,
+                'create_inventario' => false,
+                'edit_inventario' => false,
+                'delete_inventario' => false,
+                'view_inventario' => false,
+                'create_ticket' => false,
+                'edit_ticket' => false,
+                'delete_ticket' => false,
+                'view_ticket' => false,
+                'manage_users' => false,
+                'manage_tecnicos' => false,
+            ]);
 
-        return view('usuarios.permissions', compact('usuario', 'permissions'));
+            \Log::info('Permisos obtenidos/creados correctamente para usuario: ' . $usuario->id);
+            return view('usuarios.permissions', compact('usuario', 'permissions'));
+        } catch (\Exception $e) {
+            \Log::error('Error al obtener permisos para usuario ' . $usuario->id . ': ' . $e->getMessage());
+            return back()->with('error', 'Error al cargar los permisos del usuario: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -320,6 +348,9 @@ class UserController extends Controller
     public function updatePermissions(Request $request, User $usuario)
     {
         try {
+            // Log para debugging
+            \Log::info('Actualizando permisos para usuario: ' . $usuario->id . ' - ' . $usuario->name);
+            
             // Obtener o crear permisos para el usuario
             $permissions = $usuario->permissions ?? UserPermission::create([
                 'user_id' => $usuario->id
@@ -367,11 +398,42 @@ class UserController extends Controller
 
             $permissions->save();
 
+            \Log::info('Permisos actualizados exitosamente para usuario: ' . $usuario->id);
             return redirect()->route('usuarios.show', $usuario)
                 ->with('success', 'Módulos de acceso actualizados exitosamente mediante checkboxes.');
         } catch (\Exception $e) {
+            \Log::error('Error al actualizar permisos para usuario ' . $usuario->id . ': ' . $e->getMessage());
             return back()->with('error', 'Error al actualizar los módulos: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Generar un username único basado en el nombre del usuario
+     */
+    private function generateUniqueUsername($name)
+    {
+        // Limpiar el nombre y convertir a minúsculas
+        $baseUsername = strtolower(trim($name));
+        
+        // Remover caracteres especiales y espacios, reemplazar con guiones bajos
+        $baseUsername = preg_replace('/[^a-z0-9\s]/', '', $baseUsername);
+        $baseUsername = preg_replace('/\s+/', '_', $baseUsername);
+        
+        // Si está vacío, usar 'usuario'
+        if (empty($baseUsername)) {
+            $baseUsername = 'usuario';
+        }
+        
+        // Verificar si ya existe
+        $username = $baseUsername;
+        $counter = 1;
+        
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . '_' . $counter;
+            $counter++;
+        }
+        
+        return $username;
     }
 
     /**
