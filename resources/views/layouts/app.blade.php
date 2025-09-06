@@ -10,58 +10,73 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Script para aplicar colores inmediatamente -->
+    <!-- Script para aplicar colores inmediatamente (global o por módulo) -->
     <script>
-        // Aplicar colores inmediatamente al cargar la página
         (function() {
-            const coloresGuardados = localStorage.getItem('sistemaColores');
-            if (coloresGuardados) {
-                try {
-                    const colores = JSON.parse(coloresGuardados);
-                    
-                    // Actualizar variables CSS del sistema
-                    document.documentElement.style.setProperty('--system-primary', colores.primary);
-                    document.documentElement.style.setProperty('--system-secondary', colores.secondary);
-                    document.documentElement.style.setProperty('--system-success', colores.success);
-                    document.documentElement.style.setProperty('--system-warning', colores.warning);
-                    document.documentElement.style.setProperty('--system-danger', colores.danger);
-                    document.documentElement.style.setProperty('--system-info', colores.info);
-                    
-                    // También actualizar variables Bootstrap
-                    document.documentElement.style.setProperty('--bs-primary', colores.primary);
-                    document.documentElement.style.setProperty('--bs-secondary', colores.secondary);
-                    document.documentElement.style.setProperty('--bs-success', colores.success);
-                    document.documentElement.style.setProperty('--bs-warning', colores.warning);
-                    document.documentElement.style.setProperty('--bs-danger', colores.danger);
-                    document.documentElement.style.setProperty('--bs-info', colores.info);
-                    
-                    const style = document.createElement('style');
-                    style.textContent = `
-                        body { background: ${colores.primary} !important; }
-                        .sidebar { background: ${colores.primary} !important; }
-                        .btn-primary { background-color: ${colores.primary} !important; border-color: ${colores.primary} !important; }
-                        .btn-secondary { background-color: ${colores.secondary} !important; border-color: ${colores.secondary} !important; }
-                        .btn-success { background-color: ${colores.success} !important; border-color: ${colores.success} !important; }
-                        .btn-warning { background-color: ${colores.warning} !important; border-color: ${colores.warning} !important; }
-                        .btn-danger { background-color: ${colores.danger} !important; border-color: ${colores.danger} !important; }
-                        .btn-info { background-color: ${colores.info} !important; border-color: ${colores.info} !important; }
-                        .bg-primary { background-color: ${colores.primary} !important; }
-                        .bg-secondary { background-color: ${colores.secondary} !important; }
-                        .bg-success { background-color: ${colores.success} !important; }
-                        .bg-warning { background-color: ${colores.warning} !important; }
-                        .bg-danger { background-color: ${colores.danger} !important; }
-                        .bg-info { background-color: ${colores.info} !important; }
-                        .text-primary { color: ${colores.primary} !important; }
-                        .text-secondary { color: ${colores.secondary} !important; }
-                        .text-success { color: ${colores.success} !important; }
-                        .text-warning { color: ${colores.warning} !important; }
-                        .text-danger { color: ${colores.danger} !important; }
-                        .text-info { color: ${colores.info} !important; }
-                    `;
-                    document.head.appendChild(style);
-                } catch (e) {
-                    console.error('Error al aplicar colores iniciales:', e);
+            try {
+                // Detectar módulo actual por URL: /modulo/...
+                const path = (window.location.pathname || '/').replace(/\/+$/, '');
+                const moduleName = (path.split('/')[1] || 'dashboard').toLowerCase();
+
+                // 1) Intentar colores por módulo
+                const moduleKey = 'sistemaColores_module_' + moduleName;
+                let colores = null;
+                const mod = localStorage.getItem(moduleKey);
+                if (mod) {
+                    colores = JSON.parse(mod);
                 }
+
+                // 2) Si no hay por módulo, usar global
+                if (!colores) {
+                    const global = localStorage.getItem('sistemaColores');
+                    if (global) {
+                        colores = JSON.parse(global);
+                    }
+                }
+
+                if (!colores) return; // Nada que aplicar
+
+                // Actualizar variables CSS del sistema
+                document.documentElement.style.setProperty('--system-primary', colores.primary);
+                document.documentElement.style.setProperty('--system-secondary', colores.secondary);
+                document.documentElement.style.setProperty('--system-success', colores.success);
+                document.documentElement.style.setProperty('--system-warning', colores.warning);
+                document.documentElement.style.setProperty('--system-danger', colores.danger);
+                document.documentElement.style.setProperty('--system-info', colores.info);
+
+                // También actualizar variables Bootstrap
+                document.documentElement.style.setProperty('--bs-primary', colores.primary);
+                document.documentElement.style.setProperty('--bs-secondary', colores.secondary);
+                document.documentElement.style.setProperty('--bs-success', colores.success);
+                document.documentElement.style.setProperty('--bs-warning', colores.warning);
+                document.documentElement.style.setProperty('--bs-danger', colores.danger);
+                document.documentElement.style.setProperty('--bs-info', colores.info);
+
+                const style = document.createElement('style');
+                style.textContent = `
+                    .sidebar { background: ${colores.primary} !important; }
+                    .btn-primary { background-color: ${colores.primary} !important; border-color: ${colores.primary} !important; }
+                    .btn-secondary { background-color: ${colores.secondary} !important; border-color: ${colores.secondary} !important; }
+                    .btn-success { background-color: ${colores.success} !important; border-color: ${colores.success} !important; }
+                    .btn-warning { background-color: ${colores.warning} !important; border-color: ${colores.warning} !important; }
+                    .btn-danger { background-color: ${colores.danger} !important; border-color: ${colores.danger} !important; }
+                    .btn-info { background-color: ${colores.info} !important; border-color: ${colores.info} !important; }
+                    .bg-primary { background-color: ${colores.primary} !important; }
+                    .bg-secondary { background-color: ${colores.secondary} !important; }
+                    .bg-success { background-color: ${colores.success} !important; }
+                    .bg-warning { background-color: ${colores.warning} !important; }
+                    .bg-danger { background-color: ${colores.danger} !important; }
+                    .bg-info { background-color: ${colores.info} !important; }
+                    .text-primary { color: ${colores.primary} !important; }
+                    .text-secondary { color: ${colores.secondary} !important; }
+                    .text-success { color: ${colores.success} !important; }
+                    .text-warning { color: ${colores.warning} !important; }
+                    .text-danger { color: ${colores.danger} !important; }
+                    .text-info { color: ${colores.info} !important; }
+                `;
+                document.head.appendChild(style);
+            } catch (e) {
+                console.error('Error al aplicar colores iniciales:', e);
             }
         })();
     </script>
@@ -75,6 +90,7 @@
             --system-warning: #ffc107;
             --system-danger: #dc3545;
             --system-info: #17a2b8;
+            --system-gradient: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-secondary) 100%);
         }
         
         body {
@@ -88,87 +104,227 @@
             position: relative;
             z-index: 1040;
         }
+
+        /* Aplicación de gradiente del sistema a encabezados y elementos comunes */
+        .bg-gradient-primary,
+        .module-header,
+        .form-header,
+        .preview-header,
+        .card-header.bg-primary {
+            background: var(--system-gradient) !important;
+        }
+
+        /* Borde superior y iconos de tarjetas estadísticas/avatares con gradiente dinámico */
+        .stat-card::before,
+        .stat-card .stat-card-icon,
+        .avatar-circle {
+            background: var(--system-gradient) !important;
+        }
+        /* Sidebar Moderno con Glassmorphism */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
+            width: 300px;
             height: 100vh;
-            width: 280px;
-            background: var(--system-primary);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(39, 219, 159, 0.2);
+            background: linear-gradient(135deg, 
+                rgba(30, 30, 46, 0.95) 0%, 
+                rgba(44, 62, 80, 0.95) 25%,
+                rgba(52, 73, 94, 0.95) 50%,
+                rgba(44, 62, 80, 0.95) 75%,
+                rgba(30, 30, 46, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 25px 45px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             z-index: 1000;
-            transition: transform 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
         .sidebar.collapsed {
             transform: translateX(-100%);
+            box-shadow: none;
         }
+        
         .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding: 2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            backdrop-filter: blur(10px);
+            z-index: 2;
         }
+        
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #27DB9F, transparent);
+        }
+        
         .sidebar-menu {
-            padding: 1rem 0;
+            padding: 1.5rem 0;
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            max-height: calc(100vh - 120px);
-            /* Scrollbar personalizado */
+            max-height: calc(100vh - 140px);
+            position: relative;
+            z-index: 2;
+            
+            /* Scrollbar moderno */
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+            scrollbar-color: rgba(39, 219, 159, 0.3) transparent;
         }
-        /* Scrollbar para WebKit browsers (Chrome, Safari, Edge) */
+        
+        /* Scrollbar personalizado para WebKit */
         .sidebar-menu::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         .sidebar-menu::-webkit-scrollbar-track {
             background: transparent;
-            border-radius: 10px;
         }
         .sidebar-menu::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
+            background: linear-gradient(180deg, rgba(39, 219, 159, 0.5), rgba(39, 219, 159, 0.2));
             border-radius: 10px;
-            border: 2px solid transparent;
-            background-clip: content-box;
         }
         .sidebar-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-            background-clip: content-box;
+            background: linear-gradient(180deg, rgba(39, 219, 159, 0.8), rgba(39, 219, 159, 0.4));
         }
+        
+        /* Items del menú con diseño moderno */
         .sidebar-item {
-            padding: 0.75rem 1.5rem;
-            color: #ffffff;
+            position: relative;
+            margin: 0.25rem 1rem;
+            padding: 1rem 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             display: flex;
             align-items: center;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            background: transparent;
+            border: 1px solid transparent;
+            overflow: hidden;
         }
+        
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .sidebar-item:hover::before {
+            left: 100%;
+        }
+        
         .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
             color: #ffffff;
-            border-left-color: #ffffff;
+            transform: translateX(8px) scale(1.02);
+            border-color: rgba(39, 219, 159, 0.3);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.15),
+                0 0 20px rgba(39, 219, 159, 0.1);
             text-decoration: none;
         }
+        
         .sidebar-item.active {
-            background: rgba(255, 255, 255, 0.25);
+            background: linear-gradient(135deg, 
+                rgba(39, 219, 159, 0.2) 0%, 
+                rgba(39, 219, 159, 0.1) 100%);
             color: #ffffff;
-            border-left-color: #ffffff;
+            border-color: rgba(39, 219, 159, 0.5);
+            box-shadow: 
+                0 8px 25px rgba(39, 219, 159, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
         }
+        
+        .sidebar-item.active::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: linear-gradient(180deg, #27DB9F, #22c495);
+            border-radius: 2px 0 0 2px;
+        }
+        
         .sidebar-item i {
+            margin-right: 1rem;
             width: 20px;
-            margin-right: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
         }
+        
+        .sidebar-item:hover i {
+            transform: scale(1.1);
+            color: #27DB9F;
+        }
+        
+        .sidebar-item.active i {
+            color: #27DB9F;
+        }
+        
+        /* Separadores de sección */
         .sidebar .text-muted {
+            margin: 1.5rem 1rem 0.5rem 1rem !important;
+            padding: 0.5rem 1.25rem !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1.5px !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .sidebar .text-muted:hover {
+            transform: none !important;
+            background: rgba(255, 255, 255, 0.05) !important;
             color: rgba(255, 255, 255, 0.7) !important;
         }
         .main-content {
-            margin-left: 280px;
+            margin-left: 300px;
             padding: 2rem;
-            transition: margin-left 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 1;
         }
@@ -210,13 +366,25 @@
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
-                width: 300px; /* Ancho ligeramente mayor en móviles */
+                width: 320px; /* Ancho optimizado para móviles */
+                box-shadow: 
+                    0 25px 45px rgba(0, 0, 0, 0.3),
+                    0 0 0 1px rgba(255, 255, 255, 0.1);
             }
             .sidebar-menu {
-                max-height: calc(100vh - 100px); /* Más espacio para scroll en móviles */
+                max-height: calc(100vh - 120px);
+                padding: 1rem 0;
+            }
+            .sidebar-item {
+                margin: 0.2rem 0.75rem;
+                padding: 0.875rem 1rem;
             }
             .main-content {
                 margin-left: 0;
+                padding: 1rem;
+            }
+            .sidebar-header {
+                padding: 1.5rem 1rem;
             }
         }
         
@@ -231,7 +399,7 @@
             content: '';
             display: block;
             height: 1rem;
-            background: linear-gradient(to bottom, transparent, rgba(242, 174, 78, 0.1));
+            background: linear-gradient(to bottom, transparent, rgba(39, 219, 159, 0.1));
             position: sticky;
             bottom: 0;
             pointer-events: none;
@@ -248,6 +416,33 @@
         .sidebar-menu.at-bottom::after {
             opacity: 0;
         }
+        
+        /* Animaciones de entrada para los items del menú */
+        @keyframes slideInFromLeft {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .sidebar-item {
+            animation: slideInFromLeft 0.3s ease forwards;
+        }
+        
+        .sidebar-item:nth-child(1) { animation-delay: 0.1s; }
+        .sidebar-item:nth-child(2) { animation-delay: 0.15s; }
+        .sidebar-item:nth-child(3) { animation-delay: 0.2s; }
+        .sidebar-item:nth-child(4) { animation-delay: 0.25s; }
+        .sidebar-item:nth-child(5) { animation-delay: 0.3s; }
+        .sidebar-item:nth-child(6) { animation-delay: 0.35s; }
+        .sidebar-item:nth-child(7) { animation-delay: 0.4s; }
+        .sidebar-item:nth-child(8) { animation-delay: 0.45s; }
+        .sidebar-item:nth-child(9) { animation-delay: 0.5s; }
+        .sidebar-item:nth-child(10) { animation-delay: 0.55s; }
         
         /* Estilos para el dropdown del usuario */
         .dropdown-menu {
@@ -366,12 +561,6 @@
                 <i class="fas fa-laptop"></i>
                 Gestión de Equipos
             </a>
-            @if(\App\Helpers\PermissionHelper::can('create_equipo'))
-            <a href="{{ route('equipos.create') }}" class="sidebar-item {{ request()->routeIs('equipos.create') ? 'active' : '' }}">
-                <i class="fas fa-plus-circle"></i>
-                Nuevo Equipo
-            </a>
-            @endif
             @endif
             
             @if(isset($modules['reparaciones']))
@@ -379,12 +568,6 @@
                 <i class="fas fa-wrench"></i>
                 Gestión de Reparaciones
             </a>
-            @if(\App\Helpers\PermissionHelper::can('create_reparacion'))
-            <a href="{{ route('reparaciones.create') }}" class="sidebar-item {{ request()->routeIs('reparaciones.create') ? 'active' : '' }}">
-                <i class="fas fa-tools"></i>
-                Nueva Reparación
-            </a>
-            @endif
             <a href="{{ route('reparaciones.mis-tareas') }}" class="sidebar-item {{ request()->routeIs('reparaciones.mis-tareas') ? 'active' : '' }}">
                 <i class="fas fa-tasks"></i>
                 Mis Tareas
@@ -419,12 +602,10 @@
                 <i class="fas fa-users-cog"></i>
                 Gestión de Técnicos
             </a>
-            @if(\App\Helpers\PermissionHelper::can('manage_tecnicos'))
-            <a href="{{ route('tecnicos.create') }}" class="sidebar-item {{ request()->routeIs('tecnicos.create') ? 'active' : '' }}">
-                <i class="fas fa-user-plus"></i>
-                Nuevo Técnico
+            <a href="{{ route('tecnicos.carga-trabajo') }}" class="sidebar-item {{ request()->routeIs('tecnicos.carga-trabajo') ? 'active' : '' }}">
+                <i class="fas fa-chart-bar"></i>
+                Carga de Trabajo
             </a>
-            @endif
             @endif
             
             @if(isset($modules['usuarios']))
@@ -464,23 +645,38 @@
                 <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center user-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                 style="width: 32px; height: 32px; font-size: 0.875rem; background: #27DB9F;">
-                                <i class="fas fa-user"></i>
-                            </div>
+                            @if(auth()->user()->avatar_url)
+                                <img src="{{ auth()->user()->avatar_url }}" 
+                                     alt="Avatar" 
+                                     class="rounded-circle me-2"
+                                     style="width: 32px; height: 32px; object-fit: cover;">
+                            @else
+                                <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                     style="width: 32px; height: 32px; font-size: 0.875rem; background: #27DB9F;">
+                                    {{ auth()->user()->iniciales }}
+                                </div>
+                            @endif
                             <span class="d-none d-md-inline">{{ auth()->user()->name }}</span>
                             <span class="d-md-none">Cuenta</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                             <li class="dropdown-header">
                                 <div class="d-flex align-items-center">
-                                    <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                         style="width: 24px; height: 24px; font-size: 0.75rem; background: #27DB9F;">
-                                        <i class="fas fa-user"></i>
-                                    </div>
+                                    @if(auth()->user()->avatar_url)
+                                        <img src="{{ auth()->user()->avatar_url }}" 
+                                             alt="Avatar" 
+                                             class="rounded-circle me-2"
+                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                    @else
+                                        <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                             style="width: 40px; height: 40px; font-size: 1rem; background: #27DB9F;">
+                                            {{ auth()->user()->iniciales }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <div class="fw-bold">{{ auth()->user()->name }}</div>
                                         <small class="text-muted">{{ auth()->user()->email }}</small>
+                                        <small class="badge bg-{{ auth()->user()->estado_color }}">{{ auth()->user()->rol_label }}</small>
                                     </div>
                                 </div>
                             </li>
@@ -979,106 +1175,6 @@
                         console.error('Error al parsear colores:', e);
                     }
                 }
-            }
-        });
-    </script>
-
-    <!-- Modal de Confirmación Universal para Eliminación -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Confirmar Eliminación
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center mb-3">
-                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
-                        <h6>¿Estás seguro de que deseas eliminar este elemento?</h6>
-                        <p class="fw-bold text-danger" id="itemName"></p>
-                        <p class="text-muted" id="itemType"></p>
-                    </div>
-                    <div class="alert alert-warning border-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Advertencia:</strong> Esta acción no se puede deshacer y eliminará permanentemente toda la información relacionada.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancelar
-                    </button>
-                    <form id="deleteForm" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger" id="btnConfirmDelete">
-                            <i class="fas fa-trash me-2"></i>Eliminar
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script para el Modal de Confirmación Universal -->
-    <script>
-        // Función global para mostrar el modal de confirmación
-        function showDeleteConfirmation(itemId, itemName, itemType, deleteUrl) {
-            // Configurar el modal
-            document.getElementById('itemName').textContent = itemName;
-            document.getElementById('itemType').textContent = `Tipo: ${itemType}`;
-            document.getElementById('deleteForm').action = deleteUrl;
-            
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-            modal.show();
-        }
-
-        // Función para eliminar con confirmación simple (para casos donde no se puede eliminar)
-        function showDeleteWarning(itemName, totalReparaciones, totalEquipos) {
-            let mensaje = `No se puede eliminar "${itemName}" porque tiene:\n`;
-            if (totalReparaciones > 0) {
-                mensaje += `• ${totalReparaciones} reparación(es) asociada(s)\n`;
-            }
-            if (totalEquipos > 0) {
-                mensaje += `• ${totalEquipos} equipo(s) registrado(s)\n`;
-            }
-            mensaje += `\nPuede desactivar el elemento en su lugar.`;
-            
-            alert(mensaje);
-        }
-
-        // Función para confirmar eliminación con doble confirmación (para casos especiales)
-        function confirmarEliminacionDoble(mensaje1, mensaje2, formId) {
-            if (confirm(mensaje1)) {
-                if (confirm(mensaje2)) {
-                    document.getElementById(formId).submit();
-                }
-            }
-        }
-
-        // Inicializar el modal cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar el formulario de eliminación
-            const deleteForm = document.getElementById('deleteForm');
-            if (deleteForm) {
-                deleteForm.addEventListener('submit', function(e) {
-                    const submitBtn = document.getElementById('btnConfirmDelete');
-                    if (submitBtn) {
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Eliminando...';
-                        
-                        // Prevenir doble envío
-                        setTimeout(() => {
-                            if (submitBtn) {
-                                submitBtn.disabled = false;
-                                submitBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Eliminar';
-                            }
-                        }, 5000);
-                    }
-                });
             }
         });
     </script>

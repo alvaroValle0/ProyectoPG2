@@ -474,6 +474,26 @@ function mostrarConfiguracionColores() {
                                     Personalización Avanzada
                                 </h6>
                                 <div class="mb-3">
+                                    <label class="form-label">Alcance de la Personalización</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="alcanceColores" onchange="onChangeAlcance()">
+                                            <option value="global" selected>Todo el sistema</option>
+                                            <option value="module">Solo un módulo</option>
+                                        </select>
+                                        <select class="form-select" id="moduloDestino" style="display:none" onchange="onChangeModulo()">
+                                            <option value="dashboard">Dashboard</option>
+                                            <option value="usuarios">Usuarios</option>
+                                            <option value="clientes">Clientes</option>
+                                            <option value="equipos">Equipos</option>
+                                            <option value="reparaciones">Reparaciones</option>
+                                            <option value="inventario">Inventario</option>
+                                            <option value="tickets">Tickets</option>
+                                            <option value="configuracion">Configuración</option>
+                                        </select>
+                                    </div>
+                                    <small class="text-muted" id="alcanceHelp">Se aplicará a toda la plataforma.</small>
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label">Color Principal</label>
                                     <input type="color" class="form-control form-control-color w-100" id="colorPrincipal" value="#667eea" onchange="actualizarColorPersonalizado()">
                                 </div>
@@ -697,10 +717,16 @@ function aplicarColoresPersonalizados() {
         info: document.getElementById('colorInfo').value
     };
     
-    // Aplicar colores al sistema actual (local y global)
+    // Determinar alcance
+    const alcance = document.getElementById('alcanceColores')?.value || 'global';
+    const modulo = document.getElementById('moduloDestino')?.value || null;
+
+    // Aplicar colores (global o módulo) en el front
     aplicarColoresAlSistema(colores);
-    if (typeof aplicarColoresGlobales === 'function') {
-        aplicarColoresGlobales(colores);
+    if (alcance === 'module' && modulo) {
+        localStorage.setItem('sistemaColores_module_' + modulo, JSON.stringify(colores));
+    } else {
+        localStorage.setItem('sistemaColores', JSON.stringify(colores));
     }
     
     // Mostrar notificación
@@ -719,8 +745,13 @@ function restaurarColoresPorDefecto() {
     
     aplicarTema('default');
     aplicarColoresAlSistema(coloresDefault);
-    if (typeof aplicarColoresGlobales === 'function') {
-        aplicarColoresGlobales(coloresDefault);
+
+    const alcance = document.getElementById('alcanceColores')?.value || 'global';
+    const modulo = document.getElementById('moduloDestino')?.value || null;
+    if (alcance === 'module' && modulo) {
+        localStorage.removeItem('sistemaColores_module_' + modulo);
+    } else {
+        localStorage.removeItem('sistemaColores');
     }
     mostrarNotificacion('Colores por defecto restaurados en todo el sistema', 'info');
 }
@@ -908,8 +939,13 @@ function guardarConfiguracionColores() {
     
     console.log('Colores a guardar:', colores);
     
-    // Guardar en localStorage para persistencia
-    localStorage.setItem('sistemaColores', JSON.stringify(colores));
+    const alcance = document.getElementById('alcanceColores')?.value || 'global';
+    const modulo = document.getElementById('moduloDestino')?.value || null;
+    if (alcance === 'module' && modulo) {
+        localStorage.setItem('sistemaColores_module_' + modulo, JSON.stringify(colores));
+    } else {
+        localStorage.setItem('sistemaColores', JSON.stringify(colores));
+    }
     
     // Aplicar colores inmediatamente para feedback visual (local y global)
     aplicarColoresAlSistema(colores);
@@ -924,7 +960,7 @@ function guardarConfiguracionColores() {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify(colores)
+        body: JSON.stringify({ ...colores, scope: alcance, module: modulo })
     })
     .then(response => {
         console.log('Respuesta del servidor:', response);
@@ -945,7 +981,7 @@ function guardarConfiguracionColores() {
             // Mostrar notificación
             mostrarNotificacion('Configuración de colores guardada correctamente. Los cambios se aplicarán en todo el sistema.', 'success');
             
-            // Recargar la página para aplicar cambios globales
+            // Recargar la página para aplicar cambios
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
@@ -996,12 +1032,33 @@ function mostrarNotificacion(mensaje, tipo) {
     });
 }
 
+function onChangeAlcance() {
+    const alcance = document.getElementById('alcanceColores').value;
+    const moduloSelect = document.getElementById('moduloDestino');
+    const help = document.getElementById('alcanceHelp');
+    if (alcance === 'module') {
+        moduloSelect.style.display = '';
+        help.textContent = 'Selecciona el módulo al que se aplicarán estos colores.';
+    } else {
+        moduloSelect.style.display = 'none';
+        help.textContent = 'Se aplicará a toda la plataforma.';
+    }
+}
+
+function onChangeModulo() {
+    // Placeholder por si luego queremos cargar colores por módulo en el modal
+}
+
 // Cargar colores guardados al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Cargando colores del sistema...');
     
-    // Intentar cargar desde el backend primero
-    fetch('{{ route("configuracion.obtener-colores") }}')
+    // Intentar cargar desde el backend primero (módulo detectado por URL)
+    const path = (window.location.pathname || '/').replace(/\/+$/, '');
+    const moduleName = (path.split('/')[1] || 'dashboard').toLowerCase();
+    const url = new URL('{{ route("configuracion.obtener-colores") }}', window.location.origin);
+    url.searchParams.set('module', moduleName);
+    fetch(url)
         .then(response => {
             console.log('Respuesta del servidor:', response);
             if (!response.ok) {
@@ -1013,12 +1070,14 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Colores recibidos del backend:', colores);
             if (colores && Object.keys(colores).length > 0) {
                 aplicarColoresAlSistema(colores);
+                // Guardar como global por defecto, pero respetar módulo si existe
                 localStorage.setItem('sistemaColores', JSON.stringify(colores));
                 console.log('Colores del backend aplicados correctamente');
             } else {
                 console.log('No hay colores en el backend, intentando localStorage...');
                 // Si no hay colores en el backend, intentar cargar desde localStorage
-                const coloresGuardados = localStorage.getItem('sistemaColores');
+                const coloresModulo = localStorage.getItem('sistemaColores_module_' + moduleName);
+                const coloresGuardados = coloresModulo || localStorage.getItem('sistemaColores');
                 if (coloresGuardados) {
                     const colores = JSON.parse(coloresGuardados);
                     aplicarColoresAlSistema(colores);
@@ -1031,7 +1090,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error al cargar colores del backend:', error);
             // Fallback a localStorage
-            const coloresGuardados = localStorage.getItem('sistemaColores');
+            const coloresModulo = localStorage.getItem('sistemaColores_module_' + moduleName);
+            const coloresGuardados = coloresModulo || localStorage.getItem('sistemaColores');
             if (coloresGuardados) {
                 const colores = JSON.parse(coloresGuardados);
                 aplicarColoresAlSistema(colores);

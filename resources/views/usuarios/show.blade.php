@@ -37,14 +37,29 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-md-3 text-center">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
-                             style="width: 80px; height: 80px; font-size: 2rem;">
-                            <i class="fas fa-user"></i>
+                        @if($usuario->avatar_url && $usuario->avatar_url != asset('images/default-avatar.svg'))
+                            <img src="{{ $usuario->avatar_url }}" 
+                                 alt="Foto de {{ $usuario->name }}" 
+                                 class="rounded-circle border border-4 border-primary mx-auto mb-3"
+                                 style="width: 120px; height: 120px; object-fit: cover; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                        @else
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                 style="width: 120px; height: 120px; font-size: 3rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                                {{ $usuario->iniciales }}
+                            </div>
+                        @endif
+                        <div class="mb-2">
+                            <span class="badge bg-{{ $usuario->estado_color }} fs-6">
+                                <i class="fas fa-{{ $usuario->activo ? 'check-circle' : 'times-circle' }} me-1"></i>
+                                {{ $usuario->estado_label }}
+                            </span>
                         </div>
-                        <span class="badge bg-{{ $usuario->estado_color }} fs-6">
-                            <i class="fas fa-{{ $usuario->activo ? 'check-circle' : 'times-circle' }} me-1"></i>
-                            {{ $usuario->estado_label }}
-                        </span>
+                        <div>
+                            <span class="badge bg-secondary fs-6">
+                                <i class="fas fa-user-tag me-1"></i>
+                                {{ $usuario->rol_label }}
+                            </span>
+                        </div>
                     </div>
                     <div class="col-md-9">
                         <div class="row">
@@ -155,7 +170,15 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <i class="fas fa-clock text-warning display-6 mb-2"></i>
+                                <h3 class="text-warning">{{ $estadisticas['carga_trabajo'] }}</h3>
+                                <p class="text-muted mb-0">Carga Actual</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-3 mb-3">
                         <div class="card border-info">
                             <div class="card-body">

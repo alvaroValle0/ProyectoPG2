@@ -309,7 +309,7 @@
                     
                     <div class="mb-3">
                         <label for="motivo-ajuste" class="form-label">Motivo</label>
-                        <textarea class="form-control" id="motivo-ajuste" name="motivo" rows="2" required 
+                        <textarea class="form-control" id="motivo-ajuste" name="motivo" rows="2" required maxlength="255"
                                   placeholder="Ej: Compra de proveedor, Venta a cliente, Ajuste de inventario..."></textarea>
                     </div>
                 </form>
@@ -346,12 +346,13 @@ function ajustarStock() {
     const formData = new FormData(document.getElementById('formAjustarStock'));
     
     fetch(`/inventario/${itemId}/ajustar-stock`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
+            _method: 'PATCH',
             tipo: formData.get('tipo'),
             cantidad: parseInt(formData.get('cantidad')),
             motivo: formData.get('motivo')

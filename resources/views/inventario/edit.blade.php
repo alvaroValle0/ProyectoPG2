@@ -210,7 +210,7 @@
                         <!-- Precio de Compra -->
                         <div class="col-md-6 mb-3">
                             <label for="precio_compra" class="form-label">
-                                <i class="fas fa-dollar-sign me-1"></i>Precio de Compra
+                                <i class="fas fa-coins me-1"></i>Precio de Compra (Q)
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text">Q</span>
@@ -230,7 +230,7 @@
                         <!-- Precio de Venta -->
                         <div class="col-md-6 mb-3">
                             <label for="precio_venta" class="form-label">
-                                <i class="fas fa-tags me-1"></i>Precio de Venta
+                                <i class="fas fa-tags me-1"></i>Precio de Venta (Q)
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text">Q</span>

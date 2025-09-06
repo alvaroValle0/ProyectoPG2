@@ -10,14 +10,14 @@
             <div class="col-lg-8">
                 <h1 class="module-title">
                     <i class="fas fa-users text-gradient me-3"></i>
-                    Gestión de Clientes
-                </h1>
+                Gestión de Clientes
+            </h1>
                 <p class="module-subtitle">Administra y organiza la información de tus clientes de manera eficiente</p>
-            </div>
+        </div>
             <div class="col-lg-4 text-end">
                 <a href="{{ route('clientes.create') }}" class="btn btn-primary btn-lg btn-modern">
-                    <i class="fas fa-plus me-2"></i>Nuevo Cliente
-                </a>
+            <i class="fas fa-plus me-2"></i>Nuevo Cliente
+        </a>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
             <div class="stat-card stat-card-primary">
                 <div class="stat-card-icon">
                     <i class="fas fa-users"></i>
-                </div>
+                            </div>
                 <div class="stat-card-content">
                     <h3 class="stat-card-number" data-count="{{ $estadisticas['total_clientes'] }}">0</h3>
                     <p class="stat-card-label">Total Clientes</p>
@@ -44,7 +44,7 @@
             <div class="stat-card stat-card-success">
                 <div class="stat-card-icon">
                     <i class="fas fa-user-check"></i>
-                </div>
+                            </div>
                 <div class="stat-card-content">
                     <h3 class="stat-card-number" data-count="{{ $estadisticas['clientes_activos'] }}">0</h3>
                     <p class="stat-card-label">Clientes Activos</p>
@@ -60,7 +60,7 @@
             <div class="stat-card stat-card-info">
                 <div class="stat-card-icon">
                     <i class="fas fa-envelope"></i>
-                </div>
+                            </div>
                 <div class="stat-card-content">
                     <h3 class="stat-card-number" data-count="{{ $estadisticas['clientes_con_email'] }}">0</h3>
                     <p class="stat-card-label">Con Email</p>
@@ -76,7 +76,7 @@
             <div class="stat-card stat-card-warning">
                 <div class="stat-card-icon">
                     <i class="fas fa-phone"></i>
-                </div>
+                            </div>
                 <div class="stat-card-content">
                     <h3 class="stat-card-number" data-count="{{ $estadisticas['clientes_con_telefono'] }}">0</h3>
                     <p class="stat-card-label">Con Teléfono</p>
@@ -99,23 +99,23 @@
         </div>
         <div class="collapse show" id="filtersCollapse">
             <div class="filters-card-body">
-                <form method="GET" action="{{ route('clientes.index') }}" class="row g-3">
+            <form method="GET" action="{{ route('clientes.index') }}" class="row g-3">
                     <div class="col-lg-4">
                         <label for="buscar" class="form-label">
                             <i class="fas fa-search me-1"></i>Búsqueda Rápida
                         </label>
                         <div class="search-input-group">
-                            <input type="text" 
+                        <input type="text" 
                                    class="form-control search-input" 
-                                   id="buscar" 
-                                   name="buscar" 
-                                   value="{{ request('buscar') }}"
-                                   placeholder="Nombre, teléfono, email, DPI...">
+                               id="buscar" 
+                               name="buscar" 
+                               value="{{ request('buscar') }}"
+                               placeholder="Nombre, teléfono, email, DPI...">
                             <button type="submit" class="search-btn">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
-                    </div>
+                </div>
 
                     <div class="col-lg-2">
                         <label for="estado" class="form-label">
@@ -123,21 +123,21 @@
                         </label>
                         <select class="form-select modern-select" id="estado" name="estado">
                             <option value="">Todos</option>
-                            <option value="activo" {{ request('estado') === 'activo' ? 'selected' : '' }}>Activos</option>
-                            <option value="inactivo" {{ request('estado') === 'inactivo' ? 'selected' : '' }}>Inactivos</option>
-                        </select>
-                    </div>
+                        <option value="activo" {{ request('estado') === 'activo' ? 'selected' : '' }}>Activos</option>
+                        <option value="inactivo" {{ request('estado') === 'inactivo' ? 'selected' : '' }}>Inactivos</option>
+                    </select>
+                </div>
 
                     <div class="col-lg-2">
                         <label for="con_direccion" class="form-label">
                             <i class="fas fa-map-marker-alt me-1"></i>Dirección
                         </label>
                         <select class="form-select modern-select" id="con_direccion" name="con_direccion">
-                            <option value="">Todas</option>
-                            <option value="si" {{ request('con_direccion') === 'si' ? 'selected' : '' }}>Con dirección</option>
-                            <option value="no" {{ request('con_direccion') === 'no' ? 'selected' : '' }}>Sin dirección</option>
-                        </select>
-                    </div>
+                        <option value="">Todas</option>
+                        <option value="si" {{ request('con_direccion') === 'si' ? 'selected' : '' }}>Con dirección</option>
+                        <option value="no" {{ request('con_direccion') === 'no' ? 'selected' : '' }}>Sin dirección</option>
+                    </select>
+                </div>
 
                     <div class="col-lg-2">
                         <label for="orden" class="form-label">
@@ -153,14 +153,14 @@
                     <div class="col-lg-2 d-flex align-items-end">
                         <div class="btn-group w-100">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter me-1"></i>Filtrar
-                            </button>
-                            <a href="{{ route('clientes.index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i>
-                            </a>
+                        <i class="fas fa-filter me-1"></i>Filtrar
+                    </button>
+                    <a href="{{ route('clientes.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i>
+                    </a>
                         </div>
-                    </div>
-                </form>
+                </div>
+            </form>
             </div>
         </div>
     </div>
@@ -171,7 +171,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="fas fa-list text-primary me-2"></i>Lista de Clientes
-                    <span class="badge bg-primary ms-2">{{ $clientes->total() }}</span>
+                <span class="badge bg-primary ms-2">{{ $clientes->total() }}</span>
                 </h5>
                 <div class="table-actions">
                     <button class="btn btn-sm btn-outline-primary" onclick="exportarClientes()">
@@ -203,35 +203,35 @@
                                         </div>
                                         <div class="client-info">
                                             <h6 class="client-name">{{ $cliente->nombre_completo }}</h6>
-                                            @if($cliente->dpi)
+                                        @if($cliente->dpi)
                                                 <small class="client-dpi">
-                                                    <i class="fas fa-id-card me-1"></i>{{ $cliente->dpi }}
-                                                </small>
-                                            @endif
+                                                <i class="fas fa-id-card me-1"></i>{{ $cliente->dpi }}
+                                            </small>
+                                        @endif
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="contact-info">
-                                        @if($cliente->telefono)
+                                    @if($cliente->telefono)
                                             <div class="contact-item">
                                                 <i class="fas fa-phone text-success"></i>
                                                 <a href="tel:{{ $cliente->telefono }}" class="contact-link">
-                                                    {{ $cliente->telefono }}
-                                                </a>
-                                            </div>
-                                        @endif
-                                        @if($cliente->email)
+                                                {{ $cliente->telefono }}
+                                            </a>
+                                        </div>
+                                    @endif
+                                    @if($cliente->email)
                                             <div class="contact-item">
                                                 <i class="fas fa-envelope text-info"></i>
                                                 <a href="mailto:{{ $cliente->email }}" class="contact-link">
-                                                    {{ $cliente->email }}
-                                                </a>
-                                            </div>
-                                        @endif
-                                        @if(!$cliente->telefono && !$cliente->email)
+                                                {{ $cliente->email }}
+                                            </a>
+                                        </div>
+                                    @endif
+                                    @if(!$cliente->telefono && !$cliente->email)
                                             <span class="no-contact">Sin información de contacto</span>
-                                        @endif
+                                    @endif
                                     </div>
                                 </td>
                                 <td>
@@ -300,7 +300,7 @@
                         </span>
                     </div>
                     <div class="pagination-links">
-                        {{ $clientes->links() }}
+                    {{ $clientes->links() }}
                     </div>
                 </div>
             @else
@@ -344,7 +344,7 @@
 
 /* Module Header */
 .module-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--system-gradient);
     color: white;
     padding: 2rem;
     border-radius: 15px;
@@ -401,7 +401,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: var(--gradient-primary);
+    background: var(--system-gradient);
 }
 
 .stat-card-primary::before { background: var(--gradient-primary); }
@@ -418,7 +418,7 @@
     justify-content: center;
     font-size: 1.5rem;
     margin-bottom: 1rem;
-    background: var(--gradient-primary);
+    background: var(--system-gradient);
     color: white;
 }
 

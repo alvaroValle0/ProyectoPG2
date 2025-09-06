@@ -258,6 +258,8 @@ class ConfiguracionController extends Controller
             'warning' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'danger' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'info' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'scope' => 'nullable|in:global,module',
+            'module' => 'nullable|string',
         ]);
 
         $colores = [
@@ -269,18 +271,36 @@ class ConfiguracionController extends Controller
             'info' => $request->info,
         ];
 
-        // Guardar en cache
-        Cache::put('sistema_colores', $colores, now()->addYear());
+        // Guardar en cache, global o por módulo
+        $scope = $request->input('scope', 'global');
+        $module = $request->input('module');
+
+        if ($scope === 'module' && !empty($module)) {
+            Cache::put('sistema_colores_' . $module, $colores, now()->addYear());
+        } else {
+            Cache::put('sistema_colores', $colores, now()->addYear());
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Colores guardados correctamente',
-            'colores' => $colores
+            'colores' => $colores,
+            'scope' => $scope,
+            'module' => $module,
         ]);
     }
 
-    public function obtenerColores()
+    public function obtenerColores(Request $request)
     {
+        $module = $request->query('module');
+
+        if (!empty($module)) {
+            $coloresModulo = Cache::get('sistema_colores_' . $module);
+            if ($coloresModulo) {
+                return response()->json($coloresModulo);
+            }
+        }
+
         $colores = Cache::get('sistema_colores', [
             'primary' => '#667eea',
             'secondary' => '#764ba2',

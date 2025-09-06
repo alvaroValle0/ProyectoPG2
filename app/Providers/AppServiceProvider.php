@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Registrar el observer para el modelo User
-        User::observe(UserObserver::class);
+        // Observer deshabilitado - los permisos se manejan desde el UserController
+        // User::observe(UserObserver::class);
     }
 }

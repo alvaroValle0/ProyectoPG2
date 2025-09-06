@@ -69,7 +69,7 @@
                             <th>Técnico</th>
                             <th>Especialidad</th>
                             <th>Estado</th>
-
+                            <th>Carga de Trabajo</th>
                             <th>Estadísticas</th>
                             <th>Fecha Registro</th>
                             <th width="150px">Acciones</th>
@@ -117,7 +117,23 @@
                                 @endif
                             </td>
                             
-
+                            <!-- Carga de Trabajo -->
+                            <td>
+                                @php
+                                    $carga = $tecnico->reparacionesActivas ? $tecnico->reparacionesActivas->count() : 0;
+                                    $maxCarga = 10; // Carga máxima recomendada
+                                    $porcentaje = min(($carga / $maxCarga) * 100, 100);
+                                    $colorCarga = $porcentaje > 80 ? 'danger' : ($porcentaje > 50 ? 'warning' : 'success');
+                                @endphp
+                                <div>
+                                    <strong class="text-{{ $colorCarga }}">{{ $carga }} tareas</strong>
+                                    <div class="progress mt-1" style="height: 8px;">
+                                        <div class="progress-bar bg-{{ $colorCarga }}" 
+                                             style="width: {{ $porcentaje }}%"></div>
+                                    </div>
+                                    <small class="text-muted">{{ round($porcentaje, 1) }}% capacidad</small>
+                                </div>
+                            </td>
                             
                             <!-- Estadísticas -->
                             <td>
@@ -218,7 +234,11 @@
                             <i class="fas fa-user-plus me-2"></i>Nuevo Técnico
                         </a>
                     </div>
-
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ route('tecnicos.carga-trabajo') }}" class="btn btn-info w-100">
+                            <i class="fas fa-chart-bar me-2"></i>Carga de Trabajo
+                        </a>
+                    </div>
                     <div class="col-md-3 mb-2">
                         <button type="button" class="btn btn-outline-secondary w-100" onclick="mostrarProximamente('Reportes de Técnicos')">
                             <i class="fas fa-chart-line me-2"></i>Reportes
@@ -267,7 +287,13 @@ function cambiarEstado(tecnicoId, activar) {
     }
 }
 
-
+// Actualización automática de la página cada 30 segundos para refrescar carga de trabajo
+setInterval(() => {
+    // Solo si no hay modales abiertos
+    if (!document.querySelector('.modal.show')) {
+        location.reload();
+    }
+}, 30000);
 </script>
 @endsection
 

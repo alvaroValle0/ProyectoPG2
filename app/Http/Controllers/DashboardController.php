@@ -50,7 +50,14 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-
+        // Técnicos con mayor carga de trabajo
+        $tecnicosCargados = Tecnico::activos()
+            ->with(['user'])
+            ->withCount(['reparacionesActivas'])
+            ->having('reparaciones_activas_count', '>', 0)
+            ->orderBy('reparaciones_activas_count', 'desc')
+            ->limit(5)
+            ->get();
 
         // Actividad reciente (últimas reparaciones completadas)
         $actividadReciente = Reparacion::with(['equipo', 'tecnico.user'])
@@ -84,6 +91,7 @@ class DashboardController extends Controller
             'estadisticas',
             'equiposRecientes',
             'reparacionesUrgentes',
+            'tecnicosCargados',
             'actividadReciente',
             'equiposPorEstado',
             'reparacionesPorMes'

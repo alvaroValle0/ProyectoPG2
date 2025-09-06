@@ -20,7 +20,7 @@
 
 <div class="card border-0 shadow-sm">
     <div class="card-body">
-        <form action="{{ route('usuarios.update', $usuario) }}" method="POST">
+        <form action="{{ route('usuarios.update', $usuario) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
@@ -115,6 +115,37 @@
                         @error('password_confirmation')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="text-muted">Confirme la nueva contraseña si la cambió</small>
+                    </div>
+
+                    <!-- Avatar del Usuario -->
+                    <div class="mb-3">
+                        <label for="avatar" class="form-label">
+                            <i class="fas fa-camera me-1"></i>Foto de Perfil
+                        </label>
+                        
+                        <div class="text-center mb-3">
+                            <img src="{{ $usuario->avatar_url }}" alt="Avatar actual" 
+                                 class="rounded-circle border border-3 border-primary"
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 id="avatar-preview">
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="file" 
+                                   class="form-control @error('avatar') is-invalid @enderror" 
+                                   id="avatar" 
+                                   name="avatar" 
+                                   accept="image/*"
+                                   onchange="previewAvatar(this)">
+                            <label class="input-group-text" for="avatar">
+                                <i class="fas fa-upload"></i>
+                            </label>
+                        </div>
+                        @error('avatar')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">JPG, PNG, GIF hasta 2MB. Opcional.</small>
                     </div>
                 </div>
 
@@ -191,6 +222,150 @@
                 </div>
             </div>
 
+            <hr class="my-4">
+
+            <!-- Acceso a Módulos -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="mb-1">
+                                <i class="fas fa-th-large text-primary me-2"></i>
+                                Acceso a Módulos
+                            </h5>
+                            <p class="text-muted mb-0">Selecciona los módulos a los que tendrá acceso el usuario</p>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="selectAllModules()">
+                                <i class="fas fa-check-square me-1"></i>Seleccionar Todos
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAllModules()">
+                                <i class="fas fa-square me-1"></i>Deseleccionar Todos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Mensaje informativo sobre el sistema de permisos -->
+                    <div class="alert alert-info mb-3">
+                        <h6><i class="fas fa-info-circle me-2"></i>Sistema de Permisos por Módulos</h6>
+                        <p class="mb-0 small">
+                            <strong>Importante:</strong> Selecciona los módulos específicos a los que tendrá acceso este usuario. Los permisos específicos (crear, editar, eliminar) se asignan según el rol del usuario.
+                        </p>
+                        @if(!$usuario->permissions)
+                            <div class="mt-2 text-warning">
+                                <strong>Nota:</strong> Este usuario no tiene permisos configurados. Se crearán automáticamente al guardar.
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_dashboard" id="access_dashboard" 
+                                       {{ old('access_dashboard', $usuario->permissions->access_dashboard ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_dashboard">
+                                    <i class="fas fa-tachometer-alt text-primary me-2"></i>
+                                    <strong>Dashboard</strong>
+                                    <br><small class="text-muted">Panel principal y estadísticas</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_clientes" id="access_clientes" 
+                                       {{ old('access_clientes', $usuario->permissions->access_clientes ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_clientes">
+                                    <i class="fas fa-users text-info me-2"></i>
+                                    <strong>Clientes</strong>
+                                    <br><small class="text-muted">Gestión de clientes</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_equipos" id="access_equipos" 
+                                       {{ old('access_equipos', $usuario->permissions->access_equipos ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_equipos">
+                                    <i class="fas fa-laptop text-warning me-2"></i>
+                                    <strong>Equipos</strong>
+                                    <br><small class="text-muted">Gestión de equipos</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_reparaciones" id="access_reparaciones" 
+                                       {{ old('access_reparaciones', $usuario->permissions->access_reparaciones ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_reparaciones">
+                                    <i class="fas fa-wrench text-success me-2"></i>
+                                    <strong>Reparaciones</strong>
+                                    <br><small class="text-muted">Gestión de reparaciones</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_inventario" id="access_inventario" 
+                                       {{ old('access_inventario', $usuario->permissions->access_inventario ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_inventario">
+                                    <i class="fas fa-boxes text-secondary me-2"></i>
+                                    <strong>Inventario</strong>
+                                    <br><small class="text-muted">Gestión de inventario</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_tickets" id="access_tickets" 
+                                       {{ old('access_tickets', $usuario->permissions->access_tickets ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_tickets">
+                                    <i class="fas fa-ticket-alt text-danger me-2"></i>
+                                    <strong>Tickets</strong>
+                                    <br><small class="text-muted">Gestión de tickets</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_tecnicos" id="access_tecnicos" 
+                                       {{ old('access_tecnicos', $usuario->permissions->access_tecnicos ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_tecnicos">
+                                    <i class="fas fa-users-cog text-dark me-2"></i>
+                                    <strong>Técnicos</strong>
+                                    <br><small class="text-muted">Gestión de técnicos</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_usuarios" id="access_usuarios" 
+                                       {{ old('access_usuarios', $usuario->permissions->access_usuarios ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_usuarios">
+                                    <i class="fas fa-users text-primary me-2"></i>
+                                    <strong>Usuarios</strong>
+                                    <br><small class="text-muted">Gestión de usuarios</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_configuracion" id="access_configuracion" 
+                                       {{ old('access_configuracion', $usuario->permissions->access_configuracion ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_configuracion">
+                                    <i class="fas fa-cog text-secondary me-2"></i>
+                                    <strong>Configuración</strong>
+                                    <br><small class="text-muted">Configuración del sistema</small>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="access_reportes" id="access_reportes" 
+                                       {{ old('access_reportes', $usuario->permissions->access_reportes ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="access_reportes">
+                                    <i class="fas fa-chart-line text-info me-2"></i>
+                                    <strong>Reportes</strong>
+                                    <br><small class="text-muted">Acceso a reportes</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Botones de Acción -->
             <div class="row mt-4">
                 <div class="col-12">
@@ -243,5 +418,192 @@ function confirmarEliminacion() {
         document.getElementById('form-eliminar').submit();
     }
 }
+
+// Función para seleccionar todos los módulos
+function selectAllModules() {
+    const moduleCheckboxes = [
+        'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+        'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+        'access_configuracion', 'access_reportes'
+    ];
+    
+    moduleCheckboxes.forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+    });
+}
+
+// Función para deseleccionar todos los módulos
+function deselectAllModules() {
+    const moduleCheckboxes = [
+        'access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones',
+        'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios',
+        'access_configuracion', 'access_reportes'
+    ];
+    
+    moduleCheckboxes.forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+            checkbox.checked = false;
+        }
+    });
+}
+
+// Validación del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[method="POST"]');
+    const rolSelect = document.getElementById('rol');
+    
+    // Debug: Mostrar información sobre permisos
+    console.log('Usuario cargado:', {!! json_encode($usuario->toArray()) !!});
+    console.log('Permisos cargados:', {!! json_encode($usuario->permissions ? $usuario->permissions->toArray() : null) !!});
+    
+    // Asegurar que los checkboxes sean visibles
+    const moduleSection = document.querySelector('.row.mb-4');
+    if (moduleSection) {
+        moduleSection.style.display = 'block';
+        console.log('Sección de módulos encontrada y mostrada');
+    } else {
+        console.error('Sección de módulos no encontrada');
+    }
+    
+    // Sugerir módulos según el rol seleccionado
+    rolSelect.addEventListener('change', function() {
+        const rol = this.value;
+        
+        const permisosPorRol = {
+            'admin': ['access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones', 'access_inventario', 'access_tickets', 'access_tecnicos', 'access_usuarios', 'access_configuracion', 'access_reportes'],
+            'tecnico': ['access_dashboard', 'access_clientes', 'access_equipos', 'access_reparaciones', 'access_inventario', 'access_tickets', 'access_reportes'],
+            'usuario': ['access_dashboard', 'access_clientes', 'access_equipos', 'access_inventario', 'access_tickets']
+        };
+        
+        if (permisosPorRol[rol]) {
+            // Desmarcar todos primero
+            deselectAllModules();
+            
+            // Marcar los sugeridos para el rol
+            permisosPorRol[rol].forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+    });
+    
+    // Validación simplificada al enviar
+    form.addEventListener('submit', function(e) {
+        console.log('=== ENVIANDO FORMULARIO ===');
+        
+        // Verificar campos básicos
+        const nameField = document.getElementById('name');
+        const emailField = document.getElementById('email');
+        const rolField = document.getElementById('rol');
+        
+        if (!nameField.value.trim() || !emailField.value.trim() || !rolField.value) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos obligatorios.');
+            return;
+        }
+        
+        console.log('✓ Enviando formulario...');
+    });
+});
+
+// Función para preview del avatar
+function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('avatar-preview').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 </script>
+@endsection
+
+@section('styles')
+<style>
+.form-check-input:checked {
+    background-color: #27DB9F;
+    border-color: #27DB9F;
+}
+
+.form-check-input:focus {
+    border-color: #27DB9F;
+    box-shadow: 0 0 0 0.2rem rgba(39, 219, 159, 0.25);
+}
+
+.form-check-label {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-check-label:hover {
+    transform: translateX(5px);
+}
+
+.form-check {
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.form-check:hover {
+    background-color: rgba(39, 219, 159, 0.05);
+}
+
+.alert {
+    border: none;
+    border-radius: 12px;
+}
+
+.card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Asegurar que los checkboxes sean visibles */
+.form-check {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 60px !important;
+}
+
+.form-check-input {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.form-check-label {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-left: 0.5rem !important;
+    width: calc(100% - 30px) !important;
+}
+
+/* Asegurar que la sección de módulos sea visible */
+.row.mb-4 {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+</style>
 @endsection

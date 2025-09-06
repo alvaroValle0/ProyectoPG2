@@ -10,18 +10,18 @@
             <div class="col-lg-8">
                 <h1 class="form-title">
                     <i class="fas fa-user-edit text-gradient me-3"></i>
-                    Editar Cliente
-                </h1>
+                Editar Cliente
+            </h1>
                 <p class="form-subtitle">Modifica la información de: <strong>{{ $cliente->nombre_completo }}</strong></p>
-            </div>
+        </div>
             <div class="col-lg-4 text-end">
-                <div class="btn-group">
+        <div class="btn-group">
                     <a href="{{ route('clientes.show', $cliente) }}" class="btn btn-outline-secondary btn-modern">
-                        <i class="fas fa-arrow-left me-2"></i>Volver
-                    </a>
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
                     <a href="{{ route('clientes.index') }}" class="btn btn-outline-primary btn-modern">
-                        <i class="fas fa-list me-2"></i>Todos los Clientes
-                    </a>
+                <i class="fas fa-list me-2"></i>Todos los Clientes
+            </a>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
                         @csrf
                         @method('PUT')
                         
-                        <!-- Información Personal -->
+                            <!-- Información Personal -->
                         <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-user text-primary me-2"></i>
@@ -52,56 +52,56 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="nombres" class="form-label">
+                                    <label for="nombres" class="form-label">
                                             <i class="fas fa-user me-1"></i>Nombres <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" 
+                                    </label>
+                                    <input type="text" 
                                                class="form-control modern-input @error('nombres') is-invalid @enderror" 
-                                               id="nombres" 
-                                               name="nombres" 
-                                               value="{{ old('nombres', $cliente->nombres) }}" 
+                                           id="nombres" 
+                                           name="nombres" 
+                                           value="{{ old('nombres', $cliente->nombres) }}" 
                                                placeholder="Ingresa los nombres"
                                                required>
-                                        @error('nombres')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    @error('nombres')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="apellidos" class="form-label">
+                                    <label for="apellidos" class="form-label">
                                             <i class="fas fa-user me-1"></i>Apellidos <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" 
+                                    </label>
+                                    <input type="text" 
                                                class="form-control modern-input @error('apellidos') is-invalid @enderror" 
-                                               id="apellidos" 
-                                               name="apellidos" 
-                                               value="{{ old('apellidos', $cliente->apellidos) }}" 
+                                           id="apellidos" 
+                                           name="apellidos" 
+                                           value="{{ old('apellidos', $cliente->apellidos) }}" 
                                                placeholder="Ingresa los apellidos"
                                                required>
-                                        @error('apellidos')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    @error('apellidos')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="dpi" class="form-label">
+                                    <label for="dpi" class="form-label">
                                             <i class="fas fa-id-card me-1"></i>DPI
-                                        </label>
-                                        <input type="text" 
+                                    </label>
+                                    <input type="text" 
                                                class="form-control modern-input @error('dpi') is-invalid @enderror" 
-                                               id="dpi" 
-                                               name="dpi" 
-                                               value="{{ old('dpi', $cliente->dpi) }}" 
-                                               placeholder="0000 00000 0000"
-                                               maxlength="20">
+                                           id="dpi" 
+                                           name="dpi" 
+                                           value="{{ old('dpi', $cliente->dpi) }}" 
+                                           placeholder="0000 00000 0000"
+                                           maxlength="20">
                                         <small class="form-text text-muted">Formato: 0000 00000 0000</small>
-                                        @error('dpi')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    @error('dpi')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     </div>
                                 </div>
 
@@ -116,10 +116,10 @@
                                         </select>
                                     </div>
                                 </div>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Información de Contacto -->
+                            <!-- Información de Contacto -->
                         <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-address-book text-success me-2"></i>
@@ -128,50 +128,50 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="telefono" class="form-label">
+                                    <label for="telefono" class="form-label">
                                             <i class="fas fa-phone me-1"></i>Teléfono
-                                        </label>
+                                    </label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <i class="fas fa-phone"></i>
                                             </span>
-                                            <input type="tel" 
+                                    <input type="tel" 
                                                    class="form-control modern-input @error('telefono') is-invalid @enderror" 
-                                                   id="telefono" 
-                                                   name="telefono" 
-                                                   value="{{ old('telefono', $cliente->telefono) }}" 
-                                                   placeholder="0000-0000"
-                                                   maxlength="20">
+                                           id="telefono" 
+                                           name="telefono" 
+                                           value="{{ old('telefono', $cliente->telefono) }}" 
+                                           placeholder="0000-0000"
+                                           maxlength="20">
                                         </div>
-                                        @error('telefono')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    @error('telefono')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email" class="form-label">
+                                    <label for="email" class="form-label">
                                             <i class="fas fa-envelope me-1"></i>Correo Electrónico
-                                        </label>
+                                    </label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <i class="fas fa-envelope"></i>
                                             </span>
-                                            <input type="email" 
+                                    <input type="email" 
                                                    class="form-control modern-input @error('email') is-invalid @enderror" 
-                                                   id="email" 
-                                                   name="email" 
-                                                   value="{{ old('email', $cliente->email) }}" 
-                                                   placeholder="cliente@email.com">
+                                           id="email" 
+                                           name="email" 
+                                           value="{{ old('email', $cliente->email) }}" 
+                                           placeholder="cliente@email.com">
                                         </div>
-                                        @error('email')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                                </div>
 
                         <!-- Información de Ubicación -->
                         <div class="form-section">
@@ -182,17 +182,17 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label for="direccion" class="form-label">
+                                    <label for="direccion" class="form-label">
                                             <i class="fas fa-map-marker-alt me-1"></i>Dirección Completa
-                                        </label>
+                                    </label>
                                         <textarea class="form-control modern-textarea @error('direccion') is-invalid @enderror" 
-                                                  id="direccion" 
-                                                  name="direccion" 
-                                                  rows="3" 
+                                              id="direccion" 
+                                              name="direccion" 
+                                              rows="3"
                                                   placeholder="Ingresa la dirección completa del cliente">{{ old('direccion', $cliente->direccion) }}</textarea>
-                                        @error('direccion')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    @error('direccion')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     </div>
                                 </div>
                             </div>
@@ -205,19 +205,19 @@
                                 <h6>Información Adicional</h6>
                             </div>
                             <div class="row g-3">
-                                <div class="col-12">
+                            <div class="col-12">
                                     <div class="form-group">
-                                        <label for="observaciones" class="form-label">
+                                    <label for="observaciones" class="form-label">
                                             <i class="fas fa-comment me-1"></i>Observaciones
-                                        </label>
+                                    </label>
                                         <textarea class="form-control modern-textarea @error('observaciones') is-invalid @enderror" 
-                                                  id="observaciones" 
-                                                  name="observaciones" 
+                                              id="observaciones" 
+                                              name="observaciones" 
                                                   rows="3" 
                                                   placeholder="Agrega observaciones adicionales sobre el cliente">{{ old('observaciones', $cliente->observaciones) }}</textarea>
-                                        @error('observaciones')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    @error('observaciones')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     </div>
                                 </div>
                             </div>
@@ -240,15 +240,15 @@
                                     <div class="info-item">
                                         <label class="info-label">Fecha de Registro:</label>
                                         <span class="info-value">{{ $cliente->created_at->format('d/m/Y H:i') }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
+                            </div>
+                        </div>
+                                            <div class="col-md-6">
                                     <div class="info-item">
                                         <label class="info-label">Última Actualización:</label>
                                         <span class="info-value">{{ $cliente->updated_at->format('d/m/Y H:i') }}</span>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
+                                            </div>
+                                            <div class="col-md-6">
                                     <div class="info-item">
                                         <label class="info-label">Total Equipos:</label>
                                         <span class="info-value">{{ $cliente->equipos->count() }}</span>
@@ -259,22 +259,22 @@
 
                         <!-- Botones de Acción -->
                         <div class="form-actions">
-                            <div class="row">
-                                <div class="col-12">
+                        <div class="row">
+                            <div class="col-12">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="form-info">
-                                            <small class="text-muted">
-                                                <i class="fas fa-info-circle me-1"></i>
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
                                                 Los campos marcados con <span class="text-danger">*</span> son obligatorios
-                                            </small>
-                                        </div>
+                                        </small>
+                                    </div>
                                         <div class="action-buttons">
                                             <a href="{{ route('clientes.show', $cliente) }}" class="btn btn-outline-secondary btn-modern">
-                                                <i class="fas fa-times me-2"></i>Cancelar
-                                            </a>
+                                            <i class="fas fa-times me-2"></i>Cancelar
+                                        </a>
                                             <button type="submit" class="btn btn-warning btn-modern">
-                                                <i class="fas fa-save me-2"></i>Actualizar Cliente
-                                            </button>
+                                            <i class="fas fa-save me-2"></i>Actualizar Cliente
+                                        </button>
                                         </div>
                                     </div>
                                 </div>
@@ -310,7 +310,7 @@
 
 /* Form Header */
 .form-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--system-gradient);
     color: white;
     padding: 2rem;
     border-radius: 15px;

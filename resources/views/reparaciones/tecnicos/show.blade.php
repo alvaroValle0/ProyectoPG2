@@ -110,7 +110,15 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <i class="fas fa-clock text-warning display-6 mb-2"></i>
+                                <h3 class="text-warning">{{ $estadisticas['carga_trabajo'] }}</h3>
+                                <p class="text-muted mb-0">Carga Actual</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-3 mb-3">
                         <div class="card border-info">
                             <div class="card-body">
@@ -209,7 +217,51 @@
 
     <!-- Panel Lateral -->
     <div class="col-lg-4">
-
+        <!-- Carga de Trabajo Actual -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="fas fa-tasks text-warning me-2"></i>
+                    Carga de Trabajo Actual
+                </h5>
+            </div>
+            <div class="card-body">
+                @if($tecnico->reparacionesActivas && $tecnico->reparacionesActivas->count() > 0)
+                    @foreach($tecnico->reparacionesActivas as $reparacion)
+                    <div class="border-left-{{ $reparacion->estado_color }} p-3 mb-3 bg-light">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">Reparación #{{ $reparacion->id }}</h6>
+                                <p class="mb-1 text-muted small">{{ $reparacion->equipo->cliente_nombre }}</p>
+                                <span class="badge bg-{{ $reparacion->estado_color }} text-white">
+                                    {{ ucfirst($reparacion->estado) }}
+                                </span>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">{{ $reparacion->fecha_inicio->diffForHumans() }}</small>
+                                <br>
+                                <a href="{{ route('reparaciones.show', $reparacion) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                        @if($reparacion->es_vencida)
+                            <div class="alert alert-warning mt-2 mb-0 py-1">
+                                <small><i class="fas fa-exclamation-triangle me-1"></i>Vencida</small>
+                            </div>
+                        @endif
+                    </div>
+                    @endforeach
+                @else
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle display-6 text-success mb-3"></i>
+                        <p class="text-muted">Sin tareas pendientes</p>
+                        <p class="text-success"><strong>¡Al día con el trabajo!</strong></p>
+                    </div>
+                @endif
+            </div>
+        </div>
 
         <!-- Información de Contacto -->
         <div class="card border-0 shadow-sm mb-4">

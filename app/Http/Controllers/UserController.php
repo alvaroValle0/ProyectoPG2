@@ -69,7 +69,8 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'rol' => 'required|in:admin,tecnico,usuario',
-            'activo' => 'boolean'
+            'activo' => 'boolean',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ], [
             'name.required' => 'El nombre es obligatorio.',
             'username.required' => 'El nombre de usuario es obligatorio.',
@@ -87,11 +88,28 @@ class UserController extends Controller
         try {
             $validated['password'] = Hash::make($validated['password']);
             $validated['activo'] = $request->has('activo');
+            
+            // Manejar carga de avatar
+            if ($request->hasFile('avatar')) {
+                // Crear directorio si no existe
+                $avatarPath = storage_path('app/public/avatars');
+                if (!file_exists($avatarPath)) {
+                    mkdir($avatarPath, 0755, true);
+                }
+                
+                // Guardar avatar
+                $avatar = $request->file('avatar');
+                $avatarName = time() . '_avatar.' . $avatar->getClientOriginalExtension();
+                $avatar->move($avatarPath, $avatarName);
+                $validated['avatar'] = $avatarName;
+            }
 
             $user = User::create($validated);
             
             // Crear permisos basados en el rol y los módulos seleccionados
             $permissions = $this->createPermissionsFromRoleAndModules($request, $validated['rol']);
+            
+            \Log::info('Permisos creados:', $permissions);
             
             $permissions['user_id'] = $user->id;
             UserPermission::create($permissions);
@@ -100,6 +118,7 @@ class UserController extends Controller
             return redirect()->route('usuarios.show', $user)
                 ->with('success', "Usuario creado exitosamente como {$rolLabel} con los módulos seleccionados.");
         } catch (\Exception $e) {
+            \Log::error('Error al crear usuario: ' . $e->getMessage());
             return back()->withInput()
                 ->with('error', 'Error al crear el usuario: ' . $e->getMessage());
         }
@@ -118,6 +137,7 @@ class UserController extends Controller
             $estadisticas = [
                 'total_reparaciones' => $usuario->tecnico->total_reparaciones,
                 'reparaciones_completadas' => $usuario->tecnico->reparaciones_completadas_count,
+                'carga_trabajo' => $usuario->tecnico->carga_trabajo,
                 'promedio_tiempo' => $usuario->tecnico->promedio_tiempo_reparacion ? round($usuario->tecnico->promedio_tiempo_reparacion, 1) : null
             ];
         }
@@ -130,6 +150,17 @@ class UserController extends Controller
      */
     public function edit(User $usuario)
     {
+        // Cargar permisos del usuario
+        $usuario->load('permissions');
+        
+        // Si no tiene permisos, crear unos por defecto basados en su rol
+        if (!$usuario->permissions) {
+            $defaultPermissions = $this->getPermissionsByRole($usuario->rol);
+            $defaultPermissions['user_id'] = $usuario->id;
+            UserPermission::create($defaultPermissions);
+            $usuario->load('permissions');
+        }
+        
         return view('usuarios.edit', compact('usuario'));
     }
 
@@ -138,55 +169,89 @@ class UserController extends Controller
      */
     public function update(Request $request, User $usuario)
     {
-        $validated = $request->validate([
+        // Validación básica
+        $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $usuario->id,
-            'email' => 'required|string|email|max:255|unique:users,email,' . $usuario->id,
-            'password' => 'nullable|string|min:8|confirmed',
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'rol' => 'required|in:admin,tecnico,usuario',
-            'activo' => 'boolean'
-        ], [
-            'name.required' => 'El nombre es obligatorio.',
-            'username.required' => 'El nombre de usuario es obligatorio.',
-            'username.unique' => 'Este nombre de usuario ya está en uso.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'Debe ser un correo electrónico válido.',
-            'email.unique' => 'Este correo electrónico ya está registrado.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
-            'rol.required' => 'El rol es obligatorio.',
-            'rol.in' => 'El rol seleccionado no es válido.'
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        try {
-            // Solo actualizar contraseña si se proporciona
-            if (!empty($validated['password'])) {
-                $validated['password'] = Hash::make($validated['password']);
-            } else {
-                unset($validated['password']);
-            }
-
-            $validated['activo'] = $request->has('activo');
-
-            $usuario->update($validated);
-            
-            // Actualizar permisos basados en el rol y los módulos seleccionados
-            $permissions = $this->createPermissionsFromRoleAndModules($request, $validated['rol']);
-            $permissions['user_id'] = $usuario->id;
-            
-            // Actualizar o crear permisos
-            UserPermission::updateOrCreate(
-                ['user_id' => $usuario->id],
-                $permissions
-            );
-            
-            $rolLabel = $usuario->rol_label;
-            return redirect()->route('usuarios.show', $usuario)
-                ->with('success', "Usuario actualizado exitosamente como {$rolLabel}.");
-        } catch (\Exception $e) {
-            return back()->withInput()
-                ->with('error', 'Error al actualizar el usuario: ' . $e->getMessage());
+        // ACTUALIZAR USUARIO DIRECTAMENTE
+        $usuario->name = $request->name;
+        $usuario->username = $request->username;
+        $usuario->email = $request->email;
+        $usuario->rol = $request->rol;
+        $usuario->activo = $request->has('activo');
+        
+        if ($request->filled('password')) {
+            $usuario->password = Hash::make($request->password);
         }
+        
+        // Manejar carga de avatar
+        if ($request->hasFile('avatar')) {
+            // Eliminar avatar anterior si existe
+            if ($usuario->avatar && file_exists(storage_path('app/public/avatars/' . $usuario->avatar))) {
+                unlink(storage_path('app/public/avatars/' . $usuario->avatar));
+            }
+            
+            // Crear directorio si no existe
+            $avatarPath = storage_path('app/public/avatars');
+            if (!file_exists($avatarPath)) {
+                mkdir($avatarPath, 0755, true);
+            }
+            
+            // Guardar nuevo avatar
+            $avatar = $request->file('avatar');
+            $avatarName = time() . '_' . $usuario->id . '.' . $avatar->getClientOriginalExtension();
+            $avatar->move($avatarPath, $avatarName);
+            $usuario->avatar = $avatarName;
+        }
+        
+        $usuario->save();
+        
+        // ACTUALIZAR PERMISOS DIRECTAMENTE
+        $permissions = [
+            'user_id' => $usuario->id,
+            'access_dashboard' => $request->has('access_dashboard'),
+            'access_clientes' => $request->has('access_clientes'),
+            'access_equipos' => $request->has('access_equipos'),
+            'access_reparaciones' => $request->has('access_reparaciones'),
+            'access_inventario' => $request->has('access_inventario'),
+            'access_tickets' => $request->has('access_tickets'),
+            'access_tecnicos' => $request->has('access_tecnicos'),
+            'access_usuarios' => $request->has('access_usuarios'),
+            'access_configuracion' => $request->has('access_configuracion'),
+            'access_reportes' => $request->has('access_reportes'),
+            'create_equipo' => true,
+            'edit_equipo' => true,
+            'delete_equipo' => $request->rol === 'admin',
+            'view_equipo' => true,
+            'create_reparacion' => true,
+            'edit_reparacion' => true,
+            'delete_reparacion' => $request->rol === 'admin',
+            'view_reparacion' => true,
+            'create_cliente' => true,
+            'edit_cliente' => true,
+            'delete_cliente' => $request->rol === 'admin',
+            'view_cliente' => true,
+            'create_inventario' => true,
+            'edit_inventario' => true,
+            'delete_inventario' => $request->rol === 'admin',
+            'view_inventario' => true,
+            'create_ticket' => true,
+            'edit_ticket' => true,
+            'delete_ticket' => $request->rol === 'admin',
+            'view_ticket' => true,
+            'manage_users' => $request->rol === 'admin',
+            'manage_tecnicos' => $request->rol === 'admin',
+        ];
+        
+        UserPermission::updateOrCreate(['user_id' => $usuario->id], $permissions);
+        
+        return redirect()->route('usuarios.index')
+            ->with('success', 'Usuario actualizado exitosamente.');
     }
 
     /**
@@ -195,12 +260,44 @@ class UserController extends Controller
     public function destroy(User $usuario)
     {
         try {
-            // Permitir eliminar cualquier usuario sin restricciones
+            \Log::info('=== INICIANDO ELIMINACIÓN DE USUARIO ===');
+            \Log::info('Usuario a eliminar: ' . $usuario->name . ' (ID: ' . $usuario->id . ')');
+            \Log::info('Rol del usuario: ' . $usuario->rol);
+            \Log::info('Estado del usuario: ' . ($usuario->activo ? 'Activo' : 'Inactivo'));
+            
+            // Verificar que no sea el último administrador
+            if ($usuario->rol === 'admin') {
+                $adminCount = User::where('rol', 'admin')->where('activo', true)->count();
+                if ($adminCount <= 1) {
+                    \Log::warning('Intento de eliminar último administrador bloqueado');
+                    return back()->with('error', 'No se puede eliminar el último administrador activo del sistema.');
+                }
+            }
+            
+            $nombreUsuario = $usuario->name;
+            
+            // Eliminar permisos del usuario primero
+            if ($usuario->permissions) {
+                $usuario->permissions->delete();
+                \Log::info('✓ Permisos del usuario eliminados');
+            }
+            
+            // Eliminar perfil técnico si existe
+            if ($usuario->tecnico) {
+                $usuario->tecnico->delete();
+                \Log::info('✓ Perfil técnico eliminado');
+            }
+            
+            // Eliminar el usuario
             $usuario->delete();
+            \Log::info('✓ Usuario eliminado exitosamente');
+            \Log::info('=== ELIMINACIÓN COMPLETADA ===');
             
             return redirect()->route('usuarios.index')
-                ->with('success', 'Usuario eliminado exitosamente.');
+                ->with('success', "Usuario '{$nombreUsuario}' eliminado exitosamente junto con toda su información relacionada.");
         } catch (\Exception $e) {
+            \Log::error('❌ ERROR al eliminar usuario: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
             return back()->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
         }
     }
@@ -232,8 +329,6 @@ class UserController extends Controller
      */
     public function storeFromModal(Request $request)
     {
-        \Log::info('🔔 storeFromModal llamado con datos:', $request->all());
-        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -242,14 +337,8 @@ class UserController extends Controller
         ]);
 
         try {
-            \Log::info('✅ Validación exitosa, creando usuario...');
-            
             $validated['password'] = Hash::make($validated['password']);
             $validated['activo'] = true; // Por defecto activo
-            
-            // Generar username único basado en el nombre
-            $validated['username'] = $this->generateUniqueUsername($validated['name']);
-            \Log::info('🔑 Username generado:', ['username' => $validated['username']]);
 
             $user = User::create($validated);
             
@@ -257,13 +346,6 @@ class UserController extends Controller
             $permissions = $this->getPermissionsByRole($validated['rol']);
             $permissions['user_id'] = $user->id;
             UserPermission::create($permissions);
-            
-            \Log::info('✅ Usuario y permisos creados exitosamente:', [
-                'user_id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'rol' => $user->rol
-            ]);
             
             return response()->json([
                 'success' => true,
@@ -276,11 +358,6 @@ class UserController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('❌ Error en storeFromModal:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Error al crear el usuario: ' . $e->getMessage()
@@ -293,53 +370,44 @@ class UserController extends Controller
      */
     public function permissions(User $usuario)
     {
-        try {
-            // Log para debugging
-            \Log::info('Accediendo a permisos para usuario: ' . $usuario->id . ' - ' . $usuario->name);
-            
-            // Obtener o crear permisos para el usuario
-            $permissions = $usuario->permissions ?? UserPermission::create([
-                'user_id' => $usuario->id,
-                'access_dashboard' => false,
-                'access_clientes' => false,
-                'access_equipos' => false,
-                'access_reparaciones' => false,
-                'access_inventario' => false,
-                'access_tickets' => false,
-                'access_tecnicos' => false,
-                'access_usuarios' => false,
-                'access_configuracion' => false,
-                'access_reportes' => false,
-                'create_equipo' => false,
-                'edit_equipo' => false,
-                'delete_equipo' => false,
-                'view_equipo' => false,
-                'create_reparacion' => false,
-                'edit_reparacion' => false,
-                'delete_reparacion' => false,
-                'view_reparacion' => false,
-                'create_cliente' => false,
-                'edit_cliente' => false,
-                'delete_cliente' => false,
-                'view_cliente' => false,
-                'create_inventario' => false,
-                'edit_inventario' => false,
-                'delete_inventario' => false,
-                'view_inventario' => false,
-                'create_ticket' => false,
-                'edit_ticket' => false,
-                'delete_ticket' => false,
-                'view_ticket' => false,
-                'manage_users' => false,
-                'manage_tecnicos' => false,
-            ]);
+        // Obtener o crear permisos para el usuario
+        $permissions = $usuario->permissions ?? UserPermission::create([
+            'user_id' => $usuario->id,
+            'access_dashboard' => false,
+            'access_clientes' => false,
+            'access_equipos' => false,
+            'access_reparaciones' => false,
+            'access_inventario' => false,
+            'access_tickets' => false,
+            'access_tecnicos' => false,
+            'access_usuarios' => false,
+            'access_configuracion' => false,
+            'access_reportes' => false,
+            'create_equipo' => false,
+            'edit_equipo' => false,
+            'delete_equipo' => false,
+            'view_equipo' => false,
+            'create_reparacion' => false,
+            'edit_reparacion' => false,
+            'delete_reparacion' => false,
+            'view_reparacion' => false,
+            'create_cliente' => false,
+            'edit_cliente' => false,
+            'delete_cliente' => false,
+            'view_cliente' => false,
+            'create_inventario' => false,
+            'edit_inventario' => false,
+            'delete_inventario' => false,
+            'view_inventario' => false,
+            'create_ticket' => false,
+            'edit_ticket' => false,
+            'delete_ticket' => false,
+            'view_ticket' => false,
+            'manage_users' => false,
+            'manage_tecnicos' => false,
+        ]);
 
-            \Log::info('Permisos obtenidos/creados correctamente para usuario: ' . $usuario->id);
-            return view('usuarios.permissions', compact('usuario', 'permissions'));
-        } catch (\Exception $e) {
-            \Log::error('Error al obtener permisos para usuario ' . $usuario->id . ': ' . $e->getMessage());
-            return back()->with('error', 'Error al cargar los permisos del usuario: ' . $e->getMessage());
-        }
+        return view('usuarios.permissions', compact('usuario', 'permissions'));
     }
 
     /**
@@ -348,9 +416,6 @@ class UserController extends Controller
     public function updatePermissions(Request $request, User $usuario)
     {
         try {
-            // Log para debugging
-            \Log::info('Actualizando permisos para usuario: ' . $usuario->id . ' - ' . $usuario->name);
-            
             // Obtener o crear permisos para el usuario
             $permissions = $usuario->permissions ?? UserPermission::create([
                 'user_id' => $usuario->id
@@ -398,42 +463,11 @@ class UserController extends Controller
 
             $permissions->save();
 
-            \Log::info('Permisos actualizados exitosamente para usuario: ' . $usuario->id);
             return redirect()->route('usuarios.show', $usuario)
                 ->with('success', 'Módulos de acceso actualizados exitosamente mediante checkboxes.');
         } catch (\Exception $e) {
-            \Log::error('Error al actualizar permisos para usuario ' . $usuario->id . ': ' . $e->getMessage());
             return back()->with('error', 'Error al actualizar los módulos: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Generar un username único basado en el nombre del usuario
-     */
-    private function generateUniqueUsername($name)
-    {
-        // Limpiar el nombre y convertir a minúsculas
-        $baseUsername = strtolower(trim($name));
-        
-        // Remover caracteres especiales y espacios, reemplazar con guiones bajos
-        $baseUsername = preg_replace('/[^a-z0-9\s]/', '', $baseUsername);
-        $baseUsername = preg_replace('/\s+/', '_', $baseUsername);
-        
-        // Si está vacío, usar 'usuario'
-        if (empty($baseUsername)) {
-            $baseUsername = 'usuario';
-        }
-        
-        // Verificar si ya existe
-        $username = $baseUsername;
-        $counter = 1;
-        
-        while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . '_' . $counter;
-            $counter++;
-        }
-        
-        return $username;
     }
 
     /**

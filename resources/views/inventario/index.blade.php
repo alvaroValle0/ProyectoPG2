@@ -68,7 +68,7 @@
     <div class="col-lg-2 col-md-4 col-6 mb-3">
         <div class="card border-0 bg-secondary text-white h-100">
             <div class="card-body text-center">
-                <i class="fas fa-dollar-sign display-6 mb-2"></i>
+                <i class="fas fa-coins display-6 mb-2"></i>
                 <h4>Q{{ number_format($estadisticas['valor_total'], 2) }}</h4>
                 <p class="mb-0">Valor Total</p>
             </div>
@@ -421,7 +421,7 @@
                     
                     <div class="mb-3">
                         <label for="motivo-ajuste" class="form-label">Motivo</label>
-                        <textarea class="form-control" id="motivo-ajuste" name="motivo" rows="2" required 
+                        <textarea class="form-control" id="motivo-ajuste" name="motivo" rows="2" required maxlength="255"
                                   placeholder="Ej: Compra de proveedor, Venta a cliente, Ajuste de inventario..."></textarea>
                     </div>
                 </form>
@@ -458,12 +458,13 @@ function ajustarStock() {
     const formData = new FormData(document.getElementById('formAjustarStock'));
     
     fetch(`/inventario/${itemId}/ajustar-stock`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
+            _method: 'PATCH',
             tipo: formData.get('tipo'),
             cantidad: parseInt(formData.get('cantidad')),
             motivo: formData.get('motivo')

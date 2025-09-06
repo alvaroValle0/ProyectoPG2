@@ -146,6 +146,85 @@ function eliminarItem(deleteUrl) {
     }
 }
 
+// Función universal para mostrar confirmación de eliminación
+function showDeleteConfirmation(itemId, itemNombre, itemTipo, deleteUrl) {
+    console.log('Mostrando confirmación de eliminación:', { itemId, itemNombre, itemTipo, deleteUrl });
+    
+    // Confirmación doble para mayor seguridad
+    if (confirm(`¿Está seguro de que desea eliminar este ${itemTipo.toLowerCase()}?\n\n${itemTipo}: ${itemNombre}\n\nEsta acción no se puede deshacer.`)) {
+        if (confirm(`Confirme nuevamente: ¿Realmente desea eliminar "${itemNombre}"?\n\nEsta acción eliminará permanentemente toda la información relacionada.`)) {
+            console.log('Confirmación doble aceptada, procediendo con eliminación...');
+            eliminarItem(deleteUrl);
+        } else {
+            console.log('Segunda confirmación cancelada');
+        }
+    } else {
+        console.log('Primera confirmación cancelada');
+    }
+}
+
+// Función para cambiar estado de usuario (activar/desactivar)
+function toggleStatus(userId, newStatus) {
+    console.log('Cambiando estado del usuario:', { userId, newStatus });
+    
+    // Obtener token CSRF
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('Token CSRF no encontrado');
+        alert('Error: Token de seguridad no encontrado. Recarga la página e intenta nuevamente.');
+        return;
+    }
+    
+    // Hacer petición AJAX
+    fetch(`/usuarios/${userId}/toggle-status`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ activo: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarNotificacion(data.message, 'success');
+            
+            // Actualizar el botón y el badge
+            const button = document.getElementById(`toggle-btn-${userId}`);
+            const badge = document.querySelector(`[data-user-id="${userId}"] .badge`);
+            
+            if (button && badge) {
+                if (data.estado) {
+                    // Usuario activado
+                    button.className = 'btn btn-outline-danger';
+                    button.onclick = () => toggleStatus(userId, false);
+                    button.title = 'Desactivar';
+                    button.innerHTML = '<i class="fas fa-user-times"></i>';
+                    
+                    badge.className = 'badge bg-success';
+                    badge.textContent = 'Activo';
+                } else {
+                    // Usuario desactivado
+                    button.className = 'btn btn-outline-success';
+                    button.onclick = () => toggleStatus(userId, true);
+                    button.title = 'Activar';
+                    button.innerHTML = '<i class="fas fa-user-check"></i>';
+                    
+                    badge.className = 'badge bg-danger';
+                    badge.textContent = 'Inactivo';
+                }
+            }
+        } else {
+            mostrarNotificacion(data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error al cambiar estado:', error);
+        mostrarNotificacion('Error al cambiar el estado del usuario', 'danger');
+    });
+}
+
 // Función para mostrar notificaciones
 function mostrarNotificacion(mensaje, tipo = 'success') {
     const notification = document.createElement('div');

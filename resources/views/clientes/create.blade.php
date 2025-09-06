@@ -269,7 +269,7 @@
 
 /* Form Header */
 .form-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--system-gradient);
     color: white;
     padding: 2rem;
     border-radius: 15px;

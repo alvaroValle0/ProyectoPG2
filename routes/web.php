@@ -28,9 +28,9 @@ Route::middleware('guest')->group(function () {
 // Protected routes (auth required)
 Route::middleware('auth')->group(function () {
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/busqueda-rapida', [DashboardController::class, 'busquedaRapida'])->name('dashboard.busqueda-rapida');
-    Route::get('/dashboard/estadisticas-api', [DashboardController::class, 'estadisticasApi'])->name('dashboard.estadisticas-api');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('module:dashboard')->name('dashboard');
+    Route::get('/dashboard/busqueda-rapida', [DashboardController::class, 'busquedaRapida'])->middleware('module:dashboard')->name('dashboard.busqueda-rapida');
+    Route::get('/dashboard/estadisticas-api', [DashboardController::class, 'estadisticasApi'])->middleware('module:dashboard')->name('dashboard.estadisticas-api');
     
     // Authentication
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     // === MÓDULO DE REPARACIONES ===
     
     // Equipos
-    Route::prefix('equipos')->name('equipos.')->group(function () {
+    Route::prefix('equipos')->name('equipos.')->middleware('module:equipos')->group(function () {
         Route::get('/', [EquipoController::class, 'index'])->name('index');
         Route::get('/create', [EquipoController::class, 'create'])->name('create');
         Route::post('/', [EquipoController::class, 'store'])->name('store');
@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Técnicos
-    Route::prefix('tecnicos')->name('tecnicos.')->group(function () {
+    Route::prefix('tecnicos')->name('tecnicos.')->middleware('module:tecnicos')->group(function () {
         Route::get('/', [TecnicoController::class, 'index'])->name('index');
         Route::get('/create', [TecnicoController::class, 'create'])->name('create');
         Route::post('/', [TecnicoController::class, 'store'])->name('store');
@@ -67,11 +67,12 @@ Route::middleware('auth')->group(function () {
         // Acciones especiales
         Route::patch('/{tecnico}/activar', [TecnicoController::class, 'activar'])->name('activar');
         Route::patch('/{tecnico}/desactivar', [TecnicoController::class, 'desactivar'])->name('desactivar');
+        Route::get('/carga/trabajo', [TecnicoController::class, 'cargaTrabajo'])->name('carga-trabajo');
         Route::get('/{tecnico}/rendimiento', [TecnicoController::class, 'rendimiento'])->name('rendimiento');
     });
 
     // Reparaciones
-    Route::prefix('reparaciones')->name('reparaciones.')->group(function () {
+    Route::prefix('reparaciones')->name('reparaciones.')->middleware('module:reparaciones')->group(function () {
         Route::get('/', [ReparacionController::class, 'index'])->name('index');
         Route::get('/create', [ReparacionController::class, 'create'])->name('create');
         Route::post('/', [ReparacionController::class, 'store'])->name('store');
@@ -90,7 +91,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Usuarios (Gestión de Usuarios)
-    Route::prefix('usuarios')->name('usuarios.')->group(function () {
+    Route::prefix('usuarios')->name('usuarios.')->middleware('module:usuarios')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::post('/', [UserController::class, 'store'])->name('store');
@@ -111,7 +112,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Clientes (Gestión de Clientes)
-    Route::prefix('clientes')->name('clientes.')->group(function () {
+    Route::prefix('clientes')->name('clientes.')->middleware('module:clientes')->group(function () {
         Route::get('/', [ClienteController::class, 'index'])->name('index');
         Route::get('/create', [ClienteController::class, 'create'])->name('create');
         Route::post('/', [ClienteController::class, 'store'])->name('store');
@@ -128,7 +129,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Tickets (Gestión de Tickets)
-    Route::prefix('tickets')->name('tickets.')->group(function () {
+    Route::prefix('tickets')->name('tickets.')->middleware('module:tickets')->group(function () {
         Route::get('/', [TicketController::class, 'index'])->name('index');
         Route::get('/create', [TicketController::class, 'create'])->name('create');
         Route::post('/', [TicketController::class, 'store'])->name('store');
@@ -152,7 +153,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // === MÓDULO DE INVENTARIO ===
-    Route::prefix('inventario')->name('inventario.')->group(function () {
+    Route::prefix('inventario')->name('inventario.')->middleware('module:inventario')->group(function () {
         Route::get('/', [InventarioController::class, 'index'])->name('index');
         Route::get('/create', [InventarioController::class, 'create'])->name('create');
         Route::post('/', [InventarioController::class, 'store'])->name('store');
@@ -172,7 +173,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // === MÓDULO DE CONFIGURACIÓN ===
-    Route::prefix('configuracion')->name('configuracion.')->group(function () {
+    Route::prefix('configuracion')->name('configuracion.')->middleware('module:configuracion')->group(function () {
         Route::get('/', [ConfiguracionController::class, 'index'])->name('index');
         Route::get('/general', [ConfiguracionController::class, 'general'])->name('general');
         Route::post('/general', [ConfiguracionController::class, 'actualizarGeneral'])->name('actualizar-general');

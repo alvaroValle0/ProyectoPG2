@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'rol',
         'activo',
+        'avatar',
     ];
 
     /**
@@ -102,6 +103,36 @@ class User extends Authenticatable
     public function scopePorRol($query, $rol)
     {
         return $query->where('rol', $rol);
+    }
+
+    // Método para obtener la URL del avatar
+    public function getAvatarUrlAttribute()
+    {
+        // Si es técnico y tiene foto, usar la foto del técnico
+        if ($this->esTecnico() && $this->tecnico && $this->tecnico->foto) {
+            return $this->tecnico->foto_url;
+        }
+        
+        // Si tiene avatar propio, usarlo
+        if ($this->avatar) {
+            return asset('storage/avatars/' . $this->avatar);
+        }
+        
+        // Avatar por defecto
+        return asset('images/default-avatar.svg');
+    }
+
+    // Método para obtener las iniciales del nombre
+    public function getInicialesAttribute()
+    {
+        $palabras = explode(' ', trim($this->name));
+        $iniciales = '';
+        
+        foreach (array_slice($palabras, 0, 2) as $palabra) {
+            $iniciales .= strtoupper(substr($palabra, 0, 1));
+        }
+        
+        return $iniciales ?: 'U';
     }
 
     public function scopeSinTecnico($query)

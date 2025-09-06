@@ -20,7 +20,7 @@
 
 <div class="card border-0 shadow-sm">
     <div class="card-body">
-        <form action="{{ route('usuarios.store') }}" method="POST">
+        <form action="{{ route('usuarios.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="row">
@@ -116,6 +116,40 @@
                         @error('password_confirmation')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <!-- Avatar del Usuario -->
+                    <div class="mb-3">
+                        <label for="avatar" class="form-label">
+                            <i class="fas fa-camera me-1"></i>Foto de Perfil
+                        </label>
+                        
+                        <div class="text-center mb-3">
+                            <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 100px; height: 100px; font-size: 2.5rem; color: white;"
+                                 id="avatar-preview-container">
+                                <i class="fas fa-user" id="avatar-icon"></i>
+                                <img src="" alt="Preview" class="rounded-circle" 
+                                     style="width: 100px; height: 100px; object-fit: cover; display: none;"
+                                     id="avatar-preview">
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="file" 
+                                   class="form-control @error('avatar') is-invalid @enderror" 
+                                   id="avatar" 
+                                   name="avatar" 
+                                   accept="image/*"
+                                   onchange="previewAvatar(this)">
+                            <label class="input-group-text" for="avatar">
+                                <i class="fas fa-upload"></i>
+                            </label>
+                        </div>
+                        @error('avatar')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">JPG, PNG, GIF hasta 2MB. Opcional.</small>
                     </div>
                 </div>
 
@@ -674,6 +708,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Función para preview del avatar
+function previewAvatar(input) {
+    const previewImg = document.getElementById('avatar-preview');
+    const previewIcon = document.getElementById('avatar-icon');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewImg.style.display = 'block';
+            previewIcon.style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 </script>
 @endsection
 

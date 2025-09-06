@@ -117,7 +117,10 @@ class Tecnico extends Model
         return null;
     }
 
-
+    public function getCargaTrabajoAttribute()
+    {
+        return $this->reparacionesActivas()->count();
+    }
 
     public function getTotalReparacionesAttribute()
     {
@@ -133,6 +136,6 @@ class Tecnico extends Model
     {
         return $this->reparacionesCompletadas()
             ->whereNotNull('tiempo_real_horas')
-            ->avg('tiempo_real_horas');
+            ->avg('tiempo_real_horas') ?? 0;
     }
 }

@@ -133,7 +133,7 @@
                     </thead>
                     <tbody>
                         @foreach($usuarios as $usuario)
-                        <tr>
+                        <tr data-user-id="{{ $usuario->id }}">
                                                          <!-- Nombre -->
                              <td>
                                  <div class="d-flex align-items-center">
@@ -246,12 +246,16 @@
                                     @endif
                                     
                                     <!-- Eliminar -->
-                                    <button type="button" 
-                                            class="btn btn-outline-danger" 
-                                            onclick="showDeleteConfirmation({{ $usuario->id }}, '{{ $usuario->name }}', 'Usuario', '{{ route('usuarios.destroy', $usuario) }}')"
-                                            title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="btn btn-outline-danger" 
+                                                onclick="return confirm('¿Está seguro de que desea eliminar al usuario {{ $usuario->name }}?\n\nEsta acción eliminará:\n- La cuenta del usuario\n- Todos sus permisos\n- Su perfil técnico (si existe)\n\nEsta acción NO se puede deshacer.')"
+                                                title="Eliminar Usuario">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -460,4 +464,243 @@ function showToast(type, message) {
     }
 }
 </style>
+@endsection
+
+@section('scripts')
+<script>
+// Función específica para eliminar usuarios
+function showDeleteConfirmation(userId, userName, itemType, deleteUrl) {
+    console.log('Función de eliminación llamada:', { userId, userName, itemType, deleteUrl });
+    
+    // Confirmación doble para mayor seguridad
+    if (confirm(`¿Está seguro de que desea eliminar este ${itemType.toLowerCase()}?\n\n${itemType}: ${userName}\n\nEsta acción no se puede deshacer y eliminará:\n- La cuenta del usuario\n- Todos sus permisos\n- Su perfil técnico (si existe)`)) {
+        if (confirm(`CONFIRMACIÓN FINAL:\n\n¿Realmente desea eliminar al usuario "${userName}"?\n\nEsta acción es IRREVERSIBLE.`)) {
+            console.log('Confirmación doble aceptada, procediendo con eliminación...');
+            eliminarUsuario(deleteUrl);
+        } else {
+            console.log('Segunda confirmación cancelada');
+        }
+    } else {
+        console.log('Primera confirmación cancelada');
+    }
+}
+
+// Función para eliminar usuario
+function eliminarUsuario(deleteUrl) {
+    console.log('Eliminando usuario con URL:', deleteUrl);
+    
+    // Obtener token CSRF
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('Token CSRF no encontrado');
+        alert('Error: Token de seguridad no encontrado. Recarga la página e intenta nuevamente.');
+        return;
+    }
+    
+    // Crear formulario para enviar la solicitud DELETE
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = deleteUrl;
+    form.style.display = 'none';
+    
+    // Agregar token CSRF
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_token';
+    csrfInput.value = csrfToken.content;
+    form.appendChild(csrfInput);
+    
+    // Agregar método DELETE
+    const methodInput = document.createElement('input');
+    methodInput.type = 'hidden';
+    methodInput.name = '_method';
+    methodInput.value = 'DELETE';
+    form.appendChild(methodInput);
+    
+    // Agregar formulario al DOM y enviarlo
+    document.body.appendChild(form);
+    
+    console.log('Enviando formulario de eliminación...');
+    
+    try {
+        form.submit();
+    } catch (error) {
+        console.error('Error al enviar formulario:', error);
+        alert('Error al eliminar el usuario. Intenta nuevamente.');
+    }
+}
+
+// Función para cambiar estado de usuario (activar/desactivar)
+function toggleStatus(userId, newStatus) {
+    console.log('Cambiando estado del usuario:', { userId, newStatus });
+    
+    // Obtener token CSRF
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('Token CSRF no encontrado');
+        alert('Error: Token de seguridad no encontrado. Recarga la página e intenta nuevamente.');
+        return;
+    }
+    
+    // Hacer petición AJAX
+    fetch(`/usuarios/${userId}/toggle-status`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ activo: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar notificación de éxito
+            mostrarNotificacion(data.message, 'success');
+            
+            // Actualizar el botón y el badge
+            const button = document.getElementById(`toggle-btn-${userId}`);
+            const badge = document.querySelector(`[data-user-id="${userId}"] .badge`);
+            
+            if (button && badge) {
+                if (data.estado) {
+                    // Usuario activado
+                    button.className = 'btn btn-outline-danger';
+                    button.onclick = () => toggleStatus(userId, false);
+                    button.title = 'Desactivar';
+                    button.innerHTML = '<i class="fas fa-user-times"></i>';
+                    
+                    badge.className = 'badge bg-success';
+                    badge.textContent = 'Activo';
+                } else {
+                    // Usuario desactivado
+                    button.className = 'btn btn-outline-success';
+                    button.onclick = () => toggleStatus(userId, true);
+                    button.title = 'Activar';
+                    button.innerHTML = '<i class="fas fa-user-check"></i>';
+                    
+                    badge.className = 'badge bg-danger';
+                    badge.textContent = 'Inactivo';
+                }
+            }
+        } else {
+            mostrarNotificacion(data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error al cambiar estado:', error);
+        mostrarNotificacion('Error al cambiar el estado del usuario', 'danger');
+    });
+}
+
+// Función para mostrar notificaciones
+function mostrarNotificacion(mensaje, tipo = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px;';
+    
+    const iconClass = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    notification.innerHTML = `
+        <i class="fas ${iconClass} me-2"></i>
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover automáticamente después de 5 segundos
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Función directa para eliminar usuarios
+function eliminarUsuarioDirecto(userId, userName, deleteUrl) {
+    console.log('Eliminación directa llamada:', { userId, userName, deleteUrl });
+    
+    // Confirmación simple pero efectiva
+    const confirmacion1 = confirm(`⚠️ ELIMINAR USUARIO ⚠️\n\nUsuario: ${userName}\nID: ${userId}\n\n¿Está seguro de que desea eliminar este usuario?\n\nEsta acción eliminará:\n✗ La cuenta del usuario\n✗ Todos sus permisos\n✗ Su perfil técnico (si existe)\n✗ Todo su historial\n\n¿Continuar?`);
+    
+    if (confirmacion1) {
+        const confirmacion2 = confirm(`🚨 CONFIRMACIÓN FINAL 🚨\n\n¿REALMENTE desea eliminar al usuario "${userName}"?\n\nEsta acción es PERMANENTE e IRREVERSIBLE.\n\n¿Proceder con la eliminación?`);
+        
+        if (confirmacion2) {
+            console.log('Confirmaciones aceptadas, eliminando usuario...');
+            
+            // Mostrar loading
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 12px; text-align: center;">
+                        <i class="fas fa-spinner fa-spin fa-2x text-danger mb-3"></i>
+                        <h5>Eliminando usuario...</h5>
+                        <p>Por favor espere...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+            
+            // Crear y enviar formulario
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = deleteUrl;
+            form.style.display = 'none';
+            
+            // Token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken.content;
+                form.appendChild(csrfInput);
+            }
+            
+            // Método DELETE
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+            
+            // Enviar
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            console.log('Confirmación final cancelada');
+        }
+    } else {
+        console.log('Primera confirmación cancelada');
+    }
+}
+
+// Debug: Verificar que las funciones estén cargadas
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('JavaScript de usuarios cargado correctamente');
+    console.log('Funciones disponibles:', {
+        showDeleteConfirmation: typeof showDeleteConfirmation,
+        toggleStatus: typeof toggleStatus,
+        eliminarUsuario: typeof eliminarUsuario,
+        eliminarUsuarioDirecto: typeof eliminarUsuarioDirecto
+    });
+    
+    // Verificar que los botones tengan los eventos correctos
+    const deleteButtons = document.querySelectorAll('button[onclick*="eliminarUsuarioDirecto"]');
+    console.log('Botones de eliminar encontrados:', deleteButtons.length);
+    
+    deleteButtons.forEach((button, index) => {
+        console.log(`Botón ${index + 1}:`, button.getAttribute('onclick'));
+    });
+    
+    // Verificar CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    console.log('CSRF Token disponible:', csrfToken ? 'Sí' : 'No');
+    if (csrfToken) {
+        console.log('CSRF Token:', csrfToken.content);
+    }
+});
+</script>
 @endsection
