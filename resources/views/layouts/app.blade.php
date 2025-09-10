@@ -10,6 +10,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- CSS Responsive para móviles -->
+    <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
+    <!-- CSS Optimizado para touch -->
+    <link href="{{ asset('css/touch-optimized.css') }}" rel="stylesheet">
     <!-- Script para aplicar colores inmediatamente (global o por módulo) -->
     <script>
         (function() {
@@ -363,30 +367,7 @@
             border-radius: 25px;
             font-weight: 500;
         }
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 320px; /* Ancho optimizado para móviles */
-                box-shadow: 
-                    0 25px 45px rgba(0, 0, 0, 0.3),
-                    0 0 0 1px rgba(255, 255, 255, 0.1);
-            }
-            .sidebar-menu {
-                max-height: calc(100vh - 120px);
-                padding: 1rem 0;
-            }
-            .sidebar-item {
-                margin: 0.2rem 0.75rem;
-                padding: 0.875rem 1rem;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
-            }
-            .sidebar-header {
-                padding: 1.5rem 1rem;
-            }
-        }
+        /* Media queries específicas del layout ya están en responsive.css */
         
         /* Mejoras adicionales para el scroll */
         .sidebar-menu {
@@ -516,6 +497,47 @@
     @yield('styles')
 </head>
 <body>
+    <!-- Navbar móvil -->
+    <nav class="navbar navbar-expand-lg d-lg-none" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); position: fixed; top: 0; left: 0; right: 0; z-index: 9999;">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="{{ route('dashboard') }}">
+                <img src="{{ asset('images/Imagen_de_WhatsApp_2025-08-10_a_las_17.56.17_0b0e759c-removebg-preview.png') }}" 
+                     alt="Logo" 
+                     style="max-height: 35px; max-width: 120px; object-fit: contain; margin-right: 0.5rem;">
+                <span class="fw-bold">HDC</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" onclick="toggleSidebar()" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="dropdown ms-auto">
+                <button class="btn user-dropdown-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user me-2"></i>
+                    {{ auth()->user()->name ?? 'Usuario' }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">{{ auth()->user()->name ?? 'Usuario' }}</h6></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Overlay para cerrar sidebar en móvil -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -633,13 +655,16 @@
         </div>
     </div>
 
+    <!-- Overlay para cerrar sidebar en móvil -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light mb-4">
             <div class="container-fluid">
-                <button class="btn btn-outline-primary me-3" id="sidebarToggle">
-                    <i class="fas fa-bars"></i>
+                <button class="btn btn-outline-primary me-3 navbar-toggler" id="sidebarToggle" type="button">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
                 
                 <div class="d-flex align-items-center ms-auto">
@@ -740,18 +765,117 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Scripts para navegación móvil -->
+    <script>
+        // Manejo del sidebar móvil
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+            
+            // Prevenir scroll del body cuando el sidebar está abierto
+            if (sidebar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        // Cerrar sidebar al hacer clic en un enlace (móvil)
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-item');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+            
+            // Cerrar sidebar al redimensionar ventana
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+            
+            // Detectar swipe para cerrar sidebar
+            let startX = 0;
+            let currentX = 0;
+            let sidebarElement = document.getElementById('sidebar');
+            
+            sidebarElement.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+            });
+            
+            sidebarElement.addEventListener('touchmove', function(e) {
+                currentX = e.touches[0].clientX;
+                const diffX = startX - currentX;
+                
+                // Si el swipe es hacia la izquierda y suficiente
+                if (diffX > 50) {
+                    closeSidebar();
+                }
+            });
+        });
+    </script>
+    
     <!-- Sistema de eliminación unificado -->
     <script src="{{ asset('js/eliminacion.js') }}"></script>
     
+    <!-- Sistema de tablas móviles -->
+    <script src="{{ asset('js/mobile-tables.js') }}"></script>
+    
     <!-- Custom Scripts -->
     <script>
-        // Sidebar toggle
+        // Sidebar toggle mejorado para móviles
         document.getElementById('sidebarToggle').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
             
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
+            // En móviles usar show/hide, en desktop usar collapsed/expanded
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+                document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        });
+
+        // Cerrar sidebar al hacer click en el overlay
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+
+        // Cerrar sidebar al redimensionar ventana
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
         });
 
         // Asegurar que el dropdown del usuario esté siempre visible

@@ -3,22 +3,26 @@
 @section('title', 'Carga de Trabajo de Técnicos')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-chart-bar text-primary me-2"></i>
-            Carga de Trabajo de Técnicos
-        </h1>
-        <p class="text-muted">Monitorea la distribución de tareas y rendimiento del equipo técnico</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <div class="btn-group">
-            <a href="{{ route('tecnicos.index') }}" class="btn btn-outline-primary">
-                <i class="fas fa-users me-2"></i>Ver Técnicos
-            </a>
-            <a href="{{ route('reparaciones.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-wrench me-2"></i>Ver Reparaciones
-            </a>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-chart-bar text-gradient me-3"></i>
+                    Carga de Trabajo de Técnicos
+                </h1>
+                <p class="module-subtitle">Monitorea la distribución de tareas y el rendimiento del equipo técnico</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ route('tecnicos.index') }}" class="btn btn-light btn-modern" data-bs-toggle="tooltip" title="Ver listado de técnicos">
+                        <i class="fas fa-users me-2"></i>Ver Técnicos
+                    </a>
+                    <a href="{{ route('reparaciones.index') }}" class="btn btn-outline-light btn-modern" data-bs-toggle="tooltip" title="Ver reparaciones">
+                        <i class="fas fa-wrench me-2"></i>Ver Reparaciones
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -26,7 +30,7 @@
 <!-- Estadísticas Generales -->
 <div class="row mb-4">
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-primary text-white h-100">
+        <div class="card border-0 bg-primary text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-users display-6 mb-2"></i>
                 <h4>{{ $tecnicos->count() }}</h4>
@@ -35,7 +39,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-success text-white h-100">
+        <div class="card border-0 bg-success text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-user-check display-6 mb-2"></i>
                 <h4>{{ $tecnicos->where('activo', true)->count() }}</h4>
@@ -44,7 +48,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-warning text-white h-100">
+        <div class="card border-0 bg-warning text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-tasks display-6 mb-2"></i>
                 <h4>{{ $tecnicos->sum('carga_trabajo') }}</h4>
@@ -53,7 +57,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-info text-white h-100">
+        <div class="card border-0 bg-info text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-balance-scale display-6 mb-2"></i>
                 <h4>{{ $tecnicos->where('activo', true)->count() > 0 ? round($tecnicos->sum('carga_trabajo') / $tecnicos->where('activo', true)->count(), 1) : 0 }}</h4>
@@ -323,6 +327,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @section('styles')
 <style>
+.module-header {
+    background: var(--system-gradient);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.module-title { font-size: 2.0rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .6rem 1.2rem; font-weight: 600; }
+
+.kpi { background-image: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,0,0,0.08)); border-radius: 14px; }
+
 .card {
     transition: all 0.3s ease;
 }

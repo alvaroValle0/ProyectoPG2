@@ -85,6 +85,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/{reparacion}/cambiar-estado', [ReparacionController::class, 'cambiarEstado'])->name('cambiar-estado');
         Route::patch('/{reparacion}/asignar-tecnico', [ReparacionController::class, 'asignarTecnico'])->name('asignar-tecnico');
         Route::get('/mis/tareas', [ReparacionController::class, 'misTareas'])->name('mis-tareas');
+        Route::get('/mis/tareas/exportar', [ReparacionController::class, 'exportarMisTareas'])->name('mis-tareas.exportar');
         Route::get('/buscar/equipos', [ReparacionController::class, 'buscarEquipos'])->name('buscar-equipos');
         Route::get('/reportes/general', [ReparacionController::class, 'reportes'])->name('reportes');
         Route::get('/{reparacion}/ticket', [ReparacionController::class, 'imprimirTicket'])->name('ticket');

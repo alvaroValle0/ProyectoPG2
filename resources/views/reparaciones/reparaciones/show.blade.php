@@ -3,30 +3,34 @@
 @section('title', 'Reparación #' . $reparacion->id)
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-wrench text-primary me-2"></i>
-            Reparación #{{ $reparacion->id }}
-        </h1>
-        <p class="text-muted">Detalles completos de la orden de reparación</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <div class="btn-group">
-            <a href="{{ route('reparaciones.edit', $reparacion) }}" class="btn btn-warning">
-                <i class="fas fa-edit me-2"></i>Editar
-            </a>
-            <button type="button" class="btn btn-info" onclick="imprimirTicket({{ $reparacion->id }})">
-                <i class="fas fa-print me-2"></i>Imprimir
-            </button>
-            @if(in_array($reparacion->estado, ['pendiente', 'en_proceso']))
-            <button type="button" class="btn btn-danger" onclick="cancelarReparacionDirecta({{ $reparacion->id }})">
-                <i class="fas fa-ban me-2"></i>Cancelar
-            </button>
-            @endif
-            <a href="{{ route('reparaciones.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Volver
-            </a>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-wrench text-gradient me-3"></i>
+                    Reparación #{{ $reparacion->id }}
+                </h1>
+                <p class="module-subtitle">Detalles completos de la orden de reparación</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <div class="btn-group">
+                    <a href="{{ route('reparaciones.edit', $reparacion) }}" class="btn btn-warning btn-modern" data-bs-toggle="tooltip" title="Editar">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                    <button type="button" class="btn btn-info btn-modern" data-bs-toggle="tooltip" title="Imprimir" onclick="imprimirTicket({{ $reparacion->id }})">
+                        <i class="fas fa-print me-2"></i>Imprimir
+                    </button>
+                    @if(in_array($reparacion->estado, ['pendiente', 'en_proceso']))
+                    <button type="button" class="btn btn-danger btn-modern" data-bs-toggle="tooltip" title="Cancelar" onclick="cancelarReparacionDirecta({{ $reparacion->id }})">
+                        <i class="fas fa-ban me-2"></i>Cancelar
+                    </button>
+                    @endif
+                    <a href="{{ route('reparaciones.index') }}" class="btn btn-outline-light btn-modern" data-bs-toggle="tooltip" title="Volver">
+                        <i class="fas fa-arrow-left me-2"></i>Volver
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -627,5 +631,21 @@ function imprimirTicket(reparacionId) {
         alert('Por favor, permite las ventanas emergentes para imprimir el ticket.');
     }
 }
+// Inicializar tooltips
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
 </script>
+@endsection
+
+@section('styles')
+<style>
+.module-header{background:var(--system-gradient);color:#fff;padding:2rem;border-radius:15px;box-shadow:0 10px 20px rgba(0,0,0,0.08)}
+.module-title{font-size:2.25rem;font-weight:700;margin:0}
+.module-subtitle{opacity:.9;margin-top:.25rem}
+.btn-modern{border-radius:25px;padding:.5rem 1.25rem;font-weight:600}
+</style>
 @endsection

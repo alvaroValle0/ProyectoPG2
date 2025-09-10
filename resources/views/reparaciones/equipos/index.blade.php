@@ -3,20 +3,24 @@
 @section('title', 'Gestión de Equipos')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-laptop text-primary me-2"></i>
-            Gestión de Equipos
-        </h1>
-        <p class="text-muted">Lista completa de equipos registrados en el sistema</p>
-    </div>
-    <div class="col-md-4 text-end">
-        @if(\App\Helpers\PermissionHelper::can('create_equipo'))
-        <a href="{{ route('equipos.create') }}" class="btn btn-primary btn-custom">
-            <i class="fas fa-plus me-2"></i>Nuevo Equipo
-        </a>
-        @endif
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-laptop text-gradient me-3"></i>
+                    Gestión de Equipos
+                </h1>
+                <p class="module-subtitle">Lista completa de equipos registrados en el sistema</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                @if(\App\Helpers\PermissionHelper::can('create_equipo'))
+                <a href="{{ route('equipos.create') }}" class="btn btn-primary btn-lg btn-modern">
+                    <i class="fas fa-plus me-2"></i>Nuevo Equipo
+                </a>
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 
@@ -103,7 +107,7 @@
     <div class="card-body">
         @if($equipos->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover modern-table">
                     <thead>
                         <tr>
                             <th>Número de Serie</th>
@@ -158,16 +162,16 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('equipos.show', $equipo) }}" class="btn btn-outline-primary" title="Ver detalles">
+                                    <a href="{{ route('equipos.show', $equipo) }}" class="btn btn-outline-primary" title="Ver detalles" data-bs-toggle="tooltip">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     @if(\App\Helpers\PermissionHelper::can('edit_equipo'))
-                                    <a href="{{ route('equipos.edit', $equipo) }}" class="btn btn-outline-warning" title="Editar">
+                                    <a href="{{ route('equipos.edit', $equipo) }}" class="btn btn-outline-warning" title="Editar" data-bs-toggle="tooltip">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @endif
                                     @if(\App\Helpers\PermissionHelper::can('create_reparacion') && in_array($equipo->estado, ['recibido', 'en_reparacion']))
-                                        <a href="{{ route('reparaciones.create', ['equipo_id' => $equipo->id]) }}" class="btn btn-outline-success" title="Nueva reparación">
+                                        <a href="{{ route('reparaciones.create', ['equipo_id' => $equipo->id]) }}" class="btn btn-outline-success" title="Nueva reparación" data-bs-toggle="tooltip">
                                             <i class="fas fa-wrench"></i>
                                         </a>
                                     @endif
@@ -175,7 +179,7 @@
                                     <form action="{{ route('equipos.destroy', $equipo) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de eliminar el equipo {{ $equipo->marca }} {{ $equipo->modelo }} ({{ $equipo->numero_serie }})?\n\nEsta acción no se puede deshacer.');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Eliminar equipo">
+                                        <button type="submit" class="btn btn-outline-danger" title="Eliminar equipo" data-bs-toggle="tooltip">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -208,6 +212,12 @@
 
 @section('styles')
 <style>
+.module-header { background: var(--system-gradient); color: #fff; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+.module-title { font-size: 2.25rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .75rem 1.5rem; font-weight: 600; }
+.modern-table thead th { background: #f8fafc; border: none; text-transform: uppercase; letter-spacing: .5px; }
+.modern-table tbody tr:hover { background: rgba(0,0,0,0.02); transform: scale(1.005); }
 .btn-outline-danger {
     transition: all 0.3s ease;
 }
@@ -265,6 +275,13 @@
 
 @section('scripts')
 <script>
+// Inicializar tooltips Bootstrap
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
 // Script para cambio rápido de estado
 function cambiarEstado(equipoId, nuevoEstado) {
     if (confirm('¿Está seguro de cambiar el estado del equipo?')) {

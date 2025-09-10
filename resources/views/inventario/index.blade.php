@@ -3,18 +3,22 @@
 @section('title', 'Gestión de Inventario')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-boxes text-primary me-2"></i>
-            Gestión de Inventario
-        </h1>
-        <p class="text-muted">Administra el inventario de productos y componentes</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <a href="{{ route('inventario.create') }}" class="btn btn-primary btn-custom">
-            <i class="fas fa-plus me-2"></i>Nuevo Item
-        </a>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-boxes text-gradient me-3"></i>
+                    Gestión de Inventario
+                </h1>
+                <p class="module-subtitle">Administra productos y componentes de manera eficiente</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="{{ route('inventario.create') }}" class="btn btn-primary btn-lg btn-modern">
+                    <i class="fas fa-plus me-2"></i>Nuevo Item
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -153,7 +157,7 @@
     <div class="card-body">
         @if($inventario->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover modern-table">
                     <thead class="table-dark">
                         <tr>
                             <th>Código</th>
@@ -286,14 +290,16 @@
                                     <!-- Ver -->
                                     <a href="{{ route('inventario.show', $item) }}" 
                                        class="btn btn-outline-primary" 
-                                       title="Ver detalles">
+                                       title="Ver detalles" 
+                                       data-bs-toggle="tooltip">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
                                     <!-- Editar -->
                                     <a href="{{ route('inventario.edit', $item) }}" 
                                        class="btn btn-outline-warning" 
-                                       title="Editar">
+                                       title="Editar" 
+                                       data-bs-toggle="tooltip">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     
@@ -301,7 +307,8 @@
                                     <button type="button" 
                                             class="btn btn-outline-info" 
                                             onclick="mostrarModalStock({{ $item->id }}, '{{ $item->nombre }}', {{ $item->stock_actual }})"
-                                            title="Ajustar Stock">
+                                            title="Ajustar Stock" 
+                                            data-bs-toggle="tooltip">
                                         <i class="fas fa-plus-minus"></i>
                                     </button>
                                     
@@ -312,7 +319,8 @@
                                             data-item-nombre="{{ $item->nombre }}"
                                             data-item-tipo="item de inventario"
                                             data-delete-url="{{ route('inventario.destroy', $item) }}"
-                                            title="Eliminar">
+                                            title="Eliminar" 
+                                            data-bs-toggle="tooltip">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -524,11 +532,30 @@ function showToast(type, message) {
         toastElement.remove();
     });
 }
+// Inicializar tooltips Bootstrap
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
 </script>
 @endsection
 
 @section('styles')
 <style>
+.module-header {
+    background: var(--system-gradient);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.module-title { font-size: 2.25rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .75rem 1.5rem; font-weight: 600; }
+.modern-table thead th { background: #f8fafc; border: none; text-transform: uppercase; letter-spacing: .5px; }
+.modern-table tbody tr:hover { background: rgba(0,0,0,0.02); transform: scale(1.005); }
 .table-responsive {
     border-radius: 15px;
     overflow: hidden;

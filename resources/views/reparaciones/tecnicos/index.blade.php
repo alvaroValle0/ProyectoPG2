@@ -3,18 +3,22 @@
 @section('title', 'Gestión de Técnicos')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-users-cog text-primary me-2"></i>
-            Gestión de Técnicos
-        </h1>
-        <p class="text-muted">Administra el equipo de técnicos especializados</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <a href="{{ route('tecnicos.create') }}" class="btn btn-primary btn-custom">
-            <i class="fas fa-user-plus me-2"></i>Nuevo Técnico
-        </a>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-users-cog text-gradient me-3"></i>
+                    Gestión de Técnicos
+                </h1>
+                <p class="module-subtitle">Administra el equipo de técnicos especializados</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="{{ route('tecnicos.create') }}" class="btn btn-light btn-modern" data-bs-toggle="tooltip" title="Registrar nuevo técnico">
+                    <i class="fas fa-user-plus me-2"></i>Nuevo Técnico
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -63,8 +67,8 @@
     <div class="card-body">
         @if($tecnicos->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-dark">
+                <table class="table table-hover modern-table">
+                    <thead class="table-dark sticky-top" style="z-index: 1;">
                         <tr>
                             <th>Técnico</th>
                             <th>Especialidad</th>
@@ -108,10 +112,12 @@
                             <td>
                                 @if($tecnico->activo)
                                     <span class="badge bg-success text-white fs-6">
+                                        <span class="status-dot me-1"></span>
                                         <i class="fas fa-check-circle me-1"></i>Activo
                                     </span>
                                 @else
                                     <span class="badge bg-danger text-white fs-6">
+                                        <span class="status-dot me-1"></span>
                                         <i class="fas fa-times-circle me-1"></i>Inactivo
                                     </span>
                                 @endif
@@ -161,37 +167,42 @@
                             
                             <!-- Acciones -->
                             <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <!-- Ver -->
+                                <div class="action-buttons">
                                     <a href="{{ route('tecnicos.show', $tecnico) }}" 
-                                       class="btn btn-outline-primary" 
+                                       class="btn btn-sm btn-action btn-info" 
                                        title="Ver detalles">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    
-                                    <!-- Editar -->
                                     <a href="{{ route('tecnicos.edit', $tecnico) }}" 
-                                       class="btn btn-outline-warning" 
+                                       class="btn btn-sm btn-action btn-warning" 
                                        title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    
-                                    <!-- Activar/Desactivar -->
                                     @if($tecnico->activo)
                                         <button type="button" 
-                                                class="btn btn-outline-danger" 
+                                                class="btn btn-sm btn-action btn-secondary" 
                                                 onclick="cambiarEstado({{ $tecnico->id }}, false)"
                                                 title="Desactivar">
                                             <i class="fas fa-user-times"></i>
                                         </button>
                                     @else
                                         <button type="button" 
-                                                class="btn btn-outline-success" 
+                                                class="btn btn-sm btn-action btn-success" 
                                                 onclick="cambiarEstado({{ $tecnico->id }}, true)"
                                                 title="Activar">
                                             <i class="fas fa-user-check"></i>
                                         </button>
                                     @endif
+                                    <form action="{{ route('tecnicos.destroy', $tecnico) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-action btn-danger" 
+                                                onclick="return confirm('¿Eliminar al técnico {{ $tecnico->nombre_completo }}? Esta acción es irreversible.')"
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -299,6 +310,41 @@ setInterval(() => {
 
 @section('styles')
 <style>
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+.btn-action {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: none;
+}
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+.btn-info { background: #06b6d4; color: #fff; }
+.btn-warning { background: #f59e0b; color: #fff; }
+.btn-success { background: #10b981; color: #fff; }
+.btn-secondary { background: #6b7280; color: #fff; }
+.btn-danger { background: #ef4444; color: #fff; }
+.module-header {
+    background: var(--system-gradient);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.module-title { font-size: 2.0rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .6rem 1.2rem; font-weight: 600; }
+
 .table-responsive {
     border-radius: 15px;
     overflow: hidden;
@@ -338,6 +384,9 @@ setInterval(() => {
     padding: 0.375rem 0.5rem;
     font-size: 0.875rem;
 }
+
+/* Indicador tipo dot */
+.status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; background: currentColor; }
 
 @media (max-width: 768px) {
     .table-responsive {

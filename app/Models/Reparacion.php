@@ -93,16 +93,6 @@ class Reparacion extends Model
     }
 
     // Métodos auxiliares
-    public function getEstadoColorAttribute()
-    {
-        return match($this->estado) {
-            'pendiente' => 'danger',
-            'en_proceso' => 'warning',
-            'completada' => 'success',
-            'cancelada' => 'secondary',
-            default => 'secondary'
-        };
-    }
 
     public function getDiasTranscurridosAttribute()
     {
@@ -130,16 +120,7 @@ class Reparacion extends Model
         return $this->fecha_inicio->diffInDays($this->fecha_fin);
     }
 
-    public function getProgresoPorcentajeAttribute()
-    {
-        return match($this->estado) {
-            'pendiente' => 0,
-            'en_proceso' => 50,
-            'completada' => 100,
-            'cancelada' => 0,
-            default => 0
-        };
-    }
+    
 
     // Eventos del modelo
     protected static function boot()
@@ -170,5 +151,38 @@ class Reparacion extends Model
                 }
             }
         });
+    }
+
+    // Atributos calculados para UI
+    public function getEstadoColorAttribute(): string
+    {
+        return match($this->estado) {
+            'pendiente' => 'danger',
+            'en_proceso' => 'warning',
+            'completada' => 'success',
+            'cancelada' => 'secondary',
+            default => 'secondary'
+        };
+    }
+
+    public function getProgresoPorcentajeAttribute(): int
+    {
+        if ($this->estado === 'completada') {
+            return 100;
+        }
+
+        // Si existe tiempo estimado, aproximar progreso por tiempo transcurrido
+        if (!empty($this->tiempo_estimado_horas) && $this->fecha_inicio) {
+            $horasTranscurridas = $this->fecha_fin
+                ? $this->fecha_inicio->diffInHours($this->fecha_fin)
+                : $this->fecha_inicio->diffInHours(now());
+
+            if ($this->tiempo_estimado_horas > 0) {
+                $progreso = (int) round(($horasTranscurridas / $this->tiempo_estimado_horas) * 100);
+                return max(0, min($progreso, 99));
+            }
+        }
+
+        return 0;
     }
 }

@@ -3,18 +3,22 @@
 @section('title', 'Gestión de Reparaciones')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-wrench text-primary me-2"></i>
-            Gestión de Reparaciones
-        </h1>
-        <p class="text-muted">Administra todas las órdenes de reparación del sistema</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <a href="{{ route('reparaciones.create') }}" class="btn btn-primary btn-custom">
-            <i class="fas fa-plus me-2"></i>Nueva Reparación
-        </a>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-wrench text-gradient me-3"></i>
+                    Gestión de Reparaciones
+                </h1>
+                <p class="module-subtitle">Administra todas las órdenes de reparación del sistema</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="{{ route('reparaciones.create') }}" class="btn btn-primary btn-lg btn-modern">
+                    <i class="fas fa-plus me-2"></i>Nueva Reparación
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -205,7 +209,7 @@
     <div class="card-body">
         @if($reparaciones->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover modern-table">
                     <thead class="table-dark">
                         <tr>
                             <th>Nº Reparación</th>
@@ -321,14 +325,14 @@
                                     <!-- Ver -->
                                     <a href="{{ route('reparaciones.show', $reparacion) }}" 
                                        class="btn btn-outline-primary" 
-                                       title="Ver detalles">
+                                       title="Ver detalles" data-bs-toggle="tooltip">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
                                     <!-- Editar -->
                                     <a href="{{ route('reparaciones.edit', $reparacion) }}" 
                                        class="btn btn-outline-warning" 
-                                       title="Editar">
+                                       title="Editar" data-bs-toggle="tooltip">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     
@@ -336,7 +340,7 @@
                                     <button type="button" 
                                             class="btn btn-outline-info" 
                                             onclick="imprimirTicket({{ $reparacion->id }})"
-                                            title="Imprimir ticket">
+                                            title="Imprimir ticket" data-bs-toggle="tooltip">
                                         <i class="fas fa-print"></i>
                                     </button>
                                     
@@ -345,7 +349,7 @@
                                     <button type="button" 
                                             class="btn btn-outline-danger" 
                                             onclick="cancelarReparacionRapida({{ $reparacion->id }}, '{{ $reparacion->equipo->marca }} {{ $reparacion->equipo->modelo }}')"
-                                            title="Cancelar reparación">
+                                            title="Cancelar reparación" data-bs-toggle="tooltip">
                                         <i class="fas fa-times"></i>
                                     </button>
                                     @endif
@@ -613,11 +617,31 @@ function confirmarCancelacionRapida(reparacionId) {
         btnSpinner.classList.add('d-none');
     });
 }
+
+// Inicializar tooltips Bootstrap
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
 </script>
 @endsection
 
 @section('styles')
 <style>
+.module-header {
+    background: var(--system-gradient);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.module-title { font-size: 2.25rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .75rem 1.5rem; font-weight: 600; }
+.modern-table thead th { background: #f8fafc; border: none; text-transform: uppercase; letter-spacing: .5px; }
+.modern-table tbody tr:hover { background: rgba(0,0,0,0.02); transform: scale(1.005); }
 .table-responsive {
     border-radius: 15px;
     overflow: hidden;

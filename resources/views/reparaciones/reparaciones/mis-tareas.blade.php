@@ -3,19 +3,26 @@
 @section('title', 'Mis Tareas')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-tasks text-primary me-2"></i>
-            Mis Tareas
-        </h1>
-        <p class="text-muted">Gestiona las reparaciones asignadas a ti</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <div class="d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-outline-info" onclick="window.location.reload()">
-                <i class="fas fa-sync-alt me-1"></i>Actualizar
-            </button>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-tasks text-gradient me-3"></i>
+                    Mis Tareas
+                </h1>
+                <p class="module-subtitle">Gestiona tus reparaciones con una vista clara y accionable</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ route('reparaciones.mis-tareas.exportar', request()->query()) }}" class="btn btn-outline-light btn-modern" data-bs-toggle="tooltip" title="Exportar listado (CSV)">
+                        <i class="fas fa-file-csv me-2"></i>Exportar
+                    </a>
+                    <button type="button" class="btn btn-light btn-modern" onclick="window.location.reload()" data-bs-toggle="tooltip" title="Recargar la lista">
+                        <i class="fas fa-sync-alt me-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -62,61 +69,108 @@
                            onchange="this.form.submit()">
                 </div>
                 <div class="col-md-3">
-                    <div class="d-grid">
-                        @if(request()->hasAny(['estado', 'fecha_desde', 'fecha_hasta']))
-                            <a href="{{ route('reparaciones.mis-tareas') }}" class="btn btn-outline-warning">
-                                <i class="fas fa-times me-1"></i>Limpiar Filtros
-                            </a>
-                        @else
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter me-1"></i>Aplicar Filtros
-                            </button>
-                        @endif
+                    <label class="form-label">Ordenar por</label>
+                    <select name="orden" class="form-select" onchange="this.form.submit()">
+                        <option value="recientes" {{ ($orden ?? request('orden')) == 'recientes' ? 'selected' : '' }}>Más recientes</option>
+                        <option value="antiguas" {{ ($orden ?? request('orden')) == 'antiguas' ? 'selected' : '' }}>Más antiguas</option>
+                        <option value="estado_asc" {{ ($orden ?? request('orden')) == 'estado_asc' ? 'selected' : '' }}>Estado (A-Z)</option>
+                        <option value="estado_desc" {{ ($orden ?? request('orden')) == 'estado_desc' ? 'selected' : '' }}>Estado (Z-A)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row align-items-end g-3 mt-2">
+                <div class="col-md-6">
+                    <label class="form-label">Búsqueda rápida</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" name="buscar" class="form-control" placeholder="ID, serie, cliente, marca, modelo, descripción..." value="{{ request('buscar') }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="chkAtrasadas" name="atrasadas" value="1" {{ request('atrasadas') ? 'checked' : '' }} onchange="this.form.submit()">
+                        <label class="form-check-label" for="chkAtrasadas">
+                            Mostrar solo atrasadas
+                        </label>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ route('reparaciones.mis-tareas') }}" class="btn btn-outline-warning">
+                            <i class="fas fa-times me-1"></i>Limpiar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-1"></i>Aplicar
+                        </button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
+    
 </div>
 
 <!-- Estadísticas Rápidas -->
 <div class="row mb-4">
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-danger text-white h-100">
+        <div class="card border-0 bg-danger text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-clock display-6 mb-2"></i>
-                <h4>{{ $reparaciones->where('estado', 'pendiente')->count() }}</h4>
+                <h4>{{ $kpis['pendientes'] ?? $reparaciones->where('estado', 'pendiente')->count() }}</h4>
                 <p class="mb-0">Pendientes</p>
             </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-warning text-white h-100">
+        <div class="card border-0 bg-warning text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-cogs display-6 mb-2"></i>
-                <h4>{{ $reparaciones->where('estado', 'en_proceso')->count() }}</h4>
+                <h4>{{ $kpis['en_proceso'] ?? $reparaciones->where('estado', 'en_proceso')->count() }}</h4>
                 <p class="mb-0">En Proceso</p>
             </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-success text-white h-100">
+        <div class="card border-0 bg-success text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-check-circle display-6 mb-2"></i>
-                <h4>{{ $reparaciones->where('estado', 'completada')->count() }}</h4>
+                <h4>{{ $kpis['completadas'] ?? $reparaciones->where('estado', 'completada')->count() }}</h4>
                 <p class="mb-0">Completadas</p>
             </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-info text-white h-100">
+        <div class="card border-0 bg-info text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-list display-6 mb-2"></i>
-                <h4>{{ $reparaciones->total() }}</h4>
+                <h4>{{ $kpis['total'] ?? $reparaciones->total() }}</h4>
                 <p class="mb-0">Total Asignadas</p>
             </div>
         </div>
     </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 bg-secondary text-white h-100 kpi">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle display-6 mb-2"></i>
+                <h4>{{ $kpis['atrasadas'] ?? 0 }}</h4>
+                <p class="mb-0">Atrasadas</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leyenda de estados -->
+<div class="d-flex flex-wrap align-items-center mb-3 gap-2">
+    <span class="badge bg-danger"><i class="fas fa-clock me-1"></i>Pendiente</span>
+    <span class="badge bg-warning"><i class="fas fa-cogs me-1"></i>En Proceso</span>
+    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Completada</span>
+    <span class="badge bg-secondary"><i class="fas fa-times-circle me-1"></i>Cancelada</span>
+    <span class="text-muted ms-2">Leyenda de estados</span>
+    <div class="ms-auto form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="switchCompacto">
+        <label class="form-check-label" for="switchCompacto">Modo compacto</label>
+    </div>
+    
+    
 </div>
 
 <!-- Tabla de Mis Tareas -->
@@ -124,21 +178,69 @@
     <div class="card-body">
         @if($reparaciones->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-dark">
+                @php
+                    $chips = [];
+                    if(request('estado')) $chips[] = ['label' => 'Estado: ' . ucfirst(str_replace('_',' ',request('estado'))), 'param' => 'estado'];
+                    if(request('fecha_desde')) $chips[] = ['label' => 'Desde: ' . request('fecha_desde'), 'param' => 'fecha_desde'];
+                    if(request('fecha_hasta')) $chips[] = ['label' => 'Hasta: ' . request('fecha_hasta'), 'param' => 'fecha_hasta'];
+                    if(request('buscar')) $chips[] = ['label' => 'Buscar: ' . request('buscar'), 'param' => 'buscar'];
+                    if(request('atrasadas')) $chips[] = ['label' => 'Solo atrasadas', 'param' => 'atrasadas'];
+                @endphp
+                @if(count($chips))
+                    <div class="mb-2">
+                        @foreach($chips as $chip)
+                            <a href="{{ request()->fullUrlWithQuery([$chip['param'] => null]) }}" class="badge bg-light text-dark me-1" title="Quitar filtro">
+                                <i class="fas fa-filter me-1"></i>{{ $chip['label'] }}
+                                <i class="fas fa-times ms-1"></i>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+
+                <div class="d-flex justify-content-end mb-2">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-columns me-1"></i> Columnas
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 220px;">
+                            <div class="form-check">
+                                <input class="form-check-input chk-col" type="checkbox" value="col-cliente" id="colCliente" checked>
+                                <label class="form-check-label" for="colCliente">Cliente</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input chk-col" type="checkbox" value="col-equipo" id="colEquipo" checked>
+                                <label class="form-check-label" for="colEquipo">Equipo</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input chk-col" type="checkbox" value="col-fecha" id="colFecha" checked>
+                                <label class="form-check-label" for="colFecha">Fecha de Asignación</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input chk-col" type="checkbox" value="col-estado" id="colEstado" checked>
+                                <label class="form-check-label" for="colEstado">Estado</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input chk-col" type="checkbox" value="col-tiempo" id="colTiempo" checked>
+                                <label class="form-check-label" for="colTiempo">Tiempo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover modern-table" id="tablaTareas">
+                    <thead class="table-dark sticky-top" style="z-index: 1;">
                         <tr>
-                            <th>Nº Reparación</th>
-                            <th>Cliente</th>
-                            <th>Equipo (Marca/Modelo)</th>
-                            <th>Fecha de Asignación</th>
-                            <th>Estado Actual</th>
-                            <th>Tiempo Transcurrido</th>
+                            <th class="col-num">Nº Reparación</th>
+                            <th class="col-cliente">Cliente</th>
+                            <th class="col-equipo">Equipo (Marca/Modelo)</th>
+                            <th class="col-fecha">Fecha de Asignación</th>
+                            <th class="col-estado">Estado Actual</th>
+                            <th class="col-tiempo">Tiempo Transcurrido</th>
                             <th width="200px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($reparaciones as $reparacion)
-                        <tr>
+                        <tr onclick="window.location='{{ route('reparaciones.show', $reparacion) }}'" style="cursor: pointer;">
                             <!-- Nº Reparación -->
                             <td>
                                 <strong class="text-primary">#{{ $reparacion->id }}</strong>
@@ -151,7 +253,7 @@
                             </td>
                             
                             <!-- Cliente -->
-                            <td>
+                            <td class="col-cliente">
                                 <div>
                                     <strong>{{ $reparacion->equipo->cliente_nombre }}</strong>
                                     @if($reparacion->equipo->cliente_telefono)
@@ -164,7 +266,7 @@
                             </td>
                             
                             <!-- Equipo (Marca/Modelo) -->
-                            <td>
+                            <td class="col-equipo">
                                 <div>
                                     <strong>{{ $reparacion->equipo->marca }} {{ $reparacion->equipo->modelo }}</strong>
                                     <br>
@@ -177,7 +279,7 @@
                             </td>
                             
                             <!-- Fecha de Asignación -->
-                            <td>
+                            <td class="col-fecha">
                                 <div>
                                     <strong>{{ $reparacion->fecha_inicio->format('d/m/Y') }}</strong>
                                     <br>
@@ -195,9 +297,10 @@
                             </td>
                             
                             <!-- Estado Actual -->
-                            <td>
+                            <td class="col-estado">
                                 <div class="estado-reparacion">
                                     <span class="badge bg-{{ $reparacion->estado_color }} text-white fs-6 estado-badge">
+                                        <span class="status-dot me-1 bg-{{ $reparacion->estado_color }}"></span>
                                         @switch($reparacion->estado)
                                             @case('pendiente')
                                                 <i class="fas fa-clock me-1"></i>Pendiente
@@ -226,7 +329,7 @@
                             </td>
 
                             <!-- Tiempo Transcurrido -->
-                            <td>
+                            <td class="col-tiempo">
                                 @php
                                     $fechaFin = $reparacion->fecha_fin ?? now();
                                     $diasTranscurridos = $reparacion->fecha_inicio->diffInDays($fechaFin);
@@ -246,39 +349,37 @@
                             
                             <!-- Acciones -->
                             <td>
-                                <div class="btn-group-vertical btn-group-sm w-100" role="group">
-                                    <!-- Ver -->
-                                    <a href="{{ route('reparaciones.show', $reparacion) }}" 
-                                       class="btn btn-outline-primary mb-1" 
-                                       title="Ver detalles">
-                                        <i class="fas fa-eye me-1"></i>Ver Detalles
-                                    </a>
-                                    
-                                    <!-- Editar (solo para reparaciones pendientes o en proceso) -->
-                                    @if(in_array($reparacion->estado, ['pendiente', 'en_proceso']))
-                                    <a href="{{ route('reparaciones.edit', $reparacion) }}" 
-                                       class="btn btn-outline-warning mb-1" 
-                                       title="Editar">
-                                        <i class="fas fa-edit me-1"></i>Actualizar
-                                    </a>
-                                    @endif
-                                    
-                                    <!-- Cambiar estado rápido -->
-                                    @if($reparacion->estado == 'pendiente')
-                                    <button type="button" 
-                                            class="btn btn-outline-success mb-1" 
-                                            onclick="cambiarEstadoRapido({{ $reparacion->id }}, 'en_proceso')"
-                                            title="Marcar como en proceso">
-                                        <i class="fas fa-play me-1"></i>Iniciar
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                                        <i class="fas fa-ellipsis-h"></i> Acciones
                                     </button>
-                                    @elseif($reparacion->estado == 'en_proceso')
-                                    <button type="button" 
-                                            class="btn btn-outline-success mb-1" 
-                                            onclick="cambiarEstadoRapido({{ $reparacion->id }}, 'completada')"
-                                            title="Marcar como completada">
-                                        <i class="fas fa-check me-1"></i>Completar
-                                    </button>
-                                    @endif
+                                    <ul class="dropdown-menu dropdown-menu-end w-100">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('reparaciones.show', $reparacion) }}" onclick="event.stopPropagation();">
+                                                <i class="fas fa-eye me-2"></i>Ver detalles
+                                            </a>
+                                        </li>
+                                        @if(in_array($reparacion->estado, ['pendiente', 'en_proceso']))
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('reparaciones.edit', $reparacion) }}" onclick="event.stopPropagation();">
+                                                <i class="fas fa-edit me-2"></i>Actualizar
+                                            </a>
+                                        </li>
+                                        @endif
+                                        @if($reparacion->estado == 'pendiente')
+                                        <li>
+                                            <a class="dropdown-item text-success" href="#" onclick="event.preventDefault(); event.stopPropagation(); cambiarEstadoRapido({{ $reparacion->id }}, 'en_proceso');">
+                                                <i class="fas fa-play me-2"></i>Iniciar
+                                            </a>
+                                        </li>
+                                        @elseif($reparacion->estado == 'en_proceso')
+                                        <li>
+                                            <a class="dropdown-item text-success" href="#" onclick="event.preventDefault(); event.stopPropagation(); cambiarEstadoRapido({{ $reparacion->id }}, 'completada');">
+                                                <i class="fas fa-check me-2"></i>Completar
+                                            </a>
+                                        </li>
+                                        @endif
+                                    </ul>
                                 </div>
                             </td>
                         </tr>
@@ -293,7 +394,10 @@
                     Mostrando {{ $reparaciones->firstItem() }} a {{ $reparaciones->lastItem() }} 
                     de {{ $reparaciones->total() }} tareas
                 </div>
-                <div>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ route('reparaciones.mis-tareas.exportar', request()->query()) }}">
+                        <i class="fas fa-file-csv me-1"></i> Exportar CSV
+                    </a>
                     {{ $reparaciones->appends(request()->query())->links() }}
                 </div>
             </div>
@@ -439,11 +543,80 @@ document.addEventListener('keydown', function(e) {
         window.location.href = '{{ route("reparaciones.mis-tareas") }}';
     }
 });
+
+// Tooltips y modo compacto
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar tooltips Bootstrap
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    // Modo compacto para tabla
+    const switchCompacto = document.getElementById('switchCompacto');
+    if (switchCompacto) {
+        switchCompacto.addEventListener('change', function() {
+            const tabla = document.getElementById('tablaTareas');
+            if (!tabla) return;
+            if (this.checked) {
+                tabla.classList.add('table-sm');
+                localStorage.setItem('misTareas.modoCompacto', '1');
+            } else {
+                tabla.classList.remove('table-sm');
+                localStorage.removeItem('misTareas.modoCompacto');
+            }
+        });
+        // Restaurar preferencia
+        if (localStorage.getItem('misTareas.modoCompacto') === '1') {
+            switchCompacto.checked = true;
+            document.getElementById('tablaTareas')?.classList.add('table-sm');
+        }
+    }
+
+    // Selector de columnas con persistencia
+    const checkboxes = document.querySelectorAll('.chk-col');
+    const applyColumnsVisibility = () => {
+        const hidden = JSON.parse(localStorage.getItem('misTareas.hiddenCols') || '[]');
+        ['col-cliente','col-equipo','col-fecha','col-estado','col-tiempo'].forEach(cls => {
+            const hide = hidden.includes(cls);
+            document.querySelectorAll('.' + cls).forEach(el => {
+                el.style.display = hide ? 'none' : '';
+            });
+        });
+        checkboxes.forEach(cb => {
+            cb.checked = !hidden.includes(cb.value);
+        });
+    };
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            const hidden = JSON.parse(localStorage.getItem('misTareas.hiddenCols') || '[]');
+            if (!cb.checked && !hidden.includes(cb.value)) hidden.push(cb.value);
+            if (cb.checked) {
+                const idx = hidden.indexOf(cb.value);
+                if (idx >= 0) hidden.splice(idx, 1);
+            }
+            localStorage.setItem('misTareas.hiddenCols', JSON.stringify(hidden));
+            applyColumnsVisibility();
+        });
+    });
+    applyColumnsVisibility();
+});
 </script>
 @endsection
 
 @section('styles')
 <style>
+.module-header {
+    background: var(--system-gradient);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.module-title { font-size: 2.0rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .6rem 1.2rem; font-weight: 600; }
+
 .table-responsive {
     border-radius: 15px;
     overflow: hidden;
@@ -495,6 +668,12 @@ document.addEventListener('keydown', function(e) {
 .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* KPIs con sutil gradiente y realce */
+.kpi {
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,0,0,0.08));
+    border-radius: 14px;
 }
 
 /* Estilos mejorados para badges de estado de reparaciones */
@@ -559,6 +738,15 @@ document.addEventListener('keydown', function(e) {
 /* Iconos en badges */
 .estado-badge i {
     margin-right: 4px;
+}
+
+/* Indicador tipo dot para estado */
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: currentColor;
 }
 
 /* Estilos específicos para mis tareas */

@@ -897,7 +897,7 @@
 
 /* === Estilos del módulo Clientes aplicados para unificar forma y colores === */
 /* Variables CSS */
-::root {
+:root {
     --primary-color: #4f46e5;
     --primary-light: #6366f1;
     --success-color: #10b981;
@@ -913,27 +913,46 @@
     --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* Form Header */
+/* Form Header (minimal, coherente con Nueva Reparación) */
 .form-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
+    background: white;
+    color: var(--dark-color);
+    padding: 1.25rem 1.5rem;
     border-radius: 15px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
-.form-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+.form-title { font-size: 1.5rem; font-weight: 600; margin: 0; }
+
+.form-subtitle { font-size: .95rem; color: #64748b; margin: .25rem 0 0 0; }
+
+/* Header superior estilo banner (profesional) */
+.hero-banner { background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: #fff; border-radius: 16px; padding: 1.25rem 1.5rem; display:flex; justify-content: space-between; align-items:center; box-shadow: var(--shadow-lg); }
+.hero-left { display:flex; align-items:center; gap: 1rem; }
+.hero-icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; font-size: 1.25rem; }
+.hero-title { margin: 0; font-size: 1.6rem; font-weight: 700; }
+.hero-subtitle { margin: .25rem 0 0 0; font-size: .95rem; opacity: .9; }
+.hero-actions { display:flex; gap:.75rem; }
+.btn-hero { background: transparent; border: 1px solid rgba(255,255,255,.65); color: #fff; border-radius: 10px; padding:.55rem .9rem; display:flex; align-items:center; gap:.5rem; transition: all .2s ease; text-decoration: none; }
+.btn-hero:hover { background: rgba(255,255,255,.15); border-color: #fff; }
+
+@media (max-width: 768px) {
+  .hero-banner { flex-direction: column; gap: .75rem; text-align: center; }
+  .hero-actions { width: 100%; justify-content: center; }
 }
 
-.form-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    margin: 0.5rem 0 0 0;
-}
+/* Header superior minimalista */
+.minimal-header { background: white; border: 1px solid var(--border-color); border-radius: 15px; padding: 1.25rem 1.5rem; display:flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); }
+.minimal-header .header-content { display:flex; align-items:center; gap:1rem; }
+.minimal-header .header-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--light-color); color: var(--primary-color); display:flex; align-items:center; justify-content:center; }
+.minimal-header .header-title { margin: 0; font-size: 1.5rem; font-weight: 600; color: var(--dark-color); }
+.minimal-header .header-subtitle { margin: .25rem 0 0 0; color: #64748b; font-size: .95rem; }
+.minimal-header .header-actions { display:flex; gap:.75rem; }
+.btn-minimal { background: white; border: 1px solid var(--border-color); color:#64748b; border-radius: 8px; padding:.6rem 1rem; display:flex; align-items:center; gap:.5rem; transition: all .2s ease; }
+.btn-minimal:hover { background: var(--light-color); color: var(--primary-color); border-color: var(--primary-color); }
+
+@media (max-width: 768px) { .minimal-header { flex-direction: column; gap: .75rem; text-align:center; } .minimal-header .header-actions { width:100%; justify-content:center; } }
 
 .btn-modern {
     border-radius: 25px;
@@ -1133,14 +1152,190 @@
         gap: 1rem !important;
     }
 }
+
+/* ===== Estilos profesionales del módulo (refinamiento general) ===== */
+/* Tarjeta contenedora */
+.card.border-0.shadow-sm {
+    border: 1px solid var(--border-color) !important;
+    background: #fff !important;
+}
+
+/* Encabezados de sección con acento a la izquierda */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    border-bottom: 1px solid #e9edf5;
+    margin-bottom: 1.25rem !important;
+    padding-bottom: .75rem;
+    position: relative;
+}
+.section-header::before {
+    content: '';
+    width: 6px;
+    height: 18px;
+    background: var(--primary-color);
+    border-radius: 6px;
+    position: relative;
+}
+.section-header h6 { font-weight: 700; color: var(--dark-color); }
+
+/* Campos modernos (inputs/select/textarea) */
+.modern-input, .modern-select, .modern-textarea {
+    border-color: #d7dce6;
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.modern-input:hover, .modern-select:hover, .modern-textarea:hover { border-color: #c3c9d8; }
+.modern-input:focus, .modern-select:focus, .modern-textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 .25rem rgba(79, 70, 229, .18);
+    background: #fff;
+}
+
+/* Select flecha coherente */
+.modern-select { background-image: none; padding-right: .85rem; }
+
+/* Botones principales grandes */
+.btn.btn-primary.btn-lg {
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+    border-color: var(--primary-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(79, 70, 229, .15);
+}
+.btn.btn-primary.btn-lg:hover { filter: brightness(1.06); }
+.btn.btn-outline-secondary.btn-lg { border-radius: 12px; }
+
+/* Inputs dentro de grupos (íconos a la izquierda) */
+.input-group .input-group-text {
+    background: #f6f8fb;
+    border-color: #d7dce6;
+}
+
+/* Panel cabecera morado - sutil sombra y borde */
+.module-gradient-header, .purple-header {
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 8px 18px rgba(80, 72, 229, .12);
+    border: 1px solid rgba(80, 72, 229, .15);
+}
+
+/* Pista de ayuda */
+.text-muted, .form-info { color: #7b8499 !important; }
+
+/* Área de observaciones/descripcion */
+.modern-textarea { min-height: 110px; }
+
+/* Ajustes de espaciado vertical entre bloques */
+.row.g-4 > [class^='col-'] .mb-3 { margin-bottom: 1rem !important; }
+
+/* Divider fino debajo del título principal morado */
+.equipos-divider { height: 1px; background: #e9edf5; margin: .75rem 0 1.25rem; }
+
+/* Meta bar (estado/progreso) */
+.meta-bar { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: .6rem .9rem; margin-bottom: 1rem; }
+.meta-badge { padding: .25rem .6rem; border-radius: 999px; font-weight: 600; font-size: .8rem; display: inline-flex; align-items: center; }
+.meta-pending { background: #fff7ed; color: #b45309; border: 1px solid #fdba74; }
+.meta-done { background: #ecfdf5; color: #059669; border: 1px solid #6ee7b7; }
+.meta-progress { height: 6px; background: #e9edf5; border-radius: 999px; overflow: hidden; min-width: 180px; }
+.meta-progress-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #06b6d4); border-radius: 999px; transition: width .25s ease; }
+
+/* === Estilos del formulario tipo Inventario === */
+.module-header { background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: #fff; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+.module-title { font-size: 2.0rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .6rem 1.2rem; font-weight: 600; }
+
+.form-card { background: white; border-radius: 15px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e5e7eb; overflow: hidden; }
+.form-card-header { background: #f8fafc; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; }
+.form-card-header h5 { margin: 0 0 .5rem 0; font-weight: 600; color: #1f2937; font-size: 1.25rem; }
+.form-card-header small { color: #6b7280; }
+.form-card-body { padding: 1.5rem; }
+
+.help-panel { background: white; border: 1px solid #e5e7eb; border-radius: 15px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden; }
+.panel-header { background: #f8fafc; padding: 1.25rem; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 1rem; }
+.panel-icon { width: 32px; height: 32px; background: #4f46e5; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
+.panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: #1f2937; }
+.panel-body { padding: 1.25rem; }
+
+.help-section { margin-bottom: 1.5rem; }
+.help-title { font-size: .9rem; font-weight: 600; color: #1f2937; margin-bottom: .75rem; }
+.checklist, .tips-list { display: flex; flex-direction: column; gap: .5rem; }
+.checklist-item, .tip-item { display: flex; align-items: center; gap: .75rem; padding: .5rem; background: #f8fafc; border-radius: 8px; }
+.checklist-item span, .tip-item span { font-size: .875rem; color: #1f2937; }
+.help-tip { background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.2); border-radius: 8px; padding: 1rem; color: #4f46e5; font-size: .875rem; display: flex; align-items: flex-start; gap: .5rem; }
+
+/* Etiquetas y ayudas coherentes */
+.form-label { font-weight: 600; color: #334155; }
+.form-text, .text-muted { color: #64748b !important; }
+
+/* Controles con misma personalidad visual del resto de módulos */
+.modern-input, .modern-select, .modern-textarea {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+.modern-input:focus, .modern-select:focus, .modern-textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 .25rem rgba(79,70,229,.18);
+}
+
+/* Separadores y espaciado entre filas */
+.section-header { border-bottom: 2px solid #e9edf5; margin-bottom: 1rem !important; }
+.row.g-4 { row-gap: 1rem; }
+
+/* === Responsive del formulario de Nuevo Equipo === */
+@media (max-width: 1200px) {
+  .card.border-0.shadow-sm .card-body { padding: 1.25rem !important; }
+}
+@media (max-width: 992px) {
+  /* Forzar columnas al 100% dentro de filas del formulario */
+  .card.border-0.shadow-sm .card-body .row> [class^='col-'],
+  .card.border-0.shadow-sm .card-body .row> [class*=' col-'] {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+  /* Botones en bloque y espaciado vertical */
+  .d-flex.justify-content-end.gap-3 { flex-direction: column !important; align-items: stretch !important; gap: .75rem !important; }
+  .btn.btn-primary.btn-lg, .btn.btn-outline-secondary.btn-lg { width: 100%; }
+  /* Meta bar y acciones del header en columna */
+  .meta-bar { flex-direction: column; align-items: stretch; gap: .5rem; }
+  .hero-actions { width: 100%; justify-content: center; }
+}
+@media (max-width: 576px) {
+  .hero-banner { padding: 1rem 1rem; }
+  .card.border-0.shadow-sm .card-body { padding: 1rem !important; }
+  .form-label { font-size: .95rem; }
+  .modern-input, .modern-select, .modern-textarea { font-size: .95rem; }
+}
+
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row justify-content-center gx-0">
-        <div class="col-12 col-lg-10 col-xl-8 mx-auto">
-            <div class="main-form-container">
+<div class="container-fluid">
+    <!-- Header del Módulo -->
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-laptop text-gradient me-3"></i>
+                    Nuevo Equipo
+                </h1>
+                <p class="module-subtitle">Registra un nuevo equipo en el sistema de gestión</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="{{ route('equipos.index') }}" class="btn btn-light btn-modern">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Equipos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Formulario Principal -->
+        <div class="col-xl-8">
+            <div class="form-card">
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 16px; border: none; background: var(--secondary-bg); color: var(--error-color); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);">
                 <i class="fas fa-exclamation-triangle me-2"></i>
@@ -1154,31 +1349,41 @@
             </div>
         @endif
 
-        <div class="mb-4">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <h1 class="h3 mb-0">
-                        <i class="fas fa-laptop text-primary me-2"></i>
-                        Nuevo Equipo
-                    </h1>
-                    <p class="text-muted">Registra un nuevo equipo en el sistema de gestión</p>
-                </div>
-                <div class="col-lg-4 text-end">
-                    <a href="{{ route('equipos.index') }}" class="btn btn-outline-secondary btn-modern">
-                        <i class="fas fa-arrow-left me-2"></i>Volver a Equipos
-                    </a>
-                </div>
-            </div>
+        <div class="hero-banner mb-4">
+    <div class="hero-left">
+        <div class="hero-icon">
+            <i class="fas fa-laptop"></i>
         </div>
+        <div>
+            <h1 class="hero-title">Nuevo Equipo</h1>
+            <p class="hero-subtitle">Registra un nuevo equipo en el sistema de gestión</p>
+        </div>
+    </div>
+    <div class="hero-actions">
+        <a href="{{ route('equipos.index') }}" class="btn-hero">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver a Equipos</span>
+        </a>
+    </div>
+</div>
 
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-0 pb-0">
-                        <h5 class="mb-1"><i class="fas fa-laptop text-primary me-2"></i>Información del Equipo</h5>
-                        <small class="text-muted">Completa todos los campos requeridos para registrar el equipo</small>
-                    </div>
-                    <div class="card-body">
+                <div class="form-card-header">
+                    <h5><i class="fas fa-laptop me-2"></i>Información del Equipo</h5>
+                    <small>Completa todos los campos requeridos para registrar el equipo</small>
+                </div>
+                <div class="form-card-body">
         <form action="{{ route('equipos.store') }}" method="POST" id="equipoForm" class="needs-validation" novalidate>
             @csrf
+            <div class="meta-bar d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <span id="metaBadge" class="meta-badge meta-pending">
+                        <i class="fas fa-clock me-1"></i> Por completar
+                    </span>
+                </div>
+                <div class="meta-progress ms-3 flex-grow-1">
+                    <div id="metaProgressFill" class="meta-progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
             
             <!-- Sección 1: Información del Equipo -->
             <div class="mb-5">
@@ -1416,7 +1621,77 @@
                 </div>
             </div>
         </form>
-    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral de Ayuda -->
+        <div class="col-xl-4">
+            <div class="help-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h6 class="panel-title">Ayuda</h6>
+                </div>
+                <div class="panel-body">
+                    <div class="help-section mb-4">
+                        <h6 class="help-title">Campos Obligatorios</h6>
+                        <div class="checklist">
+                            <div class="checklist-item">
+                                <i class="fas fa-check text-success"></i>
+                                <span>Número de Serie (único)</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check text-success"></i>
+                                <span>Marca del equipo</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check text-success"></i>
+                                <span>Modelo específico</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check text-success"></i>
+                                <span>Tipo de equipo</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check text-success"></i>
+                                <span>Fecha de ingreso</span>
+                            </div>
+                            <div class="checklist-item">
+                                <i class="fas fa-check text-success"></i>
+                                <span>Nombre del cliente</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="help-section mb-4">
+                        <h6 class="help-title">Consejos</h6>
+                        <div class="tips-list">
+                            <div class="tip-item">
+                                <i class="fas fa-lightbulb text-warning"></i>
+                                <span>Usa códigos descriptivos</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-lightbulb text-warning"></i>
+                                <span>Incluye marca y modelo</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-lightbulb text-warning"></i>
+                                <span>Establece stock mínimo realista</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-lightbulb text-warning"></i>
+                                <span>Especifica ubicación clara</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="help-tip">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Tip:</strong> Puedes generar un código automático dejando el campo código vacío.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1882,5 +2157,44 @@ document.head.appendChild(additionalStyles);
 document.addEventListener('DOMContentLoaded', () => {
     new NeomorphicEquipoSystem();
 });
+
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    const requiredFields = [
+      'numero_serie','marca','modelo','tipo_equipo','fecha_ingreso'
+    ];
+    const badge = document.getElementById('metaBadge');
+    const fill = document.getElementById('metaProgressFill');
+
+    function updateProgress(){
+      let filled = 0;
+      requiredFields.forEach(id => {
+        const el = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
+        if(el && String(el.value || '').trim().length > 0){ filled++; }
+      });
+      const pct = Math.round((filled / requiredFields.length) * 100);
+      if(fill) fill.style.width = pct + '%';
+      if(badge){
+        if(pct === 100){
+          badge.classList.remove('meta-pending');
+          badge.classList.add('meta-done');
+          badge.innerHTML = '<i class="fas fa-check me-1"></i> Completo';
+        } else {
+          badge.classList.remove('meta-done');
+          badge.classList.add('meta-pending');
+          badge.innerHTML = '<i class="fas fa-clock me-1"></i> Por completar';
+        }
+      }
+    }
+
+    // listeners
+    requiredFields.forEach(id => {
+      const el = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
+      if(el){ el.addEventListener('input', updateProgress); el.addEventListener('change', updateProgress); }
+    });
+    updateProgress();
+  });
+})();
 </script>
 @endsection

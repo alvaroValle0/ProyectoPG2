@@ -3,25 +3,29 @@
 @section('title', 'Gestión de Usuarios')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-users text-primary me-2"></i>
-            Gestión de Usuarios
-        </h1>
-        <p class="text-muted">Administra los usuarios del sistema</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <a href="{{ route('usuarios.create') }}" class="btn btn-primary btn-custom">
-            <i class="fas fa-user-plus me-2"></i>Nuevo Usuario
-        </a>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-users text-gradient me-3"></i>
+                    Gestión de Usuarios
+                </h1>
+                <p class="module-subtitle">Administra los usuarios del sistema</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="{{ route('usuarios.create') }}" class="btn btn-light btn-modern" data-bs-toggle="tooltip" title="Crear nuevo usuario">
+                    <i class="fas fa-user-plus me-2"></i>Nuevo Usuario
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Estadísticas Rápidas -->
 <div class="row mb-4">
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-primary text-white h-100">
+        <div class="card border-0 bg-primary text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-users display-6 mb-2"></i>
                 <h4>{{ $estadisticas['total_usuarios'] }}</h4>
@@ -30,7 +34,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-success text-white h-100">
+        <div class="card border-0 bg-success text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-user-check display-6 mb-2"></i>
                 <h4>{{ $estadisticas['usuarios_activos'] }}</h4>
@@ -39,7 +43,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-warning text-white h-100">
+        <div class="card border-0 bg-warning text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-user-shield display-6 mb-2"></i>
                 <h4>{{ $estadisticas['administradores'] }}</h4>
@@ -48,7 +52,7 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card border-0 bg-info text-white h-100">
+        <div class="card border-0 bg-info text-white h-100 kpi">
             <div class="card-body text-center">
                 <i class="fas fa-user-cog display-6 mb-2"></i>
                 <h4>{{ $estadisticas['tecnicos'] }}</h4>
@@ -120,8 +124,8 @@
     <div class="card-body">
         @if($usuarios->count() > 0)
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-dark">
+                <table class="table table-hover modern-table">
+                    <thead class="table-dark sticky-top" style="z-index: 1;">
                         <tr>
                             <th>Nombre</th>
                             <th>Correo</th>
@@ -204,55 +208,41 @@
                             
                             <!-- Acciones -->
                             <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <!-- Ver -->
+                                <div class="action-buttons">
                                     <a href="{{ route('usuarios.show', $usuario) }}" 
-                                       class="btn btn-outline-primary" 
+                                       class="btn btn-sm btn-action btn-info" 
                                        title="Ver detalles">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    
-                                    <!-- Editar -->
                                     <a href="{{ route('usuarios.edit', $usuario) }}" 
-                                       class="btn btn-outline-warning" 
+                                       class="btn btn-sm btn-action btn-warning" 
                                        title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    
-                                    <!-- Permisos -->
                                     <a href="{{ route('usuarios.permissions', $usuario) }}" 
-                                       class="btn btn-outline-info" 
-                                       title="Gestionar Permisos">
+                                       class="btn btn-sm btn-action btn-primary" 
+                                       title="Permisos">
                                         <i class="fas fa-user-shield"></i>
                                     </a>
-                                    
-                                    <!-- Activar/Desactivar -->
                                     @if($usuario->activo)
                                         <button type="button" 
-                                                class="btn btn-outline-danger" 
+                                                class="btn btn-sm btn-action btn-secondary" 
                                                 onclick="toggleStatus({{ $usuario->id }}, false)"
-                                                title="Desactivar"
-                                                id="toggle-btn-{{ $usuario->id }}">
+                                                title="Desactivar">
                                             <i class="fas fa-user-times"></i>
                                         </button>
                                     @else
                                         <button type="button" 
-                                                class="btn btn-outline-success" 
+                                                class="btn btn-sm btn-action btn-success" 
                                                 onclick="toggleStatus({{ $usuario->id }}, true)"
-                                                title="Activar"
-                                                id="toggle-btn-{{ $usuario->id }}">
+                                                title="Activar">
                                             <i class="fas fa-user-check"></i>
                                         </button>
                                     @endif
-                                    
-                                    <!-- Eliminar -->
-                                    <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" style="display: inline;">
+                                    <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Eliminar al usuario {{ $usuario->name }}? Esta acción es irreversible.');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
-                                                class="btn btn-outline-danger" 
-                                                onclick="return confirm('¿Está seguro de que desea eliminar al usuario {{ $usuario->name }}?\n\nEsta acción eliminará:\n- La cuenta del usuario\n- Todos sus permisos\n- Su perfil técnico (si existe)\n\nEsta acción NO se puede deshacer.')"
-                                                title="Eliminar Usuario">
+                                        <button type="submit" class="btn btn-sm btn-action btn-danger" title="Eliminar">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -417,6 +407,28 @@ function showToast(type, message) {
 
 @section('styles')
 <style>
+.action-buttons { display:flex; gap:0.5rem; justify-content:center; }
+.btn-action { width:35px; height:35px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease; border:none; }
+.btn-action:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+.btn-info { background:#06b6d4; color:#fff; }
+.btn-warning { background:#f59e0b; color:#fff; }
+.btn-success { background:#10b981; color:#fff; }
+.btn-secondary { background:#6b7280; color:#fff; }
+.btn-danger { background:#ef4444; color:#fff; }
+.btn-primary { background:#2563eb; color:#fff; }
+
+.module-header {
+    background: var(--system-gradient);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.module-title { font-size: 2.0rem; font-weight: 700; margin: 0; }
+.module-subtitle { opacity: .9; margin-top: .25rem; }
+.btn-modern { border-radius: 25px; padding: .6rem 1.2rem; font-weight: 600; }
+.kpi { background-image: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,0,0,0.08)); border-radius: 14px; }
+
 .table-responsive {
     border-radius: 15px;
     overflow: hidden;

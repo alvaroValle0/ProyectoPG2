@@ -3,18 +3,22 @@
 @section('title', 'Nuevo Item de Inventario')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="h3 mb-3">
-            <i class="fas fa-plus text-primary me-2"></i>
-            Nuevo Item de Inventario
-        </h1>
-        <p class="text-muted">Registra un nuevo producto o componente en el inventario</p>
-    </div>
-    <div class="col-md-4 text-end">
-        <a href="{{ route('inventario.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Volver al Inventario
-        </a>
+<div class="container-fluid">
+    <div class="module-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="module-title">
+                    <i class="fas fa-plus text-gradient me-3"></i>
+                    Nuevo Item de Inventario
+                </h1>
+                <p class="module-subtitle">Registra un nuevo producto o componente en el inventario</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="{{ route('inventario.index') }}" class="btn btn-outline-light btn-lg btn-modern">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Inventario
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -450,6 +454,10 @@ document.getElementById('precio_venta').addEventListener('input', calcularMargen
 
 @section('styles')
 <style>
+.module-header{background:var(--system-gradient);color:#fff;padding:2rem;border-radius:15px;box-shadow:0 10px 20px rgba(0,0,0,0.08)}
+.module-title{font-size:2.25rem;font-weight:700;margin:0}
+.module-subtitle{opacity:.9;margin-top:.25rem}
+.btn-modern{border-radius:25px;padding:.75rem 1.5rem;font-weight:600}
 .form-label {
     font-weight: 500;
     color: #495057;

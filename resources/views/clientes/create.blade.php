@@ -489,8 +489,77 @@
         text-align: center;
     }
     
+    .form-actions .d-flex {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+    
+    .form-actions .btn {
+        width: 100% !important;
+        height: 48px !important;
+        font-size: 1rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
     .form-info {
         margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    /* Header responsive */
+    .form-header .row {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .form-header .col-lg-4 {
+        margin-top: 1rem;
+    }
+    
+    .form-header .btn {
+        width: 100%;
+        height: 48px;
+    }
+    
+    /* Form sections responsive */
+    .row.g-3 > .col-md-6,
+    .row.g-3 > .col-md-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 1rem;
+    }
+    
+    /* Inputs móviles */
+    .form-control,
+    .form-select {
+        height: 48px !important;
+        font-size: 16px !important; /* Previene zoom en iOS */
+        padding: 0.75rem !important;
+    }
+    
+    .form-control[rows] {
+        min-height: 120px !important;
+    }
+    
+    /* Labels más legibles */
+    .form-label {
+        font-size: 1rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    /* Form card responsive */
+    .form-card {
+        margin: 0 -15px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .form-card-header,
+    .form-card-body {
+        padding: 1.5rem 1rem !important;
     }
 }
 

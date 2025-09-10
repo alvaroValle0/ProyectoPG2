@@ -58,6 +58,18 @@ class ReparacionController extends Controller
             });
         }
 
+        // Filtro: solo atrasadas (pendientes/en proceso y con más de 7 días o sobre estimación)
+        if ($request->boolean('atrasadas')) {
+            $query->whereIn('estado', ['pendiente', 'en_proceso'])
+                  ->where(function($q) {
+                      $q->where('fecha_inicio', '<', now()->subDays(7))
+                        ->orWhere(function($qq) {
+                            $qq->whereNotNull('tiempo_estimado_horas')
+                               ->whereRaw('TIMESTAMPDIFF(HOUR, fecha_inicio, IFNULL(fecha_fin, NOW())) > tiempo_estimado_horas');
+                        });
+                  });
+        }
+
         if ($request->filled('vencidas')) {
             // Lógica para mostrar reparaciones vencidas
             $query->whereIn('estado', ['pendiente', 'en_proceso'])
@@ -250,9 +262,18 @@ class ReparacionController extends Controller
     public function misTareas(Request $request)
     {
         $user = auth()->user();
-        
-        // Permitir acceso a cualquier usuario autenticado
-        $query = Reparacion::with(['equipo', 'tecnico']);
+
+        // Base de consulta (solo las relaciones necesarias)
+        $baseQuery = Reparacion::with(['equipo', 'tecnico.user']);
+
+        // Si el usuario es técnico, mostrar solo sus tareas
+        $tecnico = Tecnico::where('user_id', $user->id)->first();
+        if ($tecnico) {
+            $baseQuery->where('tecnico_id', $tecnico->id);
+        }
+
+        // Clonar para aplicar filtros y paginar sin perder la base
+        $query = clone $baseQuery;
 
         // Filtros
         if ($request->filled('estado')) {
@@ -267,9 +288,135 @@ class ReparacionController extends Controller
             $query->whereDate('fecha_inicio', '<=', $request->fecha_hasta);
         }
 
-        $reparaciones = $query->orderBy('fecha_inicio', 'desc')->paginate(15);
+        // Buscador rápido
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->where(function($q) use ($buscar) {
+                $q->where('id', 'like', "%{$buscar}%")
+                  ->orWhere('descripcion_problema', 'like', "%{$buscar}%")
+                  ->orWhere('diagnostico', 'like', "%{$buscar}%")
+                  ->orWhere('solucion', 'like', "%{$buscar}%")
+                  ->orWhereHas('equipo', function($eq) use ($buscar) {
+                      $eq->where('numero_serie', 'like', "%{$buscar}%")
+                         ->orWhere('cliente_nombre', 'like', "%{$buscar}%")
+                         ->orWhere('marca', 'like', "%{$buscar}%")
+                         ->orWhere('modelo', 'like', "%{$buscar}%");
+                  });
+            });
+        }
 
-        return view('reparaciones.reparaciones.mis-tareas', compact('reparaciones'));
+        // Ordenación
+        $orden = $request->get('orden', 'recientes');
+        switch ($orden) {
+            case 'antiguas':
+                $query->orderBy('fecha_inicio', 'asc');
+                break;
+            case 'estado_asc':
+                $query->orderBy('estado', 'asc')->orderBy('fecha_inicio', 'desc');
+                break;
+            case 'estado_desc':
+                $query->orderBy('estado', 'desc')->orderBy('fecha_inicio', 'desc');
+                break;
+            default: // 'recientes'
+                $query->orderBy('fecha_inicio', 'desc');
+                break;
+        }
+
+        // KPIs correctos sin depender de la paginación actual
+        $kpis = [
+            'pendientes' => (clone $baseQuery)->where('estado', 'pendiente')->count(),
+            'en_proceso' => (clone $baseQuery)->where('estado', 'en_proceso')->count(),
+            'completadas' => (clone $baseQuery)->where('estado', 'completada')->count(),
+            'total' => (clone $baseQuery)->count(),
+            'atrasadas' => (clone $baseQuery)
+                ->whereIn('estado', ['pendiente', 'en_proceso'])
+                ->where(function($q) {
+                    $q->where('fecha_inicio', '<', now()->subDays(7))
+                      ->orWhere(function($qq) {
+                          $qq->whereNotNull('tiempo_estimado_horas')
+                             ->whereRaw('TIMESTAMPDIFF(HOUR, fecha_inicio, IFNULL(fecha_fin, NOW())) > tiempo_estimado_horas');
+                      });
+                })
+                ->count(),
+        ];
+
+        $reparaciones = $query->paginate(15)->appends($request->query());
+
+        return view('reparaciones.reparaciones.mis-tareas', compact('reparaciones', 'kpis', 'orden'));
+    }
+
+    public function exportarMisTareas(Request $request)
+    {
+        $user = auth()->user();
+
+        $baseQuery = Reparacion::with(['equipo', 'tecnico.user']);
+        $tecnico = Tecnico::where('user_id', $user->id)->first();
+        if ($tecnico) {
+            $baseQuery->where('tecnico_id', $tecnico->id);
+        }
+
+        $query = clone $baseQuery;
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('fecha_inicio', '>=', $request->fecha_desde);
+        }
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('fecha_inicio', '<=', $request->fecha_hasta);
+        }
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->where(function($q) use ($buscar) {
+                $q->where('id', 'like', "%{$buscar}%")
+                  ->orWhere('descripcion_problema', 'like', "%{$buscar}%")
+                  ->orWhere('diagnostico', 'like', "%{$buscar}%")
+                  ->orWhere('solucion', 'like', "%{$buscar}%")
+                  ->orWhereHas('equipo', function($eq) use ($buscar) {
+                      $eq->where('numero_serie', 'like', "%{$buscar}%")
+                         ->orWhere('cliente_nombre', 'like', "%{$buscar}%")
+                         ->orWhere('marca', 'like', "%{$buscar}%")
+                         ->orWhere('modelo', 'like', "%{$buscar}%");
+                  });
+            });
+        }
+        if ($request->boolean('atrasadas')) {
+            $query->whereIn('estado', ['pendiente', 'en_proceso'])
+                  ->where(function($q) {
+                      $q->where('fecha_inicio', '<', now()->subDays(7))
+                        ->orWhere(function($qq) {
+                            $qq->whereNotNull('tiempo_estimado_horas')
+                               ->whereRaw('TIMESTAMPDIFF(HOUR, fecha_inicio, IFNULL(fecha_fin, NOW())) > tiempo_estimado_horas');
+                        });
+                  });
+        }
+
+        $reparaciones = $query->orderBy('fecha_inicio', 'desc')->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="mis_tareas.csv"',
+        ];
+
+        $callback = function() use ($reparaciones) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['ID', 'Cliente', 'Equipo', 'Serie', 'Estado', 'Fecha Inicio', 'Fecha Fin']);
+            foreach ($reparaciones as $r) {
+                fputcsv($handle, [
+                    $r->id,
+                    $r->equipo->cliente_nombre ?? '',
+                    trim(($r->equipo->marca ?? '') . ' ' . ($r->equipo->modelo ?? '')),
+                    $r->equipo->numero_serie ?? '',
+                    $r->estado,
+                    optional($r->fecha_inicio)->format('Y-m-d'),
+                    optional($r->fecha_fin)->format('Y-m-d'),
+                ]);
+            }
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function reportes()

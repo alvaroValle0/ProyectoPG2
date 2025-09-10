@@ -6,23 +6,40 @@
     <title>Gestión HDC - Sistema de Gestión Integral</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        (function() {
+            try {
+                const global = localStorage.getItem('sistemaColores');
+                const colores = global ? JSON.parse(global) : null;
+                if (colores) {
+                    document.documentElement.style.setProperty('--primary', colores.primary);
+                    document.documentElement.style.setProperty('--secondary', colores.secondary);
+                }
+            } catch (e) {}
+        })();
+    </script>
     <style>
+        :root { --primary: #F2AE4E; --secondary: #E89A3A; --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); }
         body {
-            background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);
+            background: var(--gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
+        body::before, body::after{content:'';position:fixed;border-radius:50%;filter:blur(80px);opacity:.25;z-index:0}
+        body::before{width:320px;height:320px;background:var(--primary);top:-80px;left:-80px}
+        body::after{width:280px;height:280px;background:var(--secondary);bottom:-60px;right:-60px}
         .welcome-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            position:relative;z-index:1
         }
         .btn-primary {
-            background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);
+            background: var(--gradient);
             border: none;
             border-radius: 10px;
             padding: 12px 30px;
@@ -31,11 +48,11 @@
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(242, 174, 78, 0.4);
+            box-shadow: 0 5px 15px color-mix(in srgb, var(--primary) 40%, transparent);
         }
         .btn-outline-primary {
-            border: 2px solid #F2AE4E;
-            color: #F2AE4E;
+            border: 2px solid var(--primary);
+            color: var(--primary);
             border-radius: 10px;
             padding: 12px 30px;
             font-weight: 600;
@@ -44,8 +61,8 @@
         }
         .btn-outline-primary:hover {
             transform: translateY(-2px);
-            background: #F2AE4E;
-            border-color: #F2AE4E;
+            background: var(--primary);
+            border-color: var(--primary);
             color: white;
         }
         .welcome-footer {
@@ -60,7 +77,7 @@
         .system-title {
             font-size: 2.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);
+            background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -110,7 +127,7 @@
                         <h1 class="system-title">Bienvenido a Gestión HDC</h1>
                         <p class="lead text-muted">Sistema de Gestión Integral</p>
                         <div class="mt-3">
-                            <span class="badge px-3 py-2" style="background: linear-gradient(135deg, #F2AE4E 0%, #E89A3A 100%);">
+                            <span class="badge px-3 py-2" style="background: var(--gradient);">
                                 <i class="fas fa-shield-alt me-2"></i>Plataforma Profesional
                             </span>
                         </div>
