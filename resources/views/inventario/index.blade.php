@@ -22,59 +22,100 @@
     </div>
 </div>
 
-<!-- Estadísticas Rápidas -->
+<!-- Estadísticas Principales -->
 <div class="row mb-4">
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-        <div class="card border-0 bg-primary text-white h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-boxes display-6 mb-2"></i>
-                <h4>{{ $estadisticas['total_items'] }}</h4>
-                <p class="mb-0">Total Items</p>
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-card-icon">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['total_items'] }}">0</h3>
+                <p class="stat-card-label">Total Items</p>
+                <div class="stat-card-trend">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Base de datos completa</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-        <div class="card border-0 bg-success text-white h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-check-circle display-6 mb-2"></i>
-                <h4>{{ $estadisticas['items_activos'] }}</h4>
-                <p class="mb-0">Activos</p>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="stat-card stat-card-success">
+            <div class="stat-card-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['items_activos'] }}">0</h3>
+                <p class="stat-card-label">Activos</p>
+                <div class="stat-card-trend">
+                    <i class="fas fa-percentage"></i>
+                    <span>{{ $estadisticas['total_items'] > 0 ? round(($estadisticas['items_activos'] / $estadisticas['total_items']) * 100, 1) : 0 }}% del total</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-        <div class="card border-0 bg-warning text-white h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-exclamation-triangle display-6 mb-2"></i>
-                <h4>{{ $estadisticas['items_agotados'] }}</h4>
-                <p class="mb-0">Agotados</p>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-card-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['items_agotados'] }}">0</h3>
+                <p class="stat-card-label">Agotados</p>
+                <div class="stat-card-trend">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ $estadisticas['total_items'] > 0 ? round(($estadisticas['items_agotados'] / $estadisticas['total_items']) * 100, 1) : 0 }}% agotados</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-        <div class="card border-0 bg-danger text-white h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-arrow-down display-6 mb-2"></i>
-                <h4>{{ $estadisticas['items_stock_bajo'] }}</h4>
-                <p class="mb-0">Stock Bajo</p>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="stat-card stat-card-danger">
+            <div class="stat-card-icon">
+                <i class="fas fa-arrow-down"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['items_stock_bajo'] }}">0</h3>
+                <p class="stat-card-label">Stock Bajo</p>
+                <div class="stat-card-trend">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>{{ $estadisticas['total_items'] > 0 ? round(($estadisticas['items_stock_bajo'] / $estadisticas['total_items']) * 100, 1) : 0 }}% stock bajo</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-        <div class="card border-0 bg-info text-white h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-tags display-6 mb-2"></i>
-                <h4>{{ $estadisticas['categorias'] }}</h4>
-                <p class="mb-0">Categorías</p>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="stat-card stat-card-info">
+            <div class="stat-card-icon">
+                <i class="fas fa-tags"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['categorias'] }}">0</h3>
+                <p class="stat-card-label">Categorías</p>
+                <div class="stat-card-trend">
+                    <i class="fas fa-folder"></i>
+                    <span>Diversificación completa</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-        <div class="card border-0 bg-secondary text-white h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-coins display-6 mb-2"></i>
-                <h4>Q{{ number_format($estadisticas['valor_total'], 2) }}</h4>
-                <p class="mb-0">Valor Total</p>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="stat-card stat-card-secondary">
+            <div class="stat-card-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['valor_total'] }}">0</h3>
+                <p class="stat-card-label">Valor Total</p>
+                <div class="stat-card-trend">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Q{{ number_format($estadisticas['valor_total'], 2) }} en inventario</span>
+                </div>
             </div>
         </div>
     </div>
@@ -539,11 +580,145 @@ document.addEventListener('DOMContentLoaded', function () {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 });
+
+// Animación de contadores para las tarjetas de estadísticas
+document.addEventListener('DOMContentLoaded', function() {
+    const counters = document.querySelectorAll('.stat-card-number');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const duration = 2000; // 2 segundos
+        const increment = target / (duration / 16); // 60 FPS
+        let current = 0;
+        
+        const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+                counter.textContent = Math.floor(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = target;
+            }
+        };
+        
+        // Iniciar animación cuando la tarjeta sea visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(counter);
+    });
+});
 </script>
 @endsection
 
 @section('styles')
 <style>
+/* Variables CSS */
+:root {
+    --primary-color: #4f46e5;
+    --primary-light: #6366f1;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #06b6d4;
+    --secondary-color: #6b7280;
+    --dark-color: #1f2937;
+    --light-color: #f8fafc;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --gradient-info: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    --gradient-danger: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    --gradient-secondary: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+/* Stat Cards */
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--system-gradient);
+}
+
+.stat-card-primary::before { background: var(--gradient-primary); }
+.stat-card-success::before { background: var(--gradient-success); }
+.stat-card-warning::before { background: var(--gradient-warning); }
+.stat-card-info::before { background: var(--gradient-info); }
+.stat-card-danger::before { background: var(--gradient-danger); }
+.stat-card-secondary::before { background: var(--gradient-secondary); }
+
+.stat-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    background: var(--system-gradient);
+    color: white;
+}
+
+.stat-card-primary .stat-card-icon { background: var(--gradient-primary); }
+.stat-card-success .stat-card-icon { background: var(--gradient-success); }
+.stat-card-warning .stat-card-icon { background: var(--gradient-warning); }
+.stat-card-info .stat-card-icon { background: var(--gradient-info); }
+.stat-card-danger .stat-card-icon { background: var(--gradient-danger); }
+.stat-card-secondary .stat-card-icon { background: var(--gradient-secondary); }
+
+.stat-card-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--dark-color);
+}
+
+.stat-card-label {
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0.5rem 0;
+    font-weight: 500;
+}
+
+.stat-card-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--success-color);
+}
+
+/* Module Header */
 .module-header {
     background: var(--system-gradient);
     color: #fff;
@@ -551,11 +726,37 @@ document.addEventListener('DOMContentLoaded', function () {
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 }
-.module-title { font-size: 2.25rem; font-weight: 700; margin: 0; }
-.module-subtitle { opacity: .9; margin-top: .25rem; }
-.btn-modern { border-radius: 25px; padding: .75rem 1.5rem; font-weight: 600; }
-.modern-table thead th { background: #f8fafc; border: none; text-transform: uppercase; letter-spacing: .5px; }
-.modern-table tbody tr:hover { background: rgba(0,0,0,0.02); transform: scale(1.005); }
+
+.module-title { 
+    font-size: 2.25rem; 
+    font-weight: 700; 
+    margin: 0; 
+}
+
+.module-subtitle { 
+    opacity: .9; 
+    margin-top: .25rem; 
+}
+
+.btn-modern { 
+    border-radius: 25px; 
+    padding: .75rem 1.5rem; 
+    font-weight: 600; 
+}
+
+/* Table Styles */
+.modern-table thead th { 
+    background: #f8fafc; 
+    border: none; 
+    text-transform: uppercase; 
+    letter-spacing: .5px; 
+}
+
+.modern-table tbody tr:hover { 
+    background: rgba(0,0,0,0.02); 
+    transform: scale(1.005); 
+}
+
 .table-responsive {
     border-radius: 15px;
     overflow: hidden;
@@ -592,6 +793,30 @@ document.addEventListener('DOMContentLoaded', function () {
     font-size: 0.875rem;
 }
 
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+.stat-card:nth-child(5) { animation-delay: 0.5s; }
+.stat-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Responsive */
 @media (max-width: 768px) {
     .table-responsive {
         font-size: 0.875rem;
@@ -600,6 +825,14 @@ document.addEventListener('DOMContentLoaded', function () {
     .btn-group-sm > .btn {
         padding: 0.25rem 0.375rem;
         font-size: 0.8rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-card-number {
+        font-size: 2rem;
     }
 }
 </style>

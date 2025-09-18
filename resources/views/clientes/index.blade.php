@@ -300,7 +300,54 @@
                         </span>
                     </div>
                     <div class="pagination-links">
-                    {{ $clientes->links() }}
+                        @if ($clientes->hasPages())
+                            <nav aria-label="Navegación de páginas">
+                                <ul class="pagination pagination-sm">
+                                    {{-- Botón Anterior --}}
+                                    @if ($clientes->onFirstPage())
+                                        <li class="page-item disabled">
+                                            <span class="page-link">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $clientes->previousPageUrl() }}" aria-label="Anterior">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Números de página --}}
+                                    @foreach ($clientes->getUrlRange(1, $clientes->lastPage()) as $page => $url)
+                                        @if ($page == $clientes->currentPage())
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    {{-- Botón Siguiente --}}
+                                    @if ($clientes->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $clientes->nextPageUrl() }}" aria-label="Siguiente">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </nav>
+                        @endif
                     </div>
                 </div>
             @else
@@ -771,6 +818,64 @@
 .pagination-links {
     display: flex;
     gap: 0.5rem;
+}
+
+/* Estilos personalizados para la paginación */
+.pagination {
+    margin: 0;
+    gap: 0.25rem;
+}
+
+.pagination .page-item {
+    margin: 0;
+}
+
+.pagination .page-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination .page-link:hover {
+    color: white;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.pagination .page-item.active .page-link {
+    color: white;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 600;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af;
+    background-color: #f9fafb;
+    border-color: var(--border-color);
+    cursor: not-allowed;
+}
+
+.pagination .page-item.disabled .page-link:hover {
+    transform: none;
+    box-shadow: none;
+    background-color: #f9fafb;
+    border-color: var(--border-color);
+}
+
+.pagination .page-link i {
+    font-size: 0.75rem;
 }
 
 /* Empty State */

@@ -81,7 +81,7 @@ class Equipo extends Model
     public function getEstadoColorAttribute()
     {
         return match($this->estado) {
-            'recibido' => 'blue',
+            'recibido' => 'primary',
             'en_reparacion' => 'warning',
             'reparado' => 'success',
             'entregado' => 'secondary',
