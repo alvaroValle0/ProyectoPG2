@@ -220,8 +220,63 @@
             </div>
             
             <!-- Paginación -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $equipos->appends(request()->query())->links() }}
+            <div class="pagination-wrapper">
+                <div class="pagination-info">
+                    <span class="pagination-text">
+                        Mostrando <strong>{{ $equipos->firstItem() }}</strong> a <strong>{{ $equipos->lastItem() }}</strong> 
+                        de <strong>{{ $equipos->total() }}</strong> equipos
+                    </span>
+                </div>
+                <div class="pagination-links">
+                    @if ($equipos->hasPages())
+                        <nav aria-label="Navegación de páginas">
+                            <ul class="pagination pagination-sm">
+                                {{-- Botón Anterior --}}
+                                @if ($equipos->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $equipos->previousPageUrl() }}" aria-label="Anterior">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Números de página --}}
+                                @foreach ($equipos->getUrlRange(1, $equipos->lastPage()) as $page => $url)
+                                    @if ($page == $equipos->currentPage())
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Botón Siguiente --}}
+                                @if ($equipos->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $equipos->nextPageUrl() }}" aria-label="Siguiente">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
             </div>
         @else
             <div class="text-center py-5">
@@ -450,6 +505,72 @@
     .stat-card-number {
         font-size: 2rem;
     }
+    
+    .pagination-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+}
+
+/* Estilos para la paginación - Igual que clientes e inventario */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination-info {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.pagination-text strong {
+    color: var(--dark-color);
+}
+
+.pagination-links {
+    display: flex;
+}
+
+.pagination {
+    justify-content: center;
+    margin: 0;
+}
+
+.pagination .page-link {
+    border: 1px solid #dee2e6;
+    color: #007bff;
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.125rem;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--system-primary, #007bff);
+    border-color: var(--system-primary, #007bff);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+.pagination .page-link:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 </style>
 @endsection

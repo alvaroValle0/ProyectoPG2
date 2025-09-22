@@ -30,7 +30,7 @@
                 <i class="fas fa-users"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $estadisticas['total_usuarios'] }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['total_usuarios'] ?? 0 }}">{{ $estadisticas['total_usuarios'] ?? 0 }}</h3>
                 <p class="stat-card-label">Total Usuarios</p>
                 <div class="stat-card-trend">
                     <i class="fas fa-chart-line"></i>
@@ -46,7 +46,7 @@
                 <i class="fas fa-user-check"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $estadisticas['usuarios_activos'] }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['usuarios_activos'] ?? 0 }}">{{ $estadisticas['usuarios_activos'] ?? 0 }}</h3>
                 <p class="stat-card-label">Usuarios Activos</p>
                 <div class="stat-card-trend">
                     <i class="fas fa-percentage"></i>
@@ -62,7 +62,7 @@
                 <i class="fas fa-user-shield"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $estadisticas['administradores'] }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['administradores'] ?? 0 }}">{{ $estadisticas['administradores'] ?? 0 }}</h3>
                 <p class="stat-card-label">Administradores</p>
                 <div class="stat-card-trend">
                     <i class="fas fa-crown"></i>
@@ -78,7 +78,7 @@
                 <i class="fas fa-user-cog"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $estadisticas['tecnicos'] }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['tecnicos'] ?? 0 }}">{{ $estadisticas['tecnicos'] ?? 0 }}</h3>
                 <p class="stat-card-label">Técnicos</p>
                 <div class="stat-card-trend">
                     <i class="fas fa-tools"></i>

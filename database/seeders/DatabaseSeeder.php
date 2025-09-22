@@ -23,9 +23,12 @@ class DatabaseSeeder extends Seeder
             'activo' => true,
         ]);
 
-        // Ejecutar el seeder de permisos para asignar permisos a todos los usuarios
+        // Ejecutar los seeders
         $this->call([
             UserPermissionsSeeder::class,
+            TecnicoSeeder::class,
+            InventarioSeeder::class,
+            ReparacionSeeder::class,
         ]);
     }
 }

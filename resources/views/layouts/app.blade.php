@@ -398,6 +398,37 @@
             opacity: 0;
         }
         
+        /* Corregir flechas de navegación en campos number globalmente */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        /* Asegurar que todos los campos number no tengan flechas grandes */
+        .form-control[type="number"],
+        .form-control[type="number"]:focus,
+        input[type="number"] {
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .form-control[type="number"]::-webkit-outer-spin-button,
+        .form-control[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
         /* Animaciones de entrada para los items del menú */
         @keyframes slideInFromLeft {
             from {

@@ -373,8 +373,63 @@
             </div>
             
             <!-- Paginación -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $inventario->withQueryString()->links() }}
+            <div class="pagination-wrapper">
+                <div class="pagination-info">
+                    <span class="pagination-text">
+                        Mostrando <strong>{{ $inventario->firstItem() }}</strong> a <strong>{{ $inventario->lastItem() }}</strong> 
+                        de <strong>{{ $inventario->total() }}</strong> productos
+                    </span>
+                </div>
+                <div class="pagination-links">
+                    @if ($inventario->hasPages())
+                        <nav aria-label="Navegación de páginas">
+                            <ul class="pagination pagination-sm">
+                                {{-- Botón Anterior --}}
+                                @if ($inventario->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $inventario->previousPageUrl() }}" aria-label="Anterior">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Números de página --}}
+                                @foreach ($inventario->getUrlRange(1, $inventario->lastPage()) as $page => $url)
+                                    @if ($page == $inventario->currentPage())
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Botón Siguiente --}}
+                                @if ($inventario->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $inventario->nextPageUrl() }}" aria-label="Siguiente">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
             </div>
         @else
             <div class="text-center py-5">
@@ -816,6 +871,106 @@ document.addEventListener('DOMContentLoaded', function() {
 .stat-card:nth-child(5) { animation-delay: 0.5s; }
 .stat-card:nth-child(6) { animation-delay: 0.6s; }
 
+/* Corregir flechas de navegación en campos number */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Ocultar flechas de incremento/decremento en campos number */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Asegurar que los campos de entrada no tengan flechas grandes */
+.form-control[type="number"],
+.form-control[type="number"]:focus {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.form-control[type="number"]::-webkit-outer-spin-button,
+.form-control[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+/* Estilos para la paginación - Igual que clientes */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination-info {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.pagination-text strong {
+    color: var(--dark-color);
+}
+
+.pagination-links {
+    display: flex;
+}
+
+.pagination {
+    justify-content: center;
+    margin: 0;
+}
+
+.pagination .page-link {
+    border: 1px solid #dee2e6;
+    color: #007bff;
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.125rem;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--system-primary, #007bff);
+    border-color: var(--system-primary, #007bff);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+/* Asegurar que no haya flechas grandes en los controles de paginación */
+.pagination .page-link:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .table-responsive {
@@ -833,6 +988,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     .stat-card-number {
         font-size: 2rem;
+    }
+    
+    .pagination-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
     }
 }
 </style>
