@@ -94,4 +94,121 @@ class AuthController extends Controller
         $usuario = auth()->user();
         return view('auth.perfil', compact('usuario'));
     }
+
+    public function testAvatar()
+    {
+        // Método de prueba para verificar la funcionalidad
+        $usuario = auth()->user();
+        return response()->json([
+            'usuario_id' => $usuario->id,
+            'avatar_actual' => $usuario->avatar,
+            'storage_path' => storage_path('app/public/avatars'),
+            'public_path' => public_path('storage/avatars'),
+            'storage_exists' => \Storage::disk('public')->exists('avatars'),
+        ]);
+    }
+
+    public function actualizarAvatar(Request $request)
+    {
+        // Log para depuración
+        \Log::info('Iniciando actualización de avatar', [
+            'user_id' => auth()->id(),
+            'has_file' => $request->hasFile('avatar'),
+            'file_size' => $request->hasFile('avatar') ? $request->file('avatar')->getSize() : null,
+        ]);
+
+        // Verificar que el usuario esté autenticado
+        if (!auth()->check()) {
+            \Log::error('Usuario no autenticado al intentar actualizar avatar');
+            return redirect()->back()->with('error', 'Debes estar autenticado para realizar esta acción.');
+        }
+
+        // Validación más simple
+        try {
+            $request->validate([
+                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ], [
+                'avatar.required' => 'Debes seleccionar una imagen.',
+                'avatar.image' => 'El archivo debe ser una imagen.',
+                'avatar.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
+                'avatar.max' => 'La imagen no puede ser mayor a 2MB.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Error de validación en avatar', ['errors' => $e->errors()]);
+            return redirect()->back()->withErrors($e->errors())->with('error', 'Error de validación: ' . implode(', ', $e->errors()['avatar'] ?? []));
+        }
+
+        try {
+            $usuario = auth()->user();
+            $archivo = $request->file('avatar');
+
+            \Log::info('Archivo recibido', [
+                'original_name' => $archivo->getClientOriginalName(),
+                'size' => $archivo->getSize(),
+                'mime_type' => $archivo->getMimeType(),
+            ]);
+
+            // Eliminar avatar anterior si existe
+            if ($usuario->avatar && \Storage::disk('public')->exists('avatars/' . $usuario->avatar)) {
+                \Storage::disk('public')->delete('avatars/' . $usuario->avatar);
+                \Log::info('Avatar anterior eliminado', ['file' => $usuario->avatar]);
+            }
+
+            // Generar nombre único para el archivo
+            $extension = $archivo->getClientOriginalExtension();
+            $nombreArchivo = 'avatar_' . $usuario->id . '_' . time() . '.' . $extension;
+            
+            // Subir el archivo usando move_uploaded_file para mayor compatibilidad
+            $destinationPath = storage_path('app/public/avatars');
+            
+            // Verificar que el directorio existe
+            if (!is_dir($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            
+            $archivo->move($destinationPath, $nombreArchivo);
+
+            \Log::info('Archivo subido exitosamente', [
+                'destination' => $destinationPath,
+                'filename' => $nombreArchivo,
+            ]);
+
+            // Actualizar en la base de datos
+            $usuario->avatar = $nombreArchivo;
+            $usuario->save();
+
+            \Log::info('Avatar actualizado en base de datos', ['avatar' => $nombreArchivo]);
+
+            return redirect()->back()->with('success', 'Foto de perfil actualizada correctamente.');
+
+        } catch (\Exception $e) {
+            // Log del error para depuración
+            \Log::error('Error al actualizar avatar: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'user_id' => auth()->id(),
+            ]);
+            
+            return redirect()->back()->with('error', 'Error al actualizar la foto de perfil: ' . $e->getMessage());
+        }
+    }
+
+    public function eliminarAvatar()
+    {
+        try {
+            $usuario = auth()->user();
+            
+            // Eliminar archivo del storage
+            if ($usuario->avatar && \Storage::disk('public')->exists('avatars/' . $usuario->avatar)) {
+                \Storage::disk('public')->delete('avatars/' . $usuario->avatar);
+            }
+
+            // Actualizar en la base de datos
+            $usuario->update(['avatar' => null]);
+
+            return redirect()->back()->with('success', 'Foto de perfil eliminada correctamente.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error al eliminar la foto de perfil. Inténtalo de nuevo.');
+        }
+    }
 } 

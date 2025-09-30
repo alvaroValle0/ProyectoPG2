@@ -17,8 +17,8 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <strong>Cliente:</strong><br>
-                            {{ $ticket->reparacion->equipo->cliente->nombre_completo ?? 'N/A' }}<br>
-                            {{ $ticket->reparacion->equipo->cliente->telefono ?? '' }}
+                            {{ $ticket->reparacion->equipo->nombre_cliente ?? 'N/A' }}<br>
+                            {{ $ticket->reparacion->equipo->telefono_cliente ?? '' }}
                         </div>
                         <div class="col-md-6">
                             <strong>Equipo:</strong><br>
@@ -49,6 +49,26 @@
                     </div>
                     @endif
 
+                    @if($ticket->estado === 'firmado' && $ticket->firma_cliente)
+                    <div class="signature-section">
+                        <h6 class="mb-3"><i class="fas fa-signature me-2"></i>Firma del Cliente</h6>
+                        <div class="text-center">
+                            <img src="data:image/png;base64,{{ $ticket->firma_cliente }}" 
+                                 alt="Firma del Cliente" 
+                                 class="signature-image">
+                        </div>
+                        @if($ticket->nombre_quien_firma)
+                            <div class="signature-info">
+                                <p class="mb-1"><strong>Firmado por:</strong> {{ $ticket->nombre_quien_firma }}</p>
+                                @if($ticket->dpi_quien_firma)
+                                    <p class="mb-1"><strong>DPI:</strong> {{ $ticket->dpi_quien_firma }}</p>
+                                @endif
+                                <p class="mb-0"><strong>Fecha de firma:</strong> {{ $ticket->fecha_firma ? $ticket->fecha_firma->format('d/m/Y H:i') : 'N/A' }}</p>
+                            </div>
+                        @endif
+                    </div>
+                    @endif
+
                     <div class="text-center mt-4">
                         <button onclick="window.print()" class="btn btn-primary">
                             <i class="fas fa-print me-2"></i>Imprimir
@@ -69,6 +89,45 @@
 @media print {
     .btn, .card-header { display: none !important; }
     .card { border: none !important; box-shadow: none !important; }
+    
+    /* Estilos para la firma en impresión */
+    .signature-section {
+        page-break-inside: avoid;
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .signature-image {
+        max-width: 250px !important;
+        max-height: 120px !important;
+        border: 1px solid #333 !important;
+        border-radius: 4px !important;
+    }
+}
+
+/* Estilos para pantalla */
+.signature-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.signature-image {
+    max-width: 300px;
+    max-height: 150px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.signature-info {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #6c757d;
 }
 </style>
 @endsection

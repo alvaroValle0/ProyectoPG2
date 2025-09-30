@@ -29,8 +29,8 @@
                         <div class="col-md-6">
                             <h6 class="fw-bold mb-2">Cliente</h6>
                             <div class="text-muted">
-                                {{ $ticket->reparacion->equipo->cliente->nombre_completo ?? 'N/A' }}<br>
-                                {{ $ticket->reparacion->equipo->cliente->telefono ?? '' }}
+                                {{ $ticket->reparacion->equipo->nombre_cliente ?? 'N/A' }}<br>
+                                {{ $ticket->reparacion->equipo->telefono_cliente ?? '' }}
                             </div>
                         </div>
                         <div class="col-md-6">

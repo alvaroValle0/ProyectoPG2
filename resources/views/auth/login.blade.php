@@ -26,329 +26,543 @@
             --success: #28a745;
             --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: var(--gradient);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8fafc;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Contenedor principal */
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Panel izquierdo - Branding */
+        .brand-panel {
+            flex: 1;
+            background: var(--gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Patrones de ondas abstractas */
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 10%, rgba(255,255,255,0.06) 0%, transparent 40%);
+            animation: waveFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes waveFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(1deg); }
+            66% { transform: translate(20px, -10px) rotate(-1deg); }
+        }
+
+        /* Contenido del panel izquierdo */
+        .brand-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            max-width: 400px;
+        }
+
+        .brand-logo {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        body::before, body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.25;
-            z-index: 0;
-        }
-        body::before { width: 320px; height: 320px; background: var(--primary); top: -80px; left: -80px; }
-        body::after { width: 280px; height: 280px; background: var(--secondary); bottom: -60px; right: -60px; }
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
+            margin: 0 auto 2rem;
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .brand-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .brand-logo img {
+            width: 80px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .brand-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.6;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Panel derecho - Formulario */
+        .form-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            background: white;
             position: relative;
-            z-index: 1;
+        }
+
+        .form-container {
             width: 100%;
             max-width: 400px;
-            margin: 1rem;
         }
-        
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* Formulario */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(242, 174, 78, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+
+        .password-input-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        .remember-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .remember-checkbox {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+        }
+
+        .remember-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(242, 174, 78, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: var(--secondary);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .register-btn {
+            width: 100%;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .register-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(242, 174, 78, 0.2);
+        }
+
+        /* Alertas de error */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* Footer */
+        .login-footer {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .brand-panel {
+                padding: 2rem 1.5rem;
+            }
+            
+            .brand-title {
+                font-size: 2rem;
+            }
+            
+            .form-panel {
+                padding: 2rem 1.5rem;
+            }
+        }
+
         @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-                align-items: flex-start;
-                padding-top: 2rem;
+            .login-container {
+                flex-direction: column;
             }
             
-            .login-card {
-                margin: 0;
-                border-radius: 15px;
-                max-width: none;
-                width: 100%;
+            .brand-panel {
+                flex: none;
+                min-height: 40vh;
+                padding: 2rem 1rem;
             }
             
-            .login-card .card-body {
-                padding: 2rem 1.5rem !important;
+            .brand-title {
+                font-size: 1.75rem;
             }
             
-            .form-control {
-                height: 50px;
-                font-size: 16px; /* Previene zoom en iOS */
-                padding: 15px;
-            }
-            
-            .btn-primary {
-                height: 50px;
-                font-size: 1.1rem;
-                width: 100%;
-            }
-            
-            .social-btn {
-                height: 48px;
+            .brand-subtitle {
                 font-size: 1rem;
             }
             
-            h3 {
+            .form-panel {
+                flex: none;
+                min-height: 60vh;
+                padding: 2rem 1rem;
+            }
+            
+            .form-container {
+                max-width: none;
+            }
+            
+            .form-control {
+                font-size: 16px; /* Previene zoom en iOS */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .brand-panel {
+                min-height: 35vh;
+                padding: 1.5rem 1rem;
+            }
+            
+            .brand-title {
                 font-size: 1.5rem;
             }
             
-            .form-group {
-                margin-bottom: 1.5rem;
+            .brand-logo {
+                width: 90px;
+                height: 90px;
+                margin-bottom: 1rem;
             }
             
-            .logo-section img {
-                max-height: 60px !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .login-card .card-body {
-                padding: 1.5rem 1rem !important;
+            .brand-logo img {
+                width: 60px;
             }
             
-            h3 {
-                font-size: 1.3rem;
+            .form-panel {
+                min-height: 65vh;
+                padding: 1.5rem 1rem;
             }
             
-            .social-btn {
-                font-size: 0.9rem;
-                padding: 12px 16px;
+            .form-title {
+                font-size: 1.5rem;
             }
         }
-        .form-control {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
+
+        /* Animaciones suaves */
+        .form-container {
+            animation: slideInUp 0.6s ease-out;
         }
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary) 25%, transparent);
-        }
-        .btn-primary {
-            background: var(--gradient);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px color-mix(in srgb, var(--primary) 40%, transparent);
-        }
-        .social-btn {
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .social-btn:hover {
-            transform: translateY(-1px);
-        }
-        .password-toggle {
-            background: transparent;
-            border: none;
-            color: #6c757d;
-        }
-        .password-toggle:hover { color: var(--primary); }
-        .divider {
-            position: relative;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #dee2e6;
-        }
-        .divider span {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 0 15px;
-            color: #6c757d;
-        }
-        .system-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 0.5rem;
-        }
-        .system-subtitle {
-            font-size: 0.9rem;
-            color: #6c757d !important;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-        .login-footer {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.8rem;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-        @media (max-width: 768px) {
-            .system-title {
-                font-size: 1.8rem;
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-        .company-logo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+
+        .brand-content {
+            animation: fadeInLeft 0.8s ease-out;
         }
-        .logo-image {
-            max-height: 80px;
-            max-width: 150px;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-            transition: transform 0.3s ease;
-        }
-        .logo-image:hover {
-            transform: scale(1.05);
-        }
-        @media (max-width: 768px) {
-            .logo-image {
-                max-height: 60px;
-                max-width: 120px;
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <div class="login-card p-4 p-md-5">
-                    <div class="text-center mb-4">
-                        <!-- Logo/Nombre del Sistema -->
-                        <div class="mb-4">
-                            <div class="company-logo mb-3">
-                                <img src="{{ asset('images/Imagen_de_WhatsApp_2025-08-10_a_las_17.56.17_0b0e759c-removebg-preview.png') }}" 
-                                     alt="Gestión HDC Logo" 
-                                     class="img-fluid logo-image">
-                            </div>
-                            <h1 class="system-title" style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                                Gestión HDC
-                            </h1>
-                            <p class="system-subtitle">Sistema de Gestión Integral</p>
-                            <div class="mt-2">
-                                <span class="badge" style="background: var(--gradient); font-size: 0.7rem; padding: 4px 12px;">
-                                    <i class="fas fa-shield-alt me-1"></i>Acceso Seguro
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Título de Login -->
-                        <h3 class="fw-bold text-primary mb-2">
-                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-                        </h3>
-                        <p class="text-muted">Accede a tu cuenta para continuar</p>
+    <div class="login-container">
+        <!-- Panel izquierdo - Branding -->
+        <div class="brand-panel">
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <img src="{{ asset('images/Imagen_de_WhatsApp_2025-08-10_a_las_17.56.17_0b0e759c-removebg-preview.png') }}" 
+                         alt="HDC Logo">
+                </div>
+                <h1 class="brand-title">HDC</h1>
+                <p class="brand-subtitle">Gestión Integral</p>
+                <p class="brand-description">
+                    Sistema completo para la gestión de equipos, reparaciones, clientes y técnicos. 
+                    Optimiza tu taller con herramientas profesionales.
+                </p>
+            </div>
+        </div>
+
+        <!-- Panel derecho - Formulario -->
+        <div class="form-panel">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2 class="form-title">Bienvenido</h2>
+                    <p class="form-subtitle">Inicia sesión en tu cuenta para continuar</p>
+                </div>
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    
+                    <div class="form-group">
+                        <label for="username" class="form-label">Usuario</label>
+                        <input type="text" 
+                               class="form-control @error('username') is-invalid @enderror" 
+                               id="username" 
+                               name="username" 
+                               value="{{ old('username') }}" 
+                               required 
+                               autofocus
+                               placeholder="Ingresa tu usuario">
+                        @error('username')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-                        
-                        <div class="mb-3">
-                            <label for="username" class="form-label">
-                                <i class="fas fa-user me-2"></i>Nombre de Usuario
-                            </label>
-                            <input type="text" 
-                                   class="form-control @error('username') is-invalid @enderror" 
-                                   id="username" 
-                                   name="username" 
-                                   value="{{ old('username') }}" 
-                                   required 
-                                   autofocus
-                                   placeholder="Ingresa tu nombre de usuario">
-                            @error('username')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">
-                                <i class="fas fa-lock me-2"></i>Contraseña
-                            </label>
-                            <div class="input-group">
-                                <input type="password" 
-                                       class="form-control @error('password') is-invalid @enderror" 
-                                       id="password" 
-                                       name="password" 
-                                       required>
-                                <button class="password-toggle" type="button" tabindex="-1" aria-label="Mostrar/Ocultar contraseña" onclick="togglePassword()">
-                                    <i id="pwdIcon" class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                            <small id="capsLockHint" class="text-warning d-none"><i class="fas fa-exclamation-triangle me-1"></i>Bloq Mayús está activado</small>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">
-                                Recordarme
-                            </label>
-                        </div>
-
-                        <div class="d-grid mb-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    <div class="form-group">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <div class="password-input-group">
+                            <input type="password" 
+                                   class="form-control @error('password') is-invalid @enderror" 
+                                   id="password" 
+                                   name="password" 
+                                   required
+                                   placeholder="Ingresa tu contraseña">
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i id="pwdIcon" class="fas fa-eye"></i>
                             </button>
                         </div>
-                    </form>
-
-                    <div class="divider">
-                        <span>o</span>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('register') }}" class="btn btn-outline-primary social-btn">
-                            <i class="fas fa-user-plus me-2"></i>Crear Cuenta
-                        </a>
+                    <div class="remember-group">
+                        <input type="checkbox" class="remember-checkbox" id="remember" name="remember">
+                        <label for="remember" class="remember-label">Recordarme</label>
                     </div>
 
-                    <div class="text-center mt-4">
-                        <a href="#" class="text-decoration-none text-muted">
-                            <small>¿Olvidaste tu contraseña?</small>
-                        </a>
-                    </div>
+                    <button type="submit" class="login-btn">
+                        INICIAR SESIÓN
+                    </button>
+                </form>
+
+                <div class="forgot-password">
+                    <a href="#" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
                 </div>
+
+                <div class="divider">
+                    <span>o</span>
+                </div>
+
+                <a href="{{ route('register') }}" class="register-btn">
+                    CREAR CUENTA
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Footer del Sistema -->
-    <div class="login-footer text-center">
+    <!-- Footer -->
+    <div class="login-footer">
         <div class="mb-1">
-            <i class="fas fa-copyright me-1"></i>{{ date('Y') }} Gestión HDC - Sistema de Gestión Integral
+            <i class="fas fa-copyright me-1"></i>{{ date('Y') }} Gestión HDC
         </div>
         <div>
             <small>
-                <i class="fas fa-code me-1"></i>Versión 1.0 
-                <span class="mx-2">|</span>
                 <i class="fas fa-shield-alt me-1"></i>Plataforma Segura
             </small>
         </div>
@@ -360,20 +574,29 @@
             const input = document.getElementById('password');
             const icon = document.getElementById('pwdIcon');
             if (!input) return;
+            
             const isText = input.type === 'text';
             input.type = isText ? 'password' : 'text';
             icon.className = isText ? 'fas fa-eye' : 'fas fa-eye-slash';
         }
 
-        (function capsLockListener(){
-            const pwd = document.getElementById('password');
-            const hint = document.getElementById('capsLockHint');
-            if (!pwd || !hint) return;
-            pwd.addEventListener('keyup', (e) => {
-                const caps = e.getModifierState && e.getModifierState('CapsLock');
-                hint.classList.toggle('d-none', !caps);
-            });
-        })();
+        // Detectar Caps Lock
+        document.getElementById('password').addEventListener('keyup', function(e) {
+            const capsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+            if (capsLockOn) {
+                console.log('Caps Lock está activado');
+            }
+        });
+
+        // Animación suave al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
     </script>
 </body>
-</html> 
+</html>

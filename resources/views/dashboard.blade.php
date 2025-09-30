@@ -7,35 +7,41 @@
     <!-- Header Mejorado -->
     <div class="dashboard-header mb-4">
         <div class="row align-items-center">
-            <div class="col-lg-8">
+            <div class="col-lg-8 col-md-7">
                 <div class="welcome-section">
                     <h1 class="dashboard-title">
-                        <i class="fas fa-tachometer-alt me-3"></i>
-                        Dashboard del Sistema
+                        <i class="fas fa-tachometer-alt me-2 me-lg-3"></i>
+                        <span class="d-none d-sm-inline">Dashboard del Sistema</span>
+                        <span class="d-inline d-sm-none">Dashboard</span>
                     </h1>
                     <p class="dashboard-subtitle">
                         <i class="fas fa-calendar-alt me-2"></i>
-                        {{ now()->format('l, d \d\e F \d\e Y') }}
+                        <span class="d-none d-md-inline">{{ now()->format('l, d \d\e F \d\e Y') }}</span>
+                        <span class="d-inline d-md-none">{{ now()->format('d/m/Y') }}</span>
                     </p>
                     <div class="quick-stats">
-                        <span class="stat-item">
+                        <span class="stat-item" id="current-time">
                             <i class="fas fa-clock text-info"></i>
-                            {{ now()->format('H:i') }}
+                            <span id="time-display">{{ now()->format('H:i:s') }}</span>
                         </span>
-                        <span class="stat-item">
+                        <span class="stat-item d-none d-md-inline">
                             <i class="fas fa-user text-primary"></i>
-                            {{ auth()->user()->name }}
+                            {{ Str::limit(auth()->user()->name, 15) }}
                         </span>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 text-end">
+            <div class="col-lg-4 col-md-5">
                 <div class="action-buttons">
-                    <a href="{{ route('reparaciones.index') }}" class="btn btn-primary btn-modern me-2" data-bs-toggle="tooltip" title="Ir a Reparaciones">
-                        <i class="fas fa-wrench me-2"></i>Reparaciones
+                    <a href="{{ route('reparaciones.index') }}" class="btn btn-primary btn-modern me-2 mb-2 mb-md-0" data-bs-toggle="tooltip" title="Ir a Reparaciones">
+                        <i class="fas fa-wrench me-2"></i>
+                        <span class="d-none d-sm-inline">Reparaciones</span>
+                        <span class="d-inline d-sm-none">Rep</span>
                     </a>
                     <a href="{{ route('equipos.create') }}" class="btn btn-success btn-modern" data-bs-toggle="tooltip" title="Nuevo Equipo">
-                        <i class="fas fa-plus me-2"></i>Nuevo
+                        <i class="fas fa-plus me-2"></i>
+                        <span class="d-none d-sm-inline">Nuevo</span>
+                        <span class="d-inline d-sm-none">+</span>
                     </a>
                 </div>
             </div>
@@ -46,7 +52,7 @@
 <!-- Estadísticas Principales Mejoradas -->
 <div class="row mb-4">
     <!-- Equipos -->
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-3">
         <div class="stat-card stat-card-primary">
             <div class="stat-card-icon">
                 <i class="fas fa-laptop"></i>
@@ -66,7 +72,7 @@
     </div>
 
     <!-- Reparaciones Activas -->
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-3">
         <div class="stat-card stat-card-warning">
             <div class="stat-card-icon">
                 <i class="fas fa-wrench"></i>
@@ -86,7 +92,7 @@
     </div>
 
     <!-- Reparaciones Completadas -->
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-3">
         <div class="stat-card stat-card-success">
             <div class="stat-card-icon">
                 <i class="fas fa-check-circle"></i>
@@ -106,7 +112,7 @@
     </div>
 
     <!-- Reparaciones Vencidas -->
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-3">
         <div class="stat-card stat-card-danger">
             <div class="stat-card-icon">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -384,10 +390,242 @@
 </div>
 @endsection
 
+<!-- Modal de Tutorial Simple -->
+<div class="tutorial-modal" id="tutorialModal" style="display: none;">
+    <div class="tutorial-overlay-simple"></div>
+    <div class="tutorial-content-simple">
+        <div class="tutorial-header-simple">
+            <h5 id="tutorialTitle">Tutorial del Dashboard</h5>
+            <button type="button" class="btn-close-tutorial" onclick="closeTutorial()">&times;</button>
+        </div>
+        <div class="tutorial-body-simple">
+            <p id="tutorialDescription">Aquí puedes ver las estadísticas principales del sistema.</p>
+        </div>
+        <div class="tutorial-footer-simple">
+            <div class="tutorial-pagination">
+                <span id="tutorialStep">1 de 13</span>
+            </div>
+            <div class="tutorial-buttons">
+                <button type="button" class="btn-tutorial-prev" onclick="prevStep()" id="prevBtn" style="display: none;">Anterior</button>
+                <button type="button" class="btn-tutorial-next" onclick="nextStep()" id="nextBtn">Siguiente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Tutorial Modal Simple */
+.tutorial-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+.tutorial-overlay-simple {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.tutorial-content-simple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    min-width: 400px;
+    max-width: 500px;
+}
+
+.tutorial-header-simple {
+    padding: 20px 20px 10px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tutorial-header-simple h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.btn-close-tutorial {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close-tutorial:hover {
+    color: #333;
+}
+
+.tutorial-body-simple {
+    padding: 20px;
+}
+
+.tutorial-body-simple p {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+}
+
+.tutorial-footer-simple {
+    padding: 10px 20px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tutorial-pagination {
+    color: #999;
+    font-size: 14px;
+}
+
+.tutorial-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-tutorial-prev,
+.btn-tutorial-next {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-tutorial-next {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.btn-tutorial-prev:hover {
+    background: #e9ecef;
+}
+
+.btn-tutorial-next:hover {
+    background: #0056b3;
+}
+
+/* Highlight del elemento */
+.tutorial-highlight {
+    position: relative;
+    z-index: 10000;
+    outline: 3px solid #007bff;
+    outline-offset: 2px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 4px;
+    animation: tutorial-pulse 2s infinite;
+}
+
+.tutorial-highlight::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 8px;
+    z-index: -1;
+}
+
+/* Animación de pulso */
+@keyframes tutorial-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+/* Indicador de flecha */
+.tutorial-arrow {
+    position: fixed;
+    width: 0;
+    height: 0;
+    z-index: 10001;
+    pointer-events: none;
+}
+
+.tutorial-arrow-up {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid white;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.tutorial-arrow-down {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 15px solid white;
+    filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.2));
+}
+
+.tutorial-arrow-left {
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-right: 15px solid white;
+    filter: drop-shadow(2px 0 4px rgba(0,0,0,0.2));
+}
+
+.tutorial-arrow-right {
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 15px solid white;
+    filter: drop-shadow(-2px 0 4px rgba(0,0,0,0.2));
+}
+</style>
+
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar reloj cada segundo
+    function updateClock() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('es-GT', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        const timeDisplay = document.getElementById('time-display');
+        if (timeDisplay) {
+            timeDisplay.textContent = timeString;
+        }
+    }
+    
+    // Actualizar inmediatamente y luego cada segundo
+    updateClock();
+    setInterval(updateClock, 1000);
     // Datos para los gráficos
     const equiposPorEstado = @json($equiposPorEstado);
     const reparacionesPorMes = @json($reparacionesPorMes);
@@ -554,7 +792,326 @@ function toggleChart(type) {
     // Función para expandir gráficos
     console.log('Toggle chart:', type);
 }
+
+// Mostrar/ocultar botón de tutorial según si ya fue completado
+document.addEventListener('DOMContentLoaded', function() {
+    const tutorialBtn = document.getElementById('tutorialBtn');
+    const resetBtn = document.getElementById('resetTutorialBtn');
+    
+    if (tutorialBtn && window.shouldShowTutorialButton) {
+        if (window.shouldShowTutorialButton('dashboard')) {
+            tutorialBtn.style.display = 'flex';
+        } else {
+            tutorialBtn.style.display = 'none';
+            // Mostrar botón de reinicio si el tutorial ya fue completado
+            if (resetBtn) {
+                resetBtn.style.display = 'flex';
+            }
+        }
+    }
+});
+
+// Función para reiniciar tutorial
+function resetTutorial() {
+    if (window.tutorialSystem && window.tutorialSystem.resetCompleted) {
+        window.tutorialSystem.resetCompleted('dashboard');
+        
+        // Mostrar botón de tutorial y ocultar botón de reinicio
+        const tutorialBtn = document.getElementById('tutorialBtn');
+        const resetBtn = document.getElementById('resetTutorialBtn');
+        
+        if (tutorialBtn) tutorialBtn.style.display = 'flex';
+        if (resetBtn) resetBtn.style.display = 'none';
+        
+        // Mostrar notificación
+        if (window.mobileUtils) {
+            window.mobileUtils.showNotification('Tutorial reiniciado. Puedes iniciarlo nuevamente.', 'info', 3000);
+        }
+    }
+}
+
+// Tutorial Completo del Dashboard
+let currentTutorialStep = 0;
+const tutorialSteps = [
+    {
+        title: "🏠 Dashboard del Sistema",
+        description: "Bienvenido al centro de control principal de HDC. Aquí tienes acceso a toda la información importante del sistema de gestión de equipos y reparaciones.",
+        target: ".dashboard-title"
+    },
+    {
+        title: "⏰ Información en Tiempo Real",
+        description: "Este reloj se actualiza automáticamente cada segundo con la hora actual del sistema. También muestra tu usuario activo para confirmar tu sesión.",
+        target: "#current-time"
+    },
+    {
+        title: "🚀 Acciones Rápidas",
+        description: "Estos botones te permiten acceder directamente a las funciones más importantes: ir a reparaciones o crear un nuevo equipo sin navegar por menús.",
+        target: ".action-buttons"
+    },
+    {
+        title: "📊 Total de Equipos",
+        description: "Esta tarjeta azul muestra el número total de equipos registrados en el sistema. Incluye una tendencia que indica cuántos equipos nuevos se registraron este mes.",
+        target: ".stat-card-primary"
+    },
+    {
+        title: "🔧 Reparaciones en Proceso",
+        description: "Esta tarjeta amarilla muestra cuántas reparaciones están actualmente en proceso. También indica cuántas están pendientes de iniciar.",
+        target: ".stat-card-warning"
+    },
+    {
+        title: "✅ Reparaciones Completadas",
+        description: "Esta tarjeta verde muestra el número de reparaciones exitosamente completadas y la tasa de éxito en porcentaje.",
+        target: ".stat-card-success"
+    },
+    {
+        title: "🚨 Reparaciones Vencidas",
+        description: "Esta tarjeta roja muestra las reparaciones que han superado su fecha límite y requieren atención inmediata del equipo técnico.",
+        target: ".stat-card-danger"
+    },
+    {
+        title: "📈 Gráfico de Estado de Equipos",
+        description: "Este gráfico de líneas muestra la distribución actual de todos los equipos según su estado: recibidos, en reparación, completados, etc.",
+        target: "#equiposEstadoChart"
+    },
+    {
+        title: "🥧 Gráfico de Reparaciones por Mes",
+        description: "Este gráfico circular te muestra la tendencia de reparaciones por mes, ayudándote a identificar patrones y planificar recursos.",
+        target: "#reparacionesMesChart"
+    },
+    {
+        title: "💻 Equipos Recientes",
+        description: "Esta sección muestra los últimos 5 equipos registrados en el sistema, con información del cliente, modelo y estado actual.",
+        target: "h5:contains('Equipos Recientes')"
+    },
+    {
+        title: "⚠️ Reparaciones Urgentes",
+        description: "Aquí se muestran las reparaciones que requieren atención inmediata, incluyendo cuántos días han transcurrido desde su registro.",
+        target: "h5:contains('Reparaciones Urgentes')"
+    },
+    {
+        title: "👥 Carga de Trabajo de Técnicos",
+        description: "Esta sección muestra cómo está distribuida la carga de trabajo entre los técnicos, con barras de progreso que indican su nivel de ocupación.",
+        target: "h5:contains('Carga de Trabajo')"
+    },
+    {
+        title: "📋 Actividad Reciente",
+        description: "Esta línea de tiempo muestra las últimas reparaciones completadas, con información del técnico responsable y cuándo se completó.",
+        target: "h5:contains('Actividad Reciente')"
+    }
+];
+
+function startSimpleTutorial() {
+    document.getElementById('tutorialModal').style.display = 'block';
+    currentTutorialStep = 0;
+    showTutorialStep();
+}
+
+function showTutorialStep() {
+    const step = tutorialSteps[currentTutorialStep];
+    document.getElementById('tutorialTitle').textContent = step.title;
+    document.getElementById('tutorialDescription').textContent = step.description;
+    document.getElementById('tutorialStep').textContent = `${currentTutorialStep + 1} de ${tutorialSteps.length}`;
+    
+    // Remover highlight anterior
+    document.querySelectorAll('.tutorial-highlight').forEach(el => {
+        el.classList.remove('tutorial-highlight');
+    });
+    
+    // Función para encontrar elementos por texto
+    function findElementByText(text) {
+        const elements = document.querySelectorAll('h5');
+        for (let el of elements) {
+            if (el.textContent.includes(text)) {
+                return el.closest('.modern-card') || el.closest('.chart-card') || el;
+            }
+        }
+        return null;
+    }
+    
+    // Agregar highlight al elemento actual
+    let targetElement = null;
+    
+    if (step.target.includes(':contains')) {
+        const text = step.target.match(/:contains\('([^']+)'\)/)[1];
+        targetElement = findElementByText(text);
+    } else {
+        targetElement = document.querySelector(step.target);
+    }
+    
+    if (targetElement) {
+        targetElement.classList.add('tutorial-highlight');
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Posicionar el modal cerca del elemento resaltado
+        positionModalNearElement(targetElement);
+    }
+    
+    // Mostrar/ocultar botones
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    if (currentTutorialStep === 0) {
+        prevBtn.style.display = 'none';
+    } else {
+        prevBtn.style.display = 'inline-block';
+    }
+    
+    if (currentTutorialStep === tutorialSteps.length - 1) {
+        nextBtn.textContent = 'Finalizar';
+    } else {
+        nextBtn.textContent = 'Siguiente';
+    }
+}
+
+function nextStep() {
+    if (currentTutorialStep < tutorialSteps.length - 1) {
+        currentTutorialStep++;
+        showTutorialStep();
+    } else {
+        closeTutorial();
+    }
+}
+
+function prevStep() {
+    if (currentTutorialStep > 0) {
+        currentTutorialStep--;
+        showTutorialStep();
+    }
+}
+
+function positionModalNearElement(element) {
+    const modal = document.querySelector('.tutorial-content-simple');
+    const elementRect = element.getBoundingClientRect();
+    const modalRect = modal.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    // Dimensiones del modal
+    const modalWidth = 400; // min-width del modal
+    const modalHeight = 200; // altura estimada del modal
+    const margin = 20; // margen mínimo del modal
+    
+    let top, left, arrowDirection;
+    
+    // Calcular posición horizontal
+    if (elementRect.left + elementRect.width + modalWidth + margin < windowWidth) {
+        // Espacio a la derecha del elemento
+        left = elementRect.right + margin;
+        arrowDirection = 'left';
+    } else if (elementRect.left - modalWidth - margin > 0) {
+        // Espacio a la izquierda del elemento
+        left = elementRect.left - modalWidth - margin;
+        arrowDirection = 'right';
+    } else {
+        // Centrar horizontalmente si no hay espacio
+        left = (windowWidth - modalWidth) / 2;
+        arrowDirection = 'up';
+    }
+    
+    // Calcular posición vertical
+    if (elementRect.top + modalHeight + margin < windowHeight) {
+        // Espacio debajo del elemento
+        top = elementRect.top;
+        if (!arrowDirection || arrowDirection === 'up') arrowDirection = 'up';
+    } else if (elementRect.bottom - modalHeight - margin > 0) {
+        // Espacio arriba del elemento
+        top = elementRect.bottom - modalHeight;
+        if (!arrowDirection || arrowDirection === 'up') arrowDirection = 'down';
+    } else {
+        // Centrar verticalmente si no hay espacio
+        top = (windowHeight - modalHeight) / 2;
+        arrowDirection = 'up';
+    }
+    
+    // Asegurar que el modal no se salga de la pantalla
+    top = Math.max(margin, Math.min(top, windowHeight - modalHeight - margin));
+    left = Math.max(margin, Math.min(left, windowWidth - modalWidth - margin));
+    
+    // Aplicar la posición
+    modal.style.position = 'fixed';
+    modal.style.top = top + 'px';
+    modal.style.left = left + 'px';
+    modal.style.transform = 'none';
+    modal.style.transition = 'top 0.3s ease, left 0.3s ease';
+    
+    // Crear flecha apuntando al elemento
+    createArrow(element, modal, arrowDirection);
+}
+
+function createArrow(element, modal, direction) {
+    // Remover flecha anterior
+    const existingArrow = document.querySelector('.tutorial-arrow');
+    if (existingArrow) {
+        existingArrow.remove();
+    }
+    
+    const arrow = document.createElement('div');
+    arrow.className = 'tutorial-arrow tutorial-arrow-' + direction;
+    
+    const elementRect = element.getBoundingClientRect();
+    const modalRect = modal.getBoundingClientRect();
+    
+    // Posicionar la flecha según la dirección
+    switch (direction) {
+        case 'up':
+            arrow.style.top = (modalRect.bottom - 5) + 'px';
+            arrow.style.left = (modalRect.left + modalRect.width / 2 - 15) + 'px';
+            break;
+        case 'down':
+            arrow.style.top = (modalRect.top - 20) + 'px';
+            arrow.style.left = (modalRect.left + modalRect.width / 2 - 15) + 'px';
+            break;
+        case 'left':
+            arrow.style.top = (modalRect.top + modalRect.height / 2 - 15) + 'px';
+            arrow.style.left = (modalRect.right - 5) + 'px';
+            break;
+        case 'right':
+            arrow.style.top = (modalRect.top + modalRect.height / 2 - 15) + 'px';
+            arrow.style.left = (modalRect.left - 20) + 'px';
+            break;
+    }
+    
+    document.body.appendChild(arrow);
+}
+
+function closeTutorial() {
+    document.getElementById('tutorialModal').style.display = 'none';
+    document.querySelectorAll('.tutorial-highlight').forEach(el => {
+        el.classList.remove('tutorial-highlight');
+    });
+    
+    // Limpiar flecha
+    const existingArrow = document.querySelector('.tutorial-arrow');
+    if (existingArrow) {
+        existingArrow.remove();
+    }
+    
+    // Resetear posición del modal
+    const modal = document.querySelector('.tutorial-content-simple');
+    modal.style.position = 'absolute';
+    modal.style.top = '50%';
+    modal.style.left = '50%';
+    modal.style.transform = 'translate(-50%, -50%)';
+}
+
+// Reemplazar la función del tutorial anterior
+window.startDashboardTutorial = startSimpleTutorial;
 </script>
+@endsection
+
+@section('tutorial-button')
+<button class="tutorial-button" onclick="startDashboardTutorial()" id="tutorialBtn" style="display: none;">
+    <i class="fas fa-graduation-cap"></i>
+    <span>Tutorial</span>
+</button>
+
+<!-- Botón para reiniciar tutorial (solo para admins) -->
+@if(auth()->user()->role === 'admin')
+<button class="tutorial-button" onclick="resetTutorial()" id="resetTutorialBtn" style="display: none; top: 60%; background: #6b7280;">
+    <i class="fas fa-redo"></i>
+    <span>Reiniciar</span>
+</button>
+@endif
 @endsection
 
 @section('styles')

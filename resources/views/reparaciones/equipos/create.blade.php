@@ -1700,48 +1700,9 @@
 
 @section('scripts')
 <script>
-// Validaciones ligeras y contadores, alineado con Clientes
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle de diseño alternativo
-    const wrapper = document.getElementById('equipoCreateWrapper');
-    const toggleBtn = document.getElementById('altDesignToggle');
-    const saved = localStorage.getItem('equipos_alt_design');
-    if (saved === '1') {
-        wrapper && wrapper.classList.add('alt-design');
-    }
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', function() {
-            if (!wrapper) return;
-            wrapper.classList.toggle('alt-design');
-            localStorage.setItem('equipos_alt_design', wrapper.classList.contains('alt-design') ? '1' : '0');
-        });
-    }
-    
-    handleFocus(e) {
-        const field = e.target;
-        field.parentElement.classList.add('focused');
-        this.addGlowEffect(field, 'focus');
-    }
-    
-    handleBlur(e) {
-        const field = e.target;
-        field.parentElement.classList.remove('focused');
-        this.validateField(field);
-        this.updateProgressIndicator();
-    }
-    
-    handleInput(e) {
-        const field = e.target;
-        this.addGlowEffect(field, 'typing');
-        
-        // Debounced validation
-        clearTimeout(field.validationTimeout);
-        field.validationTimeout = setTimeout(() => {
-            this.validateField(field, true);
-        }, 500);
-    }
-    
-    setupCharacterCounters() {
+    // Configuración de contadores de caracteres
+    function setupCharacterCounters() {
         const counters = [
             { field: 'descripcion', counter: 'descripcion-counter', max: 500 },
             { field: 'observaciones', counter: 'observaciones-counter', max: 1000 }
@@ -1758,18 +1719,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Color dinámico basado en el progreso
                     if (count > max * 0.9) {
-                        counterElement.style.color = 'var(--error-color)';
+                        counterElement.style.color = '#ef4444';
                     } else if (count > max * 0.7) {
-                        counterElement.style.color = 'var(--warning-color)';
+                        counterElement.style.color = '#f59e0b';
                     } else {
-                        counterElement.style.color = 'var(--text-secondary)';
-                    }
-                    
-                    // Animación de pulso cuando se acerca al límite
-                    if (count > max * 0.95) {
-                        counterElement.style.animation = 'pulse 1s infinite';
-                    } else {
-                        counterElement.style.animation = 'none';
+                        counterElement.style.color = '#64748b';
                     }
                 });
                 
@@ -1778,423 +1732,127 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    setupValidation() {
-        this.validationRules = {
-            numero_serie: { required: true, minLength: 3, pattern: /^[A-Z0-9\-_]+$/ },
-            marca: { required: true, minLength: 2 },
-            modelo: { required: true, minLength: 2 },
-            tipo_equipo: { required: true },
-            fecha_ingreso: { required: true },
-            cliente_nombre: { required: true, minLength: 3, pattern: /^[a-záéíóúñü\s]+$/i },
-            cliente_telefono: { pattern: /^[\+]?[0-9\s\-\(\)]{7,}$/ },
-            cliente_email: { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ }
-        };
-    }
-    
-    validateField(field, isRealTime = false) {
-        const fieldName = field.name || field.id;
-        const rules = this.validationRules[fieldName];
-        if (!rules) return true;
-        
-        const value = field.value.trim();
-        let isValid = true;
-        let errorMessage = '';
-        
-        // Validaciones
-        if (rules.required && !value) {
-            isValid = false;
-            errorMessage = 'Este campo es obligatorio';
-        } else if (value) {
-            if (rules.minLength && value.length < rules.minLength) {
-                isValid = false;
-                errorMessage = `Mínimo ${rules.minLength} caracteres`;
-            }
-            
-            if (rules.pattern && !rules.pattern.test(value)) {
-                isValid = false;
-                switch (fieldName) {
-                    case 'numero_serie':
-                        errorMessage = 'Solo letras, números, guiones y guiones bajos';
-                        break;
-                    case 'cliente_nombre':
-                        errorMessage = 'Solo letras y espacios';
-                        break;
-                    case 'cliente_telefono':
-                        errorMessage = 'Formato de teléfono inválido';
-                        break;
-                    case 'cliente_email':
-                        errorMessage = 'Formato de email inválido';
-                        break;
-                    default:
-                        errorMessage = 'Formato inválido';
-                }
-            }
-        }
-        
-        // Aplicar estilos de validación
-        this.applyValidationStyles(field, isValid, errorMessage, isRealTime);
-        
-        return isValid;
-    }
-    
-    applyValidationStyles(field, isValid, errorMessage, isRealTime) {
-        const fieldName = field.name || field.id;
-        const errorElement = document.getElementById(`${fieldName}_error`);
-        
-        // Remover clases anteriores
-        field.classList.remove('success-glow', 'error-glow');
-        
-        if (field.value.trim()) {
-            if (isValid) {
-                field.classList.add('success-glow');
-                if (errorElement) {
-                    errorElement.textContent = '';
-                    errorElement.classList.remove('show');
-                }
-            } else {
-                field.classList.add('error-glow');
-                if (errorElement && (!isRealTime || field.value.length > 2)) {
-                    errorElement.textContent = errorMessage;
-                    errorElement.classList.add('show');
-                }
-            }
-        } else {
-            if (errorElement) {
-                errorElement.classList.remove('show');
-            }
-        }
-    }
-    
-    setupFormSummary() {
-        const summaryFields = {
-            'summary-equipo': () => {
-                const marca = document.getElementById('marca').value;
-                const modelo = document.getElementById('modelo').value;
-                const tipo = document.getElementById('tipo_equipo').value;
-                return marca || modelo || tipo ? `${marca} ${modelo} ${tipo}`.trim() : '-';
-            },
-            'summary-serie': () => document.getElementById('numero_serie').value || '-',
-            'summary-cliente': () => document.getElementById('cliente_nombre').value || '-',
-            'summary-fecha': () => {
-                const fecha = document.getElementById('fecha_ingreso').value;
-                return fecha ? new Date(fecha).toLocaleDateString('es-GT') : '-';
-            },
-            'summary-telefono': () => document.getElementById('cliente_telefono').value || 'No proporcionado',
-            'summary-costo': () => {
-                const costo = document.getElementById('costo_estimado').value;
-                return costo ? `Q ${parseFloat(costo).toFixed(2)}` : 'Q 0.00';
-            }
-        };
-        
-        const updateSummary = () => {
-            Object.entries(summaryFields).forEach(([elementId, getValue]) => {
-                const element = document.getElementById(elementId);
-                if (element) {
-                    const value = getValue();
-                    element.textContent = value;
-                    
-                    // Animación sutil cuando el valor cambia
-                    element.style.transform = 'scale(1.05)';
-                    element.style.transition = 'transform 0.2s ease';
-                    setTimeout(() => {
-                        element.style.transform = 'scale(1)';
-                    }, 200);
+
+    // Configuración de validación del formulario
+    function setupFormValidation() {
+        const form = document.getElementById('equipoForm');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            let firstError = null;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                    if (!firstError) firstError = field;
+                } else {
+                    field.classList.remove('is-invalid');
                 }
             });
-        };
-        
-        this.form.addEventListener('input', () => {
-            clearTimeout(this.summaryTimeout);
-            this.summaryTimeout = setTimeout(updateSummary, 300);
-        });
-        
-        // Update inicial
-        updateSummary();
-    }
-    
-    setupAutoSuggestions() {
-        const tipoField = document.getElementById('tipo_equipo');
-        const descripcionField = document.getElementById('descripcion');
-        
-        tipoField.addEventListener('change', () => {
-            if (!descripcionField.value.trim()) {
-                const descripciones = {
-                    'Laptop': 'Computadora portátil en revisión - verificar batería, pantalla y teclado',
-                    'Computadora de Escritorio': 'Equipo de escritorio para diagnóstico completo',
-                    'Impresora': 'Impresora para mantenimiento y revisión de calidad',
-                    'Monitor': 'Monitor para reparación - revisar imagen y conectividad',
-                    'Tablet': 'Tablet en servicio - verificar pantalla táctil y batería',
-                    'Smartphone': 'Dispositivo móvil para reparación integral'
-                };
+
+            if (!isValid) {
+                e.preventDefault();
+                showNotification('Por favor, completa todos los campos obligatorios', 'error');
                 
-                const descripcion = descripciones[tipoField.value];
-                if (descripcion) {
-                    this.animateTextInput(descripcionField, descripcion);
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
                 }
+                return false;
+            }
+
+            // Deshabilitar botón de envío para evitar doble envío
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Registrando...';
             }
         });
     }
-    
-    animateTextInput(element, text) {
-        element.value = '';
-        let i = 0;
-        const interval = setInterval(() => {
-            if (i < text.length) {
-                element.value += text.charAt(i);
-                element.dispatchEvent(new Event('input'));
-                i++;
-            } else {
-                clearInterval(interval);
-            }
-        }, 30);
-    }
-    
-    setupProgressIndicator() {
-        this.updateProgressIndicator();
-    }
-    
-    updateProgressIndicator() {
-        const section1Fields = ['numero_serie', 'marca', 'modelo', 'tipo_equipo', 'fecha_ingreso'];
-        const section2Fields = ['cliente_nombre'];
-        
-        const section1Complete = this.checkSectionComplete(section1Fields);
-        const section2Complete = this.checkSectionComplete(section2Fields);
-        
-        this.updateStepIndicator(1, section1Complete);
-        this.updateStepIndicator(2, section2Complete && section1Complete);
-        this.updateStepIndicator(3, section1Complete && section2Complete);
-    }
-    
-    checkSectionComplete(fields) {
-        return fields.every(fieldName => {
-            const field = document.getElementById(fieldName);
-            return field && field.value.trim() !== '';
-        });
-    }
-    
-    updateStepIndicator(step, completed) {
-        const stepElement = document.querySelector(`[data-step="${step}"]`);
-        if (stepElement) {
-            stepElement.classList.remove('active', 'completed');
-            if (completed) {
-                stepElement.classList.add('completed');
-                
-                // Animación de éxito
-                const circle = stepElement.querySelector('.step-circle');
-                if (circle) {
-                    circle.style.animation = 'successPulse 0.6s ease-out';
-                    setTimeout(() => {
-                        circle.style.animation = '';
-                    }, 600);
-                }
-            } else {
-                stepElement.classList.add('active');
-            }
-        }
-    }
-    
-    setupNeomorphicEffects() {
-        // Efectos hover mejorados para secciones
-        document.querySelectorAll('.neomorphic-section').forEach(section => {
-            section.addEventListener('mouseenter', () => {
-                section.style.transform = 'translateY(-2px)';
-            });
-            
-            section.addEventListener('mouseleave', () => {
-                section.style.transform = 'translateY(0)';
-            });
-        });
-        
-        // Efectos de focus para inputs
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes successPulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.1); background: var(--success-color); }
-                100% { transform: scale(1); }
-            }
-            
-            @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.7; }
-            }
-            
-            .focused .input-icon {
-                color: var(--accent-color) !important;
-                transform: translateY(-50%) scale(1.1) !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    addGlowEffect(element, type) {
-        element.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        
-        switch (type) {
-            case 'focus':
-                element.style.transform = 'scale(1.02)';
-                break;
-            case 'typing':
-                element.style.boxShadow = 'inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light), 0 0 20px rgba(79, 70, 229, 0.15)';
-                break;
-        }
-        
-        setTimeout(() => {
-            if (type === 'focus') {
-                element.style.transform = '';
-            }
-        }, 300);
-    }
-    
-    handleSubmit(e) {
-        e.preventDefault();
-        
-        // Validar todos los campos
-        let isValid = true;
-        const requiredFields = this.form.querySelectorAll('[required]');
-        
-        requiredFields.forEach(field => {
-            if (!this.validateField(field)) {
-                isValid = false;
-            }
-        });
-        
-        if (!isValid) {
-            this.showNotification('Por favor, corrige los errores en el formulario', 'error');
-            
-            // Scroll al primer error con animación suave
-            const firstError = this.form.querySelector('.error-glow');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // Efecto de atención
-                firstError.style.animation = 'shake 0.6s ease-in-out';
-                setTimeout(() => {
-                    firstError.style.animation = '';
-                }, 600);
-            }
-            return;
-        }
-        
-        // Animación de envío
-        const submitBtn = document.getElementById('submitBtn');
-        const spinner = document.getElementById('submitSpinner');
-        
-        submitBtn.disabled = true;
-        submitBtn.classList.add('loading');
-        spinner.classList.remove('d-none');
-        
-        // Mensaje de éxito
-        this.showNotification('Registrando equipo...', 'success');
-        
-        // Enviar después de un breve delay para mostrar la animación
-        setTimeout(() => {
-            this.form.submit();
-        }, 1000);
-    }
-    
-    showNotification(message, type) {
+
+    // Función para mostrar notificaciones
+    function showNotification(message, type) {
         const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
-            <span>${message}</span>
-        `;
-        
+        notification.className = 'alert alert-' + (type === 'error' ? 'danger' : 'success');
         notification.style.cssText = `
             position: fixed;
-            top: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            z-index: 10000;
-            transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: ${type === 'error' ? 'var(--error-color)' : 'var(--success-color)'};
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        
+        notification.innerHTML = `
+            <i class="fas ${type === 'error' ? 'fa-exclamation-triangle' : 'fa-check-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
         `;
         
         document.body.appendChild(notification);
         
-        // Animación de entrada
+        // Auto-remove después de 5 segundos
         setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-        
-        // Auto-remove
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 400);
-        }, 4000);
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
     }
-}
 
-// Estilos adicionales para animaciones
-const additionalStyles = document.createElement('style');
-additionalStyles.textContent = `
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
+    // Configuración del indicador de progreso
+    function setupProgressIndicator() {
+        const requiredFields = ['numero_serie', 'marca', 'modelo', 'tipo_equipo', 'fecha_ingreso', 'cliente_nombre'];
+        const badge = document.getElementById('metaBadge');
+        const fill = document.getElementById('metaProgressFill');
 
-.notification {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.notification i {
-    font-size: 1.2rem;
-}
-`;
-document.head.appendChild(additionalStyles);
-
-// Inicializar sistema cuando DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-    new NeomorphicEquipoSystem();
-});
-
-<script>
-(function(){
-  document.addEventListener('DOMContentLoaded', function(){
-    const requiredFields = [
-      'numero_serie','marca','modelo','tipo_equipo','fecha_ingreso'
-    ];
-    const badge = document.getElementById('metaBadge');
-    const fill = document.getElementById('metaProgressFill');
-
-    function updateProgress(){
-      let filled = 0;
-      requiredFields.forEach(id => {
-        const el = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
-        if(el && String(el.value || '').trim().length > 0){ filled++; }
-      });
-      const pct = Math.round((filled / requiredFields.length) * 100);
-      if(fill) fill.style.width = pct + '%';
-      if(badge){
-        if(pct === 100){
-          badge.classList.remove('meta-pending');
-          badge.classList.add('meta-done');
-          badge.innerHTML = '<i class="fas fa-check me-1"></i> Completo';
-        } else {
-          badge.classList.remove('meta-done');
-          badge.classList.add('meta-pending');
-          badge.innerHTML = '<i class="fas fa-clock me-1"></i> Por completar';
+        function updateProgress() {
+            let filled = 0;
+            requiredFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value.trim().length > 0) {
+                    filled++;
+                }
+            });
+            
+            const pct = Math.round((filled / requiredFields.length) * 100);
+            
+            if (fill) {
+                fill.style.width = pct + '%';
+            }
+            
+            if (badge) {
+                if (pct === 100) {
+                    badge.classList.remove('meta-pending');
+                    badge.classList.add('meta-done');
+                    badge.innerHTML = '<i class="fas fa-check me-1"></i> Completo';
+                } else {
+                    badge.classList.remove('meta-done');
+                    badge.classList.add('meta-pending');
+                    badge.innerHTML = '<i class="fas fa-clock me-1"></i> Por completar';
+                }
+            }
         }
-      }
+
+        // Escuchar cambios en los campos
+        requiredFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updateProgress);
+                el.addEventListener('change', updateProgress);
+            }
+        });
+        
+        // Actualización inicial
+        updateProgress();
     }
 
-    // listeners
-    requiredFields.forEach(id => {
-      const el = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
-      if(el){ el.addEventListener('input', updateProgress); el.addEventListener('change', updateProgress); }
-    });
-    updateProgress();
-  });
-})();
+    // Inicializar todas las funciones
+    setupCharacterCounters();
+    setupFormValidation();
+    setupProgressIndicator();
+});
 </script>
 @endsection

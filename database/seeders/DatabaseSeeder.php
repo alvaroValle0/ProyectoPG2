@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             TecnicoSeeder::class,
             InventarioSeeder::class,
             ReparacionSeeder::class,
+            TicketSeeder::class,
         ]);
     }
 }

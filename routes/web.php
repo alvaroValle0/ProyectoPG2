@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
     // Authentication
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
+    Route::post('/perfil/avatar', [AuthController::class, 'actualizarAvatar'])->name('perfil.avatar.update');
+    Route::delete('/perfil/avatar', [AuthController::class, 'eliminarAvatar'])->name('perfil.avatar.delete');
+    Route::get('/test-avatar', [AuthController::class, 'testAvatar'])->name('test.avatar');
 
     // === MÓDULO DE REPARACIONES ===
     

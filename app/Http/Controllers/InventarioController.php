@@ -503,62 +503,101 @@ class InventarioController extends Controller
      */
     public function exportar(Request $request)
     {
-        $query = Inventario::query();
+        try {
+            $query = Inventario::query();
 
-        // Aplicar filtros si existen
-        if ($request->filled('categoria')) {
-            $query->porCategoria($request->categoria);
-        }
+            // Aplicar filtros si existen
+            if ($request->filled('categoria')) {
+                $query->porCategoria($request->categoria);
+            }
 
-        if ($request->filled('estado')) {
-            $query->where('estado', $request->estado);
-        }
+            if ($request->filled('estado')) {
+                $query->where('estado', $request->estado);
+            }
 
-        $inventario = $query->get();
+            if ($request->filled('stock_status')) {
+                switch ($request->stock_status) {
+                    case 'agotado':
+                        $query->agotados();
+                        break;
+                    case 'bajo':
+                        $query->stockBajo();
+                        break;
+                    case 'normal':
+                        $query->whereRaw('stock_actual > stock_minimo');
+                        break;
+                }
+            }
 
-        // Generar CSV
-        $filename = 'inventario_' . date('Y-m-d_H-i-s') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+            $inventario = $query->orderBy('nombre')->get();
 
-        $callback = function() use ($inventario) {
-            $file = fopen('php://temp', 'w+');
+            // Generar CSV con codificación UTF-8 BOM para Excel
+            $filename = 'inventario_' . now()->format('Y-m-d_H-i-s') . '.csv';
+            
+            // Crear contenido CSV
+            $csvContent = '';
+            
+            // BOM para UTF-8 (para que Excel reconozca los caracteres especiales)
+            $csvContent .= "\xEF\xBB\xBF";
             
             // Headers del CSV
-            fputcsv($file, [
-                'Código', 'Nombre', 'Categoría', 'Marca', 'Modelo', 'Stock Actual',
-                'Stock Mínimo', 'Precio Compra', 'Precio Venta', 'Proveedor',
-                'Ubicación', 'Estado', 'Fecha Compra'
-            ]);
+            $headers = [
+                'Código', 'Nombre', 'Categoría', 'Marca', 'Modelo', 'Serie',
+                'Stock Actual', 'Stock Mínimo', 'Estado Stock', 
+                'Precio Compra (Q)', 'Precio Venta (Q)', 'Margen (%)',
+                'Proveedor', 'Ubicación', 'Estado', 'Fecha Compra', 'Fecha Vencimiento',
+                'Descripción', 'Notas'
+            ];
+            
+            $csvContent .= '"' . implode('","', $headers) . '"' . "\n";
 
             // Datos
             foreach ($inventario as $item) {
-                fputcsv($file, [
-                    $item->codigo,
-                    $item->nombre,
-                    $item->categoria,
-                    $item->marca,
-                    $item->modelo,
-                    $item->stock_actual,
-                    $item->stock_minimo,
-                    $item->precio_compra,
-                    $item->precio_venta,
-                    $item->proveedor,
-                    $item->ubicacion,
-                    $item->estado_label,
-                    $item->fecha_compra ? $item->fecha_compra->format('d/m/Y') : ''
-                ]);
+                $row = [
+                    $item->codigo ?? '',
+                    $item->nombre ?? '',
+                    $item->categoria ?? '',
+                    $item->marca ?? '',
+                    $item->modelo ?? '',
+                    $item->serie ?? '',
+                    $item->stock_actual ?? 0,
+                    $item->stock_minimo ?? 0,
+                    $item->stock_status_label ?? '',
+                    $item->precio_compra ? number_format((float)$item->precio_compra, 2) : '',
+                    $item->precio_venta ? number_format((float)$item->precio_venta, 2) : '',
+                    $item->margen_ganancia ? number_format((float)$item->margen_ganancia, 1) . '%' : '',
+                    $item->proveedor ?? '',
+                    $item->ubicacion ?? '',
+                    $item->estado_label ?? '',
+                    $item->fecha_compra ? \Carbon\Carbon::parse($item->fecha_compra)->format('d/m/Y') : '',
+                    $item->fecha_vencimiento ? \Carbon\Carbon::parse($item->fecha_vencimiento)->format('d/m/Y') : '',
+                    $item->descripcion ?? '',
+                    $item->notas ?? ''
+                ];
+                
+                // Escapar comillas dobles en los valores
+                $row = array_map(function($value) {
+                    return str_replace('"', '""', $value);
+                }, $row);
+                
+                $csvContent .= '"' . implode('","', $row) . '"' . "\n";
             }
 
-            rewind($file);
-            $csv = stream_get_contents($file);
-            fclose($file);
-            
-            echo $csv;
-        };
+            // Configurar headers para descarga
+            $headers = [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Content-Length' => strlen($csvContent),
+                'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+                'Pragma' => 'public'
+            ];
 
-        return response()->stream($callback, 200, $headers);
+            return response($csvContent, 200, $headers);
+
+        } catch (\Exception $e) {
+            Log::error('Error al exportar inventario: ' . $e->getMessage());
+            
+            return back()->with('error', 'Error al exportar el inventario. Por favor, inténtelo nuevamente.');
+        }
     }
 }

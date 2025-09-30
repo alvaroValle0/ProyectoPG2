@@ -14,6 +14,10 @@
     <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
     <!-- CSS Optimizado para touch -->
     <link href="{{ asset('css/touch-optimized.css') }}" rel="stylesheet">
+    <!-- Sistema de Tutoriales -->
+    <link href="{{ asset('css/tutorial-system.css') }}" rel="stylesheet">
+    <!-- Sistema de Notificaciones Toast -->
+    <link href="{{ asset('css/toast-system.css') }}" rel="stylesheet">
     <!-- Script para aplicar colores inmediatamente (global o por módulo) -->
     <script>
         (function() {
@@ -358,6 +362,149 @@
             box-shadow: 0 10px 20px rgba(39, 219, 159, 0.3);
             background: #22c495;
         }
+        
+        /* Estilos para el dropdown de usuario */
+        .user-dropdown-btn {
+            border: 1px solid var(--system-primary, #F2AE4E) !important;
+            color: var(--system-primary, #F2AE4E) !important;
+            background: transparent !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .user-dropdown-btn:hover {
+            background: var(--system-primary, #F2AE4E) !important;
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .user-dropdown-btn:focus {
+            box-shadow: 0 0 0 0.2rem rgba(242, 174, 78, 0.25) !important;
+        }
+        
+        .dropdown-menu {
+            border: 1px solid rgba(0,0,0,0.1) !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+            background: #ffffff !important;
+            min-width: 280px !important;
+        }
+        
+        .dropdown-item {
+            transition: all 0.2s ease !important;
+            color: #333333 !important;
+            font-weight: 500 !important;
+            padding: 8px 16px !important;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--system-primary, #F2AE4E) !important;
+            color: white !important;
+            transform: translateX(2px) !important;
+        }
+        
+        .dropdown-item:hover i {
+            color: white !important;
+        }
+        
+        .dropdown-header {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+            color: #2c3e50 !important;
+            border-radius: 8px 8px 0 0 !important;
+            margin: -8px -8px 0 -8px !important;
+            padding: 12px 16px !important;
+            border-bottom: 2px solid var(--system-primary, #F2AE4E) !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
+        }
+        
+        .dropdown-header .fw-bold {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            color: #2c3e50 !important;
+            text-shadow: none !important;
+            margin-bottom: 2px !important;
+        }
+        
+        .dropdown-header .text-muted {
+            color: #6c757d !important;
+            font-size: 0.875rem !important;
+            font-weight: 400 !important;
+            margin-bottom: 4px !important;
+        }
+        
+        .dropdown-header .badge {
+            background-color: var(--system-primary, #F2AE4E) !important;
+            color: white !important;
+            font-size: 0.75rem !important;
+            padding: 0.2rem 0.6rem !important;
+            border-radius: 10px !important;
+            font-weight: 500 !important;
+        }
+        
+        .dropdown-divider {
+            border-color: rgba(0,0,0,0.1) !important;
+            margin: 4px 0 !important;
+        }
+        
+        /* Mejoras adicionales para el dropdown */
+        .dropdown-menu.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #f8f9fa;
+            z-index: 1001;
+        }
+        
+        /* Estilo especial para el botón de cerrar sesión */
+        .dropdown-item.text-danger {
+            color: #dc3545 !important;
+            font-weight: 600 !important;
+        }
+        
+        .dropdown-item.text-danger:hover {
+            background: #dc3545 !important;
+            color: white !important;
+        }
+        
+        /* Mejorar el avatar en el header */
+        .dropdown-header img,
+        .dropdown-header .rounded-circle {
+            border: 3px solid var(--system-primary, #F2AE4E) !important;
+            box-shadow: 0 4px 12px rgba(242, 174, 78, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .dropdown-header img:hover,
+        .dropdown-header .rounded-circle:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 6px 16px rgba(242, 174, 78, 0.4) !important;
+        }
+        
+        /* Animación de entrada del dropdown */
+        .dropdown-menu {
+            animation: dropdownFadeIn 0.2s ease-out !important;
+        }
+        
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         .table-responsive {
             border-radius: 15px;
             overflow: hidden;
@@ -524,34 +671,194 @@
             transform: translateY(-1px);
             box-shadow: 0 5px 15px rgba(39, 219, 159, 0.2);
         }
+        
+        /* Estilos específicos para navbar móvil */
+        .mobile-navbar {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .mobile-logo {
+            max-height: 30px;
+            max-width: 100px;
+            object-fit: contain;
+        }
+        
+        .mobile-toggle {
+            border: none;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .mobile-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .mobile-toggle:focus {
+            box-shadow: 0 0 0 2px rgba(39, 219, 159, 0.3);
+        }
+        
+        .mobile-user-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(39, 219, 159, 0.3);
+            color: #27DB9F;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-height: 40px;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .mobile-user-btn:hover {
+            background: rgba(39, 219, 159, 0.1);
+            border-color: #27DB9F;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(39, 219, 159, 0.2);
+        }
+        
+        .mobile-dropdown {
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border: none;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .mobile-dropdown .dropdown-item {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin: 0.125rem 0;
+            transition: all 0.2s ease;
+        }
+        
+        .mobile-dropdown .dropdown-item:hover {
+            background: rgba(39, 219, 159, 0.1);
+            transform: translateX(4px);
+        }
+        
+        /* Botón flotante (FAB) para móviles */
+        .fab-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+        
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--system-primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        .fab.success {
+            background: var(--system-success);
+        }
+        
+        .fab.warning {
+            background: var(--system-warning);
+        }
+        
+        .fab.danger {
+            background: var(--system-danger);
+        }
+        
+        .fab.info {
+            background: var(--system-info);
+        }
+        
+        /* Tooltip para FAB */
+        .fab-tooltip {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .fab-tooltip::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-left-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .fab:hover .fab-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
     @yield('styles')
 </head>
 <body>
-    <!-- Navbar móvil -->
-    <nav class="navbar navbar-expand-lg d-lg-none" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); position: fixed; top: 0; left: 0; right: 0; z-index: 9999;">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white" href="{{ route('dashboard') }}">
+    <!-- Navbar móvil mejorado -->
+    <nav class="navbar navbar-expand-lg d-lg-none mobile-navbar" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); position: fixed; top: 0; left: 0; right: 0; z-index: 9999; height: 60px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container-fluid px-3">
+            <!-- Logo y título compacto -->
+            <a class="navbar-brand text-white d-flex align-items-center" href="{{ route('dashboard') }}">
                 <img src="{{ asset('images/Imagen_de_WhatsApp_2025-08-10_a_las_17.56.17_0b0e759c-removebg-preview.png') }}" 
-                     alt="Logo" 
-                     style="max-height: 35px; max-width: 120px; object-fit: contain; margin-right: 0.5rem;">
-                <span class="fw-bold">HDC</span>
+                     alt="Logo HDC" 
+                     class="mobile-logo">
+                <span class="fw-bold ms-2 d-none d-sm-inline">HDC</span>
             </a>
             
-            <button class="navbar-toggler" type="button" onclick="toggleSidebar()" aria-label="Abrir menú">
+            <!-- Botón hamburguesa mejorado -->
+            <button class="navbar-toggler mobile-toggle" type="button" onclick="toggleSidebar()" aria-label="Abrir menú" aria-expanded="false">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-            <div class="dropdown ms-auto">
-                <button class="btn user-dropdown-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-user me-2"></i>
-                    {{ auth()->user()->name ?? 'Usuario' }}
+            <!-- Dropdown de usuario compacto -->
+            <div class="dropdown">
+                <button class="btn user-dropdown-btn dropdown-toggle mobile-user-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                    <span class="d-none d-sm-inline ms-1">{{ Str::limit(auth()->user()->name ?? 'Usuario', 10) }}</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end">
+                <ul class="dropdown-menu dropdown-menu-end mobile-dropdown">
                     <li><h6 class="dropdown-header">{{ auth()->user()->name ?? 'Usuario' }}</h6></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                    <li><a class="dropdown-item" href="{{ route('perfil') }}"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                    <li><a class="dropdown-item" href="{{ route('configuracion.index') }}"><i class="fas fa-cog me-2"></i>Configuración</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}" class="d-inline">
@@ -708,7 +1015,7 @@
                                      style="width: 32px; height: 32px; object-fit: cover;">
                             @else
                                 <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                     style="width: 32px; height: 32px; font-size: 0.875rem; background: #27DB9F;">
+                                     style="width: 32px; height: 32px; font-size: 0.875rem; background: var(--system-primary, #F2AE4E);">
                                     {{ auth()->user()->iniciales }}
                                 </div>
                             @endif
@@ -725,33 +1032,33 @@
                                              style="width: 40px; height: 40px; object-fit: cover;">
                                     @else
                                         <div class="text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                             style="width: 40px; height: 40px; font-size: 1rem; background: #27DB9F;">
+                                             style="width: 40px; height: 40px; font-size: 1rem; background: var(--system-primary, #F2AE4E);">
                                             {{ auth()->user()->iniciales }}
                                         </div>
                                     @endif
                                     <div>
                                         <div class="fw-bold">{{ auth()->user()->name }}</div>
                                         <small class="text-muted">{{ auth()->user()->email }}</small>
-                                        <small class="badge bg-{{ auth()->user()->estado_color }}">{{ auth()->user()->rol_label }}</small>
+                                        <small class="badge" style="background-color: var(--system-primary, #F2AE4E); color: white;">{{ auth()->user()->rol_label }}</small>
                                     </div>
                                 </div>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('perfil') }}">
-                                    <i class="fas fa-user-cog me-2" style="color: #27DB9F;"></i> 
+                                    <i class="fas fa-user-cog me-2" style="color: var(--system-primary, #F2AE4E);"></i> 
                                     Mi Perfil
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard') }}">
-                                    <i class="fas fa-tachometer-alt me-2" style="color: #27DB9F;"></i> 
+                                    <i class="fas fa-tachometer-alt me-2" style="color: var(--system-primary, #F2AE4E);"></i> 
                                     Dashboard
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('reparaciones.mis-tareas') }}">
-                                    <i class="fas fa-tasks me-2" style="color: #27DB9F;"></i> 
+                                    <i class="fas fa-tasks me-2" style="color: var(--system-primary, #F2AE4E);"></i> 
                                     Mis Tareas
                                 </a>
                             </li>
@@ -865,8 +1172,24 @@
     <!-- Sistema de eliminación unificado -->
     <script src="{{ asset('js/eliminacion.js') }}"></script>
     
-    <!-- Sistema de tablas móviles -->
+    <!-- Sistema de tablas móviles automático -->
     <script src="{{ asset('js/mobile-tables.js') }}"></script>
+    
+    <!-- Utilidades móviles -->
+    <script src="{{ asset('js/mobile-utils.js') }}"></script>
+    
+    <!-- Sistema de Tutoriales -->
+    <script src="{{ asset('js/tutorial-system.js') }}"></script>
+    <script src="{{ asset('js/toast-system.js') }}"></script>
+    
+    <!-- Botón flotante para móviles -->
+    <div class="fab-container d-lg-none">
+        <!-- Se puede personalizar por página -->
+        @yield('fab-button')
+    </div>
+    
+    <!-- Botón de tutorial -->
+    @yield('tutorial-button')
     
     <!-- Custom Scripts -->
     <script>

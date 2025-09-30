@@ -23,7 +23,7 @@
                                 <option value="">Seleccione una reparación</option>
                                 @foreach(($reparaciones ?? []) as $rep)
                                     <option value="{{ $rep->id }}" {{ old('reparacion_id') == $rep->id ? 'selected' : '' }}>
-                                        {{ $rep->id }} - {{ $rep->equipo->cliente->nombre_completo ?? 'Cliente' }} ({{ $rep->equipo->marca }} {{ $rep->equipo->modelo }})
+                                        {{ $rep->id }} - {{ $rep->equipo->nombre_cliente }} ({{ $rep->equipo->marca }} {{ $rep->equipo->modelo }})
                                     </option>
                                 @endforeach
                             </select>

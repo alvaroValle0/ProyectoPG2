@@ -474,7 +474,7 @@
                         </a>
                     </div>
                     <div class="col-md-3 mb-2">
-                        <a href="{{ route('inventario.exportar') }}" class="btn btn-success w-100">
+                        <a href="{{ route('inventario.exportar', request()->query()) }}" class="btn btn-success w-100" title="Exportar inventario actual (con filtros aplicados)" onclick="exportarInventario(this)">
                             <i class="fas fa-download me-2"></i>Exportar
                         </a>
                     </div>
@@ -628,6 +628,29 @@ function showToast(type, message) {
         toastElement.remove();
     });
 }
+
+function exportarInventario(linkElement) {
+    // Mostrar mensaje de procesamiento
+    showToast('success', 'Preparando exportación...');
+    
+    // Deshabilitar el botón temporalmente
+    const originalText = linkElement.innerHTML;
+    linkElement.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Exportando...';
+    linkElement.style.pointerEvents = 'none';
+    
+    // Restaurar el botón después de 2 segundos
+    setTimeout(() => {
+        linkElement.innerHTML = originalText;
+        linkElement.style.pointerEvents = 'auto';
+    }, 2000);
+    
+    // Permitir que el enlace continúe normalmente
+    return true;
+}
+
+function mostrarProximamente(feature) {
+    showToast('info', `${feature} estará disponible próximamente`);
+}
 // Inicializar tooltips Bootstrap
 document.addEventListener('DOMContentLoaded', function () {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -670,6 +693,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endsection
+
+@section('fab-button')
+<a href="{{ route('inventario.create') }}" class="fab success" title="Nuevo Item">
+    <i class="fas fa-plus"></i>
+    <div class="fab-tooltip">Nuevo Item</div>
+</a>
 @endsection
 
 @section('styles')

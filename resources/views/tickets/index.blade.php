@@ -113,7 +113,7 @@
                                 <td>
                                     <span class="badge bg-secondary">{{ $ticket->tipo_ticket_label ?? ucfirst($ticket->tipo_ticket) }}</span>
                                 </td>
-                                <td>{{ $ticket->reparacion->equipo->cliente->nombre_completo ?? 'N/A' }}</td>
+                                <td>{{ $ticket->reparacion->equipo->nombre_cliente ?? 'N/A' }}</td>
                                 <td>{{ $ticket->reparacion->equipo->marca ?? '' }} {{ $ticket->reparacion->equipo->modelo ?? '' }}</td>
                                 <td>
                                     <span class="badge bg-primary">{{ $ticket->estado_label ?? ucfirst($ticket->estado) }}</span>
@@ -121,13 +121,41 @@
                                 <td>{{ $ticket->fecha_generacion ? $ticket->fecha_generacion->format('d/m/Y') : 'N/A' }}</td>
                                 <td>
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-h"></i> Acciones
+                                        <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" 
+                                                data-bs-toggle="dropdown" 
+                                                aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v me-1"></i> Acciones
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end w-100">
-                                            <li><a class="dropdown-item" href="{{ route('tickets.show', $ticket) }}"><i class="fas fa-eye me-2"></i>Ver</a></li>
-                                            <li><a class="dropdown-item" href="{{ route('tickets.edit', $ticket) }}"><i class="fas fa-edit me-2"></i>Editar</a></li>
-                                            <li><a class="dropdown-item" href="{{ route('tickets.imprimir', $ticket) }}"><i class="fas fa-print me-2"></i>Imprimir</a></li>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('tickets.show', $ticket) }}">
+                                                    <i class="fas fa-eye me-2 text-info"></i>Ver Detalles
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('tickets.edit', $ticket) }}">
+                                                    <i class="fas fa-edit me-2 text-warning"></i>Editar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('tickets.imprimir', $ticket) }}">
+                                                    <i class="fas fa-print me-2 text-primary"></i>Imprimir
+                                                </a>
+                                            </li>
+                                            @if($ticket->estado === 'generado')
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('tickets.firmar', $ticket) }}">
+                                                    <i class="fas fa-signature me-2 text-success"></i>Firmar
+                                                </a>
+                                            </li>
+                                            @endif
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#" 
+                                                   onclick="confirmarEliminacion({{ $ticket->id }}, '{{ $ticket->numero_ticket }}')">
+                                                    <i class="fas fa-trash me-2"></i>Eliminar
+                                                </a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </td>
@@ -190,6 +218,100 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         observer.observe(counter);
+    });
+
+    // Inicializar tooltips de Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Inicializar dropdowns de Bootstrap con configuración mejorada
+    var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+    var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl, {
+            boundary: 'viewport',
+            display: 'dynamic',
+            offset: [0, 2],
+            autoClose: true
+        });
+    });
+});
+
+// Función para confirmar eliminación de ticket
+function confirmarEliminacion(ticketId, numeroTicket) {
+    if (confirm(`¿Estás seguro de que deseas eliminar el ticket ${numeroTicket}?\n\nEsta acción no se puede deshacer.`)) {
+        // Crear formulario para eliminación
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/tickets/${ticketId}`;
+        
+        // Agregar token CSRF
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        form.appendChild(csrfToken);
+        
+        // Agregar método DELETE
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        // Enviar formulario
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Función para mostrar notificaciones toast
+function mostrarNotificacion(tipo, titulo, mensaje) {
+    if (window.toastSystem) {
+        window.toastSystem[tipo](titulo, mensaje);
+    } else {
+        // Fallback si no hay sistema de toast
+        alert(`${titulo}: ${mensaje}`);
+    }
+}
+
+// Mejorar la funcionalidad de los dropdowns
+document.addEventListener('click', function(e) {
+    // Solo manejar clicks fuera de dropdowns para cerrarlos
+    if (!e.target.closest('.dropdown')) {
+        // Cerrar todos los dropdowns si se hace click fuera
+        const allDropdowns = document.querySelectorAll('.dropdown-menu.show');
+        allDropdowns.forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Manejar teclas de escape para cerrar dropdowns
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const allDropdowns = document.querySelectorAll('.dropdown-menu.show');
+        allDropdowns.forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Agregar efectos visuales a los dropdowns
+document.addEventListener('DOMContentLoaded', function() {
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    
+    dropdownItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.transform = 'translateX(5px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.transform = '';
+        });
     });
 });
 </script>
@@ -358,6 +480,129 @@ document.addEventListener('DOMContentLoaded', function() {
 .stat-card:nth-child(3) { animation-delay: 0.3s; }
 .stat-card:nth-child(4) { animation-delay: 0.4s; }
 
+/* Dropdown Actions - Estilos corregidos */
+.dropdown-menu {
+    z-index: 99999 !important;
+    position: absolute !important;
+    background: white !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    min-width: 180px !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: all 0.2s ease !important;
+    transform: translateY(-10px) !important;
+}
+
+.dropdown-menu.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+.dropdown-item {
+    padding: 10px 16px !important;
+    color: #495057 !important;
+    text-decoration: none !important;
+    display: block !important;
+    transition: all 0.2s ease !important;
+    border-radius: 4px !important;
+    margin: 2px 8px !important;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    transform: translateX(5px) !important;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #fff5f5 !important;
+    color: #dc3545 !important;
+}
+
+.dropdown-divider {
+    margin: 8px 0 !important;
+    border-top: 1px solid #dee2e6 !important;
+}
+
+/* Estilos para el botón del dropdown */
+.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    margin: 2px 8px;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transform: translateX(5px);
+    color: #495057;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+    border-color: #e9ecef;
+}
+
+/* Estados específicos para acciones */
+.dropdown-item.text-danger:hover {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+    color: #e53e3e;
+}
+
+.dropdown-item.text-success:hover {
+    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+    color: #38a169;
+}
+
+.dropdown-item.text-warning:hover {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    color: #d69e2e;
+}
+
+.dropdown-item.text-info:hover {
+    background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+    color: #3182ce;
+}
+
+.dropdown-item.text-primary:hover {
+    background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%);
+    color: #2d3748;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .stat-card {
@@ -366,6 +611,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     .stat-card-number {
         font-size: 2rem;
+    }
+    
+    .dropdown-menu {
+        min-width: 160px;
+        font-size: 13px;
+    }
+    
+    .dropdown-item {
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dropdown-toggle {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .dropdown-menu {
+        min-width: 140px;
     }
 }
 </style>

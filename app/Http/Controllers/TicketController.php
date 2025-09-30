@@ -50,7 +50,9 @@ class TicketController extends Controller
             });
         }
 
-        $tickets = $query->orderBy('fecha_generacion', 'desc')->paginate(15);
+        $tickets = $query->with(['reparacion.equipo.cliente', 'reparacion.tecnico.user'])
+                         ->orderBy('fecha_generacion', 'desc')
+                         ->paginate(15);
 
         // Estadísticas
         $estadisticas = [
@@ -77,7 +79,8 @@ class TicketController extends Controller
 
         $reparaciones = Reparacion::with(['equipo.cliente', 'tecnico'])
                                   ->whereDoesntHave('tickets')
-                                  ->whereIn('estado', ['en_proceso', 'completada'])
+                                  ->whereIn('estado', ['pendiente', 'en_proceso', 'completada'])
+                                  ->orderBy('fecha_inicio', 'desc')
                                   ->get();
 
         return view('tickets.create', compact('reparacion', 'reparaciones'));

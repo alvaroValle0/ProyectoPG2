@@ -1,0 +1,1241 @@
+/**
+ * Sistema de Tutoriales Interactivos
+ * Estilos CSS para el sistema de tutoriales del HDC
+ */
+
+/* =========================================
+   OVERLAY Y FONDO
+   ========================================= */
+
+.tutorial-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    z-index: 9998 !important;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transition: all 0.3s ease !important;
+    pointer-events: none !important;
+}
+
+/* Crear efecto spotlight dinámico */
+.tutorial-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%), 
+        transparent 0px, 
+        transparent 150px, 
+        rgba(0, 0, 0, 0.6) 200px, 
+        rgba(0, 0, 0, 0.8) 100%);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+/* =========================================
+   HIGHLIGHT DE ELEMENTOS MEJORADO
+   ========================================= */
+
+.tutorial-highlight {
+    position: relative !important;
+    z-index: 9999 !important;
+    outline: 4px solid #27DB9F !important;
+    outline-offset: 3px !important;
+    border-radius: 12px !important;
+    box-shadow: 
+        0 0 0 6px rgba(39, 219, 159, 0.4),
+        0 0 20px rgba(39, 219, 159, 0.6),
+        0 0 40px rgba(39, 219, 159, 0.3) !important;
+    animation: tutorial-pulse-enhanced 1.5s infinite !important;
+    transform: scale(1.02) !important;
+    transition: all 0.3s ease !important;
+    background: rgba(39, 219, 159, 0.05) !important;
+    border: 2px solid rgba(39, 219, 159, 0.2) !important;
+}
+
+/* Efecto spotlight mejorado */
+.tutorial-highlight::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background: linear-gradient(45deg, 
+        rgba(39, 219, 159, 0.1) 0%,
+        rgba(39, 219, 159, 0.2) 25%,
+        rgba(39, 219, 159, 0.1) 50%,
+        rgba(39, 219, 159, 0.2) 75%,
+        rgba(39, 219, 159, 0.1) 100%);
+    border-radius: 16px;
+    z-index: -1;
+    animation: tutorial-glow 2s infinite;
+}
+
+/* Animación de pulso mejorada */
+@keyframes tutorial-pulse-enhanced {
+    0% {
+        box-shadow: 
+            0 0 0 6px rgba(39, 219, 159, 0.4),
+            0 0 20px rgba(39, 219, 159, 0.6),
+            0 0 40px rgba(39, 219, 159, 0.3);
+        transform: scale(1.02);
+    }
+    50% {
+        box-shadow: 
+            0 0 0 10px rgba(39, 219, 159, 0.3),
+            0 0 30px rgba(39, 219, 159, 0.8),
+            0 0 60px rgba(39, 219, 159, 0.4);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 
+            0 0 0 6px rgba(39, 219, 159, 0.4),
+            0 0 20px rgba(39, 219, 159, 0.6),
+            0 0 40px rgba(39, 219, 159, 0.3);
+        transform: scale(1.02);
+    }
+}
+
+/* Animación de brillo */
+@keyframes tutorial-glow {
+    0% {
+        opacity: 0.5;
+        transform: rotate(0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(360deg);
+    }
+}
+
+/* Efecto especial para botones */
+.tutorial-highlight.btn,
+.tutorial-highlight.button {
+    background: linear-gradient(135deg, #27DB9F 0%, #22c495 100%) !important;
+    color: white !important;
+    transform: scale(1.1) !important;
+    box-shadow: 
+        0 0 0 6px rgba(39, 219, 159, 0.4),
+        0 0 30px rgba(39, 219, 159, 0.8),
+        0 8px 25px rgba(39, 219, 159, 0.4) !important;
+}
+
+/* Efecto especial para tarjetas */
+.tutorial-highlight.card,
+.tutorial-highlight.stat-card {
+    background: rgba(39, 219, 159, 0.1) !important;
+    border: 3px solid #27DB9F !important;
+    transform: scale(1.03) !important;
+}
+
+/* Efecto especial para enlaces */
+.tutorial-highlight a {
+    color: #27DB9F !important;
+    text-decoration: underline !important;
+    font-weight: 600 !important;
+}
+
+/* Efecto especial para inputs */
+.tutorial-highlight input,
+.tutorial-highlight select,
+.tutorial-highlight textarea {
+    border: 3px solid #27DB9F !important;
+    background: rgba(39, 219, 159, 0.05) !important;
+    transform: scale(1.05) !important;
+}
+
+/* =========================================
+   TOOLTIP DEL TUTORIAL
+   ========================================= */
+
+.tutorial-tooltip {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden !important;
+    z-index: 9999 !important;
+}
+
+/* Header del tooltip */
+.tutorial-header {
+    background: linear-gradient(135deg, #27DB9F 0%, #22c495 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    position: relative;
+}
+
+.tutorial-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.tutorial-title i {
+    font-size: 1.25rem;
+    opacity: 0.9;
+}
+
+.tutorial-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.tutorial-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.tutorial-meta i {
+    font-size: 0.75rem;
+}
+
+.tutorial-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.tutorial-step-counter {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.tutorial-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.tutorial-progress-fill {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Contenido del tooltip mejorado */
+.tutorial-content {
+    padding: 1.5rem;
+    line-height: 1.6;
+    color: #374151;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.tutorial-content p {
+    margin-bottom: 1rem;
+}
+
+.tutorial-content p:last-child {
+    margin-bottom: 0;
+}
+
+.tutorial-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.tutorial-content li {
+    margin-bottom: 0.5rem;
+}
+
+.tutorial-content strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+/* Estilos específicos para contenido del tutorial */
+.tutorial-welcome h4 {
+    color: #27DB9F;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.tutorial-highlights {
+    margin: 1rem 0;
+}
+
+.highlight-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(39, 219, 159, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #27DB9F;
+}
+
+.highlight-item i {
+    font-size: 1.125rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Sección de información */
+.tutorial-info-section h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.info-grid {
+    margin: 1rem 0;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #3b82f6;
+}
+
+.info-item i {
+    font-size: 1.125rem;
+    margin-top: 0.125rem;
+    width: 20px;
+    text-align: center;
+}
+
+.info-item div {
+    flex: 1;
+}
+
+.info-item strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.info-item small {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+/* Sección de acciones */
+.tutorial-actions-section h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.action-buttons-demo {
+    margin: 1rem 0;
+}
+
+.action-demo-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(34, 197, 94, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #22c55e;
+}
+
+.demo-btn {
+    flex-shrink: 0;
+    margin: 0 !important;
+}
+
+.action-explanation {
+    flex: 1;
+}
+
+.action-explanation strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.action-explanation p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.action-explanation small {
+    color: #6b7280;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+/* Sección de estadísticas */
+.tutorial-stats-section h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.stats-explanation {
+    margin: 1rem 0;
+}
+
+.stat-item-explanation {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #3b82f6;
+}
+
+.stat-number-demo {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.stat-details {
+    flex: 1;
+}
+
+.stat-details strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.stat-details p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.stat-details small {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+/* Sección de alertas */
+.tutorial-alerts-section h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.alert-types {
+    margin: 1rem 0;
+}
+
+.alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid;
+}
+
+.alert-item.critical {
+    background: rgba(239, 68, 68, 0.05);
+    border-left-color: #ef4444;
+}
+
+.alert-item.warning {
+    background: rgba(245, 158, 11, 0.05);
+    border-left-color: #f59e0b;
+}
+
+.alert-item.info {
+    background: rgba(59, 130, 246, 0.05);
+    border-left-color: #3b82f6;
+}
+
+.alert-item i {
+    font-size: 1.125rem;
+    margin-top: 0.125rem;
+    width: 20px;
+    text-align: center;
+}
+
+.alert-item div {
+    flex: 1;
+}
+
+.alert-item strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.alert-item p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.alert-item small {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+.alert-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.alert-actions .btn {
+    margin: 0 !important;
+}
+
+/* Sección de reparaciones recientes */
+.tutorial-recent-section h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.recent-items-explanation {
+    margin: 1rem 0;
+}
+
+.recent-item-demo {
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #3b82f6;
+}
+
+.recent-item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.recent-item-info {
+    flex: 1;
+}
+
+.recent-item-info strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #1f2937;
+}
+
+.recent-item-info small {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+.recent-item-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.recent-features {
+    margin: 1rem 0;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(39, 219, 159, 0.05);
+    border-radius: 6px;
+}
+
+.feature-item i {
+    font-size: 1rem;
+    width: 16px;
+    text-align: center;
+}
+
+/* Sección de navegación */
+.tutorial-navigation-section h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.navigation-modules {
+    margin: 1rem 0;
+}
+
+.nav-module {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    background: rgba(243, 244, 246, 0.5);
+}
+
+.nav-module.active {
+    background: rgba(39, 219, 159, 0.1);
+    border-left: 3px solid #27DB9F;
+}
+
+.nav-module i {
+    font-size: 1.125rem;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-module div {
+    flex: 1;
+}
+
+.nav-module strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #1f2937;
+}
+
+.nav-module small {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+/* Sección de finalización */
+.tutorial-completion-section {
+    text-align: center;
+}
+
+.completion-celebration h4 {
+    color: #27DB9F;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.completion-summary {
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.completion-summary h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.learned-items {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.learned-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(34, 197, 94, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #22c55e;
+}
+
+.learned-item i {
+    font-size: 1rem;
+}
+
+.next-steps {
+    margin: 1.5rem 0;
+}
+
+.next-steps h5 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.step-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.step-card {
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #3b82f6;
+    text-align: center;
+}
+
+.step-card i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.step-card strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.step-card p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.completion-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.completion-actions .btn {
+    margin: 0 !important;
+}
+
+/* Tips del tutorial */
+.tutorial-tip {
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.tutorial-tip i {
+    color: #3b82f6;
+    font-size: 1rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.tutorial-tip strong {
+    color: #1f2937;
+    margin-right: 0.25rem;
+}
+
+.tutorial-tip.final-tip {
+    background: rgba(39, 219, 159, 0.05);
+    border-color: rgba(39, 219, 159, 0.2);
+}
+
+.tutorial-tip.final-tip i {
+    color: #27DB9F;
+}
+
+/* Acciones del tooltip */
+.tutorial-actions {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.tutorial-btn {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    min-width: 100px;
+    justify-content: center;
+}
+
+.tutorial-btn-skip {
+    background: #6b7280;
+    color: white;
+}
+
+.tutorial-btn-skip:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+}
+
+.tutorial-btn-prev {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.tutorial-btn-prev:hover {
+    background: #d1d5db;
+    transform: translateY(-1px);
+}
+
+.tutorial-btn-next {
+    background: #27DB9F;
+    color: white;
+}
+
+.tutorial-btn-next:hover {
+    background: #22c495;
+    transform: translateY(-1px);
+}
+
+/* =========================================
+   FLECHAS DEL TOOLTIP MEJORADAS
+   ========================================= */
+
+.tutorial-arrow-top::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 12px solid transparent;
+    border-bottom-color: #27DB9F;
+    filter: drop-shadow(0 -3px 6px rgba(0, 0, 0, 0.2));
+}
+
+.tutorial-arrow-top::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 10px solid transparent;
+    border-bottom-color: white;
+}
+
+.tutorial-arrow-bottom::before {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 12px solid transparent;
+    border-top-color: #27DB9F;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+}
+
+.tutorial-arrow-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 10px solid transparent;
+    border-top-color: white;
+}
+
+.tutorial-arrow-left::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 12px solid transparent;
+    border-right-color: #27DB9F;
+    filter: drop-shadow(-3px 0 6px rgba(0, 0, 0, 0.2));
+}
+
+.tutorial-arrow-left::after {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 10px solid transparent;
+    border-right-color: white;
+}
+
+.tutorial-arrow-right::before {
+    content: '';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 12px solid transparent;
+    border-left-color: #27DB9F;
+    filter: drop-shadow(3px 0 6px rgba(0, 0, 0, 0.2));
+}
+
+.tutorial-arrow-right::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 10px solid transparent;
+    border-left-color: white;
+}
+
+/* Animación de entrada del tooltip */
+.tutorial-tooltip-entering {
+    animation: tutorial-tooltip-enter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes tutorial-tooltip-enter {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Indicador visual adicional */
+.tutorial-indicator {
+    position: fixed !important;
+    z-index: 10000 !important;
+    pointer-events: none !important;
+}
+
+.tutorial-indicator-content {
+    background: linear-gradient(135deg, #27DB9F 0%, #22c495 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(39, 219, 159, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.tutorial-indicator-content i {
+    font-size: 1rem;
+    animation: tutorial-hand-wave 1s infinite;
+}
+
+@keyframes tutorial-indicator-bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes tutorial-hand-wave {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-10deg);
+    }
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+/* Estilos para sección de gráficos */
+.tutorial-chart-section {
+    padding: 1rem 0;
+}
+
+.chart-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(0, 123, 255, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #007bff;
+}
+
+.benefit-item i {
+    font-size: 1.2rem;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+.benefit-item div {
+    flex: 1;
+}
+
+.benefit-item strong {
+    display: block;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.benefit-item small {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* =========================================
+   BOTÓN DE TUTORIAL
+   ========================================= */
+
+.tutorial-button {
+    position: fixed;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+    z-index: 1000;
+    background: linear-gradient(135deg, #27DB9F 0%, #22c495 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(39, 219, 159, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.tutorial-button:hover {
+    transform: translateY(-50%) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(39, 219, 159, 0.4);
+    background: linear-gradient(135deg, #22c495 0%, #1fb885 100%);
+}
+
+.tutorial-button:active {
+    transform: translateY(-50%) translateY(0);
+}
+
+.tutorial-button i {
+    font-size: 1rem;
+}
+
+/* Animación de pulso para llamar la atención */
+.tutorial-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    transform: translate(-50%, -50%) scale(0);
+    animation: tutorial-button-pulse 2s infinite;
+}
+
+@keyframes tutorial-button-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* =========================================
+   RESPONSIVE PARA MÓVILES
+   ========================================= */
+
+@media (max-width: 768px) {
+    .tutorial-tooltip {
+        max-width: calc(100vw - 2rem) !important;
+        min-width: calc(100vw - 2rem) !important;
+        margin: 1rem !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        top: auto !important;
+    }
+
+    .tutorial-button {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        top: auto;
+        transform: none;
+        border-radius: 50px;
+        padding: 1rem 1.5rem;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 12px rgba(39, 219, 159, 0.3);
+    }
+
+    .tutorial-button:hover {
+        transform: translateY(-2px);
+    }
+
+    .tutorial-button:active {
+        transform: translateY(0);
+    }
+
+    .tutorial-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .tutorial-btn {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .tutorial-header {
+        padding: 1rem;
+    }
+
+    .tutorial-content {
+        padding: 1rem;
+    }
+
+    .tutorial-actions {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .tutorial-tooltip {
+        max-width: calc(100vw - 1rem) !important;
+        min-width: calc(100vw - 1rem) !important;
+        margin: 0.5rem !important;
+        left: 0.5rem !important;
+        right: 0.5rem !important;
+    }
+
+    .tutorial-button {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.875rem 1.25rem;
+        font-size: 0.8rem;
+    }
+
+    .tutorial-button span {
+        display: none;
+    }
+
+    .tutorial-button i {
+        font-size: 1.125rem;
+    }
+}
+
+/* =========================================
+   ESTADOS ESPECIALES
+   ========================================= */
+
+/* Cuando el tutorial está activo */
+body.tutorial-active {
+    overflow: hidden;
+}
+
+/* Botón de tutorial cuando está oculto */
+.tutorial-button.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-50%) scale(0.8);
+}
+
+.tutorial-button.hidden:hover {
+    transform: translateY(-50%) translateY(-2px) scale(0.8);
+}
+
+/* =========================================
+   ACCESIBILIDAD
+   ========================================= */
+
+.tutorial-btn:focus,
+.tutorial-button:focus {
+    outline: 2px solid #27DB9F;
+    outline-offset: 2px;
+}
+
+/* Reducir animaciones si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+    .tutorial-highlight {
+        animation: none !important;
+    }
+    
+    .tutorial-button::before {
+        animation: none !important;
+    }
+    
+    .tutorial-tooltip,
+    .tutorial-overlay {
+        transition: none !important;
+    }
+}
+
+/* =========================================
+   TEMAS ADICIONALES
+   ========================================= */
+
+/* Tema oscuro (opcional) */
+@media (prefers-color-scheme: dark) {
+    .tutorial-tooltip {
+        background: #1f2937 !important;
+        color: white !important;
+    }
+
+    .tutorial-content {
+        color: #f3f4f6;
+    }
+
+    .tutorial-actions {
+        background: #111827;
+        border-top-color: #374151;
+    }
+
+    .tutorial-btn-prev {
+        background: #374151;
+        color: #f3f4f6;
+    }
+
+    .tutorial-btn-prev:hover {
+        background: #4b5563;
+    }
+}
