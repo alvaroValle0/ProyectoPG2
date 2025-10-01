@@ -58,6 +58,19 @@
                             @error('descripcion_servicio')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
 
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Observaciones del Técnico</label>
+                                <textarea name="observaciones_tecnico" rows="4" class="form-control" placeholder="Observaciones técnicas, diagnóstico, recomendaciones...">{{ old('observaciones_tecnico') }}</textarea>
+                                @error('observaciones_tecnico')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Observaciones del Cliente</label>
+                                <textarea name="observaciones_cliente" rows="4" class="form-control" placeholder="Comentarios del cliente, quejas, sugerencias...">{{ old('observaciones_cliente') }}</textarea>
+                                @error('observaciones_cliente')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('tickets.index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-2"></i>Cancelar

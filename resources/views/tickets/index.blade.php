@@ -142,13 +142,6 @@
                                                     <i class="fas fa-print me-2 text-primary"></i>Imprimir
                                                 </a>
                                             </li>
-                                            @if($ticket->estado === 'generado')
-                                            <li>
-                                                <a class="dropdown-item" href="{{ route('tickets.firmar', $ticket) }}">
-                                                    <i class="fas fa-signature me-2 text-success"></i>Firmar
-                                                </a>
-                                            </li>
-                                            @endif
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
                                                 <a class="dropdown-item text-danger" href="#" 

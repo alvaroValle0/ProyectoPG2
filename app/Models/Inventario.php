@@ -114,7 +114,7 @@ class Inventario extends Model
 
     public function getValorTotalAttribute()
     {
-        return $this->stock_actual * $this->precio_compra;
+        return $this->stock_actual * ($this->precio_compra ?? 0);
     }
 
     // Scopes para consultas

@@ -830,13 +830,6 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Table Styles */
-.modern-table thead th { 
-    background: #f8fafc; 
-    border: none; 
-    text-transform: uppercase; 
-    letter-spacing: .5px; 
-}
-
 .modern-table tbody tr:hover { 
     background: rgba(0,0,0,0.02); 
     transform: scale(1.005); 
@@ -854,6 +847,10 @@ document.addEventListener('DOMContentLoaded', function() {
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
+}
+
+.table-dark th {
+    color: #fff !important;
 }
 
 .table td {

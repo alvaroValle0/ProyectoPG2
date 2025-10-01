@@ -193,13 +193,20 @@
                             @php
                                 $totalSize = 0;
                                 foreach($backups as $backup) {
-                                    $size = str_replace([' KB', ' MB', ' GB'], '', $backup['tamaño']);
-                                    $unit = str_replace($size, '', $backup['tamaño']);
-                                    switch($unit) {
-                                        case ' KB': $totalSize += $size * 1024; break;
-                                        case ' MB': $totalSize += $size * 1024 * 1024; break;
-                                        case ' GB': $totalSize += $size * 1024 * 1024 * 1024; break;
-                                        default: $totalSize += $size; break;
+                                    $sizeString = $backup['tamaño'] ?? '0 KB';
+                                    // Extraer número y unidad
+                                    preg_match('/([0-9.]+)\s*(KB|MB|GB)/i', $sizeString, $matches);
+                                    
+                                    if (count($matches) >= 3) {
+                                        $size = floatval($matches[1]);
+                                        $unit = strtoupper(trim($matches[2]));
+                                        
+                                        switch($unit) {
+                                            case 'KB': $totalSize += $size * 1024; break;
+                                            case 'MB': $totalSize += $size * 1024 * 1024; break;
+                                            case 'GB': $totalSize += $size * 1024 * 1024 * 1024; break;
+                                            default: $totalSize += $size; break;
+                                        }
                                     }
                                 }
                                 $totalSize = $totalSize / (1024 * 1024); // Convert to MB

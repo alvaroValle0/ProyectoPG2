@@ -29,19 +29,22 @@
                 </h5>
             </div>
             <div class="card-body">
-                <form action="#" method="POST">
+                <form action="{{ route('perfil.update') }}" method="POST" id="profileForm">
                     @csrf
                     @method('PUT')
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Nombre Completo</label>
+                            <label for="name" class="form-label">Nombre Completo <span class="text-danger">*</span></label>
                             <input type="text" 
-                                   class="form-control" 
+                                   class="form-control @error('name') is-invalid @enderror" 
                                    id="name" 
                                    name="name" 
-                                   value="{{ $usuario->name }}" 
-                                   readonly>
+                                   value="{{ old('name', $usuario->name) }}" 
+                                   required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         
                         <div class="col-md-6 mb-3">
@@ -49,53 +52,76 @@
                             <input type="email" 
                                    class="form-control" 
                                    id="email" 
-                                   name="email" 
                                    value="{{ $usuario->email }}" 
                                    readonly>
+                            <div class="form-text">El correo electrónico no se puede modificar</div>
                         </div>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="rol" class="form-label">Rol del Sistema</label>
+                            <label for="username" class="form-label">Nombre de Usuario</label>
                             <input type="text" 
-                                   class="form-control" 
-                                   id="rol" 
-                                   value="{{ ucfirst($usuario->rol ?? 'Usuario') }}" 
-                                   readonly>
+                                   class="form-control @error('username') is-invalid @enderror" 
+                                   id="username" 
+                                   name="username" 
+                                   value="{{ old('username', $usuario->username) }}">
+                            @error('username')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">Opcional. Si no se especifica, se usará el email.</div>
                         </div>
                         
                         <div class="col-md-6 mb-3">
-                            <label for="estado" class="form-label">Estado de la Cuenta</label>
-                            <div class="input-group">
-                                <input type="text" 
-                                       class="form-control" 
-                                       value="{{ $usuario->activo ? 'Activo' : 'Inactivo' }}" 
-                                       readonly>
-                                <span class="input-group-text">
-                                    <i class="fas fa-{{ $usuario->activo ? 'check-circle text-success' : 'times-circle text-danger' }}"></i>
-                                </span>
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="tel" 
+                                   class="form-control @error('telefono') is-invalid @enderror" 
+                                   id="telefono" 
+                                   name="telefono" 
+                                   value="{{ old('telefono', $usuario->telefono) }}">
+                            @error('telefono')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <textarea class="form-control @error('direccion') is-invalid @enderror" 
+                                  id="direccion" 
+                                  name="direccion" 
+                                  rows="3">{{ old('direccion', $usuario->direccion) }}</textarea>
+                        @error('direccion')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
+                    <!-- Información del sistema (solo lectura) -->
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>Información del Sistema
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Rol:</strong> {{ ucfirst($usuario->rol ?? 'Usuario') }}</p>
+                                <p class="mb-0"><strong>Estado:</strong> 
+                                    <span class="badge bg-{{ $usuario->activo ? 'success' : 'danger' }}">
+                                        {{ $usuario->activo ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Registrado:</strong> {{ $usuario->created_at->format('d/m/Y') }}</p>
+                                <p class="mb-0"><strong>Última actualización:</strong> {{ $usuario->updated_at->format('d/m/Y H:i') }}</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="alert alert-info">
-                        <h6 class="alert-heading">
-                            <i class="fas fa-info-circle me-2"></i>Información de la Cuenta
-                        </h6>
-                        <p class="mb-2"><strong>Fecha de registro:</strong> {{ $usuario->created_at->format('d/m/Y H:i') }}</p>
-                        <p class="mb-2"><strong>Última actualización:</strong> {{ $usuario->updated_at->format('d/m/Y H:i') }}</p>
-                        @if($usuario->email_verified_at)
-                            <p class="mb-0"><strong>Email verificado:</strong> {{ $usuario->email_verified_at->format('d/m/Y H:i') }}</p>
-                        @else
-                            <p class="mb-0 text-warning"><strong>Email:</strong> Pendiente de verificación</p>
-                        @endif
-                    </div>
-                    
-                    <!-- Nota informativa -->
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Para modificar tu información personal, contacta con el administrador del sistema.
+                    <!-- Botón de guardar -->
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary" id="saveButton">
+                            <i class="fas fa-save me-2"></i>Guardar Cambios
+                        </button>
                     </div>
                 </form>
             </div>
@@ -296,6 +322,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('scripts')
@@ -465,6 +492,76 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Manejar el formulario de perfil
+    const profileForm = document.getElementById('profileForm');
+    const saveButton = document.getElementById('saveButton');
+
+    if (profileForm && saveButton) {
+        // Validación en tiempo real
+        const nameField = document.getElementById('name');
+        const usernameField = document.getElementById('username');
+        const telefonoField = document.getElementById('telefono');
+
+        if (nameField) {
+            nameField.addEventListener('blur', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        }
+
+        if (usernameField) {
+            usernameField.addEventListener('blur', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid', 'is-invalid');
+                }
+            });
+        }
+
+        // Manejar envío del formulario
+        profileForm.addEventListener('submit', function(e) {
+            // Validar campo requerido
+            if (!nameField.value.trim()) {
+                e.preventDefault();
+                nameField.classList.add('is-invalid');
+                alert('El nombre completo es requerido.');
+                return false;
+            }
+
+            // Deshabilitar botón para evitar múltiples envíos
+            saveButton.disabled = true;
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+            
+            // Mostrar mensaje de procesamiento
+            console.log('Enviando datos del perfil...');
+        });
+
+        // Restaurar botón si hay errores de validación
+        profileForm.addEventListener('invalid', function() {
+            saveButton.disabled = false;
+            saveButton.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
+        });
+
+        // Restaurar botón después de 10 segundos si no hay respuesta
+        profileForm.addEventListener('submit', function() {
+            setTimeout(function() {
+                if (saveButton.disabled) {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
+                    console.log('Botón restaurado por timeout');
+                }
+            }, 10000);
+        });
+    }
+
 });
 
 // Mostrar mensajes de éxito/error
@@ -585,18 +682,73 @@ document.addEventListener('DOMContentLoaded', function() {
     border: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     z-index: 9999 !important;
+    position: relative;
+    background: white !important;
+    pointer-events: auto !important;
 }
 
 .modal {
     z-index: 9998 !important;
+    background: rgba(0,0,0,0.5) !important;
 }
 
 .modal-backdrop {
     z-index: 9997 !important;
+    background: rgba(0,0,0,0.5) !important;
 }
 
 .modal-dialog {
     z-index: 9999 !important;
+    position: relative;
+}
+
+/* Estilos específicos para el modal de editar perfil */
+#editProfileModal {
+    z-index: 99999 !important;
+}
+
+#editProfileModal .modal-dialog {
+    z-index: 100000 !important;
+    position: relative;
+    pointer-events: auto !important;
+}
+
+#editProfileModal .modal-content {
+    z-index: 100001 !important;
+    position: relative;
+    background: white !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+#editProfileModal .modal-body {
+    z-index: 100002 !important;
+    position: relative;
+    pointer-events: auto !important;
+    background: white !important;
+}
+
+#editProfileModal .modal-footer {
+    z-index: 100003 !important;
+    position: relative;
+    pointer-events: auto !important;
+    background: white !important;
+}
+
+#editProfileModal .btn {
+    z-index: 100004 !important;
+    position: relative;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+}
+
+#editProfileModal input, #editProfileModal textarea {
+    z-index: 100005 !important;
+    position: relative;
+    pointer-events: auto !important;
+    cursor: text !important;
+    opacity: 1 !important;
 }
 
 /* Asegurar que el modal sea interactivo */
@@ -702,6 +854,44 @@ document.addEventListener('DOMContentLoaded', function() {
     z-index: 99999 !important;
 }
 
+/* Estilos adicionales para el modal de editar perfil */
+#editProfileModal.show {
+    display: block !important;
+    z-index: 99999 !important;
+}
+
+#editProfileModal.show .modal-dialog {
+    transform: none !important;
+    transition: none !important;
+}
+
+/* Forzar que el backdrop no interfiera con el modal de editar perfil */
+#editProfileModal + .modal-backdrop {
+    z-index: 99998 !important;
+    background: rgba(0,0,0,0.5) !important;
+}
+
+/* Asegurar que el modal de editar perfil sea completamente funcional */
+#editProfileModal .modal-header,
+#editProfileModal .modal-body,
+#editProfileModal .modal-footer {
+    background: white !important;
+    border: none !important;
+    pointer-events: auto !important;
+}
+
+#editProfileModal .form-control {
+    background: white !important;
+    border: 1px solid #ced4da !important;
+    pointer-events: auto !important;
+}
+
+#editProfileModal .form-control:focus {
+    border-color: #80bdff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25) !important;
+}
+
+
 /* Prevenir que otros elementos interfieran */
 body.modal-open {
     overflow: hidden;
@@ -800,6 +990,69 @@ body.modal-open {
     animation: fadeInUp 0.6s ease;
 }
 
+/* Estilos para el formulario de perfil */
+.form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.form-control.is-valid {
+    border-color: #198754;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='m2.3 6.73.94-.94 1.88-1.88-1.88-1.88-.94-.94L0 4.7l.94.94L2.3 6.73z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4 1.4-1.4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+/* Estilos para el botón de guardar */
+#saveButton {
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+#saveButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+#saveButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Estilos para campos de solo lectura */
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #6c757d;
+}
+
+/* Estilos para el formulario */
+#profileForm .form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+#profileForm .form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Animaciones para validación */
+.form-control.is-valid,
+.form-control.is-invalid {
+    transition: all 0.3s ease;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .card {
@@ -830,6 +1083,11 @@ body.modal-open {
     
     .modal-dialog {
         margin: 1rem;
+    }
+    
+    #saveButton {
+        width: 100%;
+        margin-top: 1rem;
     }
 }
 </style>

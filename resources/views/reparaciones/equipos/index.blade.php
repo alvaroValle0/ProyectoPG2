@@ -135,7 +135,7 @@
         @if($equipos->count() > 0)
             <div class="table-responsive">
                 <table class="table table-hover modern-table">
-                    <thead>
+                    <thead class="table-dark">
                         <tr>
                             <th>Número de Serie</th>
                             <th>Equipo</th>
@@ -413,13 +413,6 @@
 }
 
 /* Table Styles */
-.modern-table thead th { 
-    background: #f8fafc; 
-    border: none; 
-    text-transform: uppercase; 
-    letter-spacing: .5px; 
-}
-
 .modern-table tbody tr:hover { 
     background: rgba(0,0,0,0.02); 
     transform: scale(1.005); 
@@ -453,6 +446,10 @@
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
+}
+
+.table-dark th {
+    color: #fff !important;
 }
 
 .table td {

@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     // Authentication
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
+    Route::put('/perfil', [AuthController::class, 'actualizarPerfil'])->name('perfil.update');
     Route::post('/perfil/avatar', [AuthController::class, 'actualizarAvatar'])->name('perfil.avatar.update');
     Route::delete('/perfil/avatar', [AuthController::class, 'eliminarAvatar'])->name('perfil.avatar.delete');
     Route::get('/test-avatar', [AuthController::class, 'testAvatar'])->name('test.avatar');
@@ -144,8 +145,6 @@ Route::middleware('auth')->group(function () {
         
         // Acciones especiales para tickets
         Route::get('/{ticket}/imprimir', [TicketController::class, 'imprimir'])->name('imprimir');
-        Route::get('/{ticket}/firmar', [TicketController::class, 'firmar'])->name('firmar');
-        Route::post('/{ticket}/procesar-firma', [TicketController::class, 'procesarFirma'])->name('procesar-firma');
         Route::patch('/{ticket}/marcar-entregado', [TicketController::class, 'marcarEntregado'])->name('marcar-entregado');
         Route::patch('/{ticket}/anular', [TicketController::class, 'anular'])->name('anular');
         

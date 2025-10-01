@@ -253,51 +253,6 @@ class TicketController extends Controller
         return view('tickets.imprimir', compact('ticket'));
     }
 
-    /**
-     * Show signature form
-     */
-    public function firmar(Ticket $ticket)
-    {
-        if ($ticket->estado !== 'generado') {
-            return redirect()->route('tickets.show', $ticket)
-                           ->with('error', 'Este ticket ya no puede ser firmado.');
-        }
-
-        $ticket->load([
-            'reparacion.equipo.cliente', 
-            'reparacion.tecnico.user'
-        ]);
-
-        return view('tickets.firmar', compact('ticket'));
-    }
-
-    /**
-     * Process signature
-     */
-    public function procesarFirma(Request $request, Ticket $ticket)
-    {
-        $validated = $request->validate([
-            'firma_base64' => 'required|string',
-            'nombre_firmante' => 'required|string|max:255',
-            'dpi_firmante' => 'nullable|string|max:20',
-        ], [
-            'firma_base64.required' => 'La firma es obligatoria.',
-            'nombre_firmante.required' => 'El nombre del firmante es obligatorio.',
-        ]);
-
-        try {
-            $ticket->firmar(
-                $validated['firma_base64'],
-                $validated['nombre_firmante'],
-                $validated['dpi_firmante'] ?? null
-            );
-
-            return redirect()->route('tickets.show', $ticket)
-                           ->with('success', 'Ticket firmado exitosamente.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al procesar la firma: ' . $e->getMessage());
-        }
-    }
 
     /**
      * Mark ticket as delivered

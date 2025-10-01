@@ -143,10 +143,6 @@ class Ticket extends Model
         return false;
     }
 
-    public function getTieneFirmaAttribute()
-    {
-        return !empty($this->firma_cliente);
-    }
 
     // Métodos de utilidad
     public static function generarNumeroTicket($tipo = 'ingreso')
@@ -180,16 +176,6 @@ class Ticket extends Model
         return $total;
     }
 
-    public function firmar($firmaBase64, $nombreFirmante = null, $dpiFirmante = null)
-    {
-        $this->update([
-            'firma_cliente' => $firmaBase64,
-            'nombre_quien_firma' => $nombreFirmante,
-            'dpi_quien_firma' => $dpiFirmante,
-            'fecha_firma' => now(),
-            'estado' => 'firmado'
-        ]);
-    }
 
     public function marcarComoEntregado()
     {

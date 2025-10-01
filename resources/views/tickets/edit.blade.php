@@ -48,10 +48,17 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Observaciones del Técnico</label>
-                            <textarea name="observaciones_tecnico" rows="3" class="form-control">{{ old('observaciones_tecnico', $ticket->observaciones_tecnico) }}</textarea>
-                            @error('observaciones_tecnico')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Observaciones del Técnico</label>
+                                <textarea name="observaciones_tecnico" rows="4" class="form-control" placeholder="Observaciones técnicas, diagnóstico, recomendaciones...">{{ old('observaciones_tecnico', $ticket->observaciones_tecnico) }}</textarea>
+                                @error('observaciones_tecnico')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Observaciones del Cliente</label>
+                                <textarea name="observaciones_cliente" rows="4" class="form-control" placeholder="Comentarios del cliente, quejas, sugerencias...">{{ old('observaciones_cliente', $ticket->observaciones_cliente) }}</textarea>
+                                @error('observaciones_cliente')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">

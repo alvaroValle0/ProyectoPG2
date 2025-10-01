@@ -211,4 +211,66 @@ class AuthController extends Controller
             return redirect()->back()->with('error', 'Error al eliminar la foto de perfil. Inténtalo de nuevo.');
         }
     }
+
+    public function actualizarPerfil(Request $request)
+    {
+        $usuario = Auth::user();
+        
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'username' => 'nullable|string|max:255|unique:users,username,' . $usuario->id,
+            'telefono' => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:500',
+        ], [
+            'name.required' => 'El nombre completo es requerido.',
+            'name.max' => 'El nombre no puede tener más de 255 caracteres.',
+            'username.unique' => 'Este nombre de usuario ya está en uso.',
+            'telefono.max' => 'El teléfono no puede tener más de 20 caracteres.',
+            'direccion.max' => 'La dirección no puede tener más de 500 caracteres.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            // Log de los datos recibidos para debug
+            \Log::info('Actualizando perfil para usuario: ' . $usuario->id, [
+                'name' => $request->name,
+                'username' => $request->username,
+                'telefono' => $request->telefono,
+                'direccion' => $request->direccion,
+            ]);
+
+            // Actualizar información del usuario (sin email ya que es de solo lectura)
+            $updated = $usuario->update([
+                'name' => $request->name,
+                'username' => $request->username ?: null,
+                'telefono' => $request->telefono,
+                'direccion' => $request->direccion,
+            ]);
+
+            if ($updated) {
+                \Log::info('Perfil actualizado exitosamente para usuario: ' . $usuario->id);
+                return redirect()->route('perfil')->with('success', 'Perfil actualizado correctamente.');
+            } else {
+                \Log::warning('No se pudo actualizar el perfil para usuario: ' . $usuario->id);
+                return redirect()->back()
+                    ->with('error', 'No se pudieron guardar los cambios. Inténtalo de nuevo.')
+                    ->withInput();
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error al actualizar perfil para usuario: ' . $usuario->id, [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Error al actualizar el perfil: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
 } 

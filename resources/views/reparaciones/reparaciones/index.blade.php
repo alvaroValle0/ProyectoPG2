@@ -846,7 +846,6 @@ document.addEventListener('DOMContentLoaded', function() {
 .module-title { font-size: 2.25rem; font-weight: 700; margin: 0; }
 .module-subtitle { opacity: .9; margin-top: .25rem; }
 .btn-modern { border-radius: 25px; padding: .75rem 1.5rem; font-weight: 600; }
-.modern-table thead th { background: #f8fafc; border: none; text-transform: uppercase; letter-spacing: .5px; }
 .modern-table tbody tr:hover { background: rgba(0,0,0,0.02); transform: scale(1.005); }
 .table-responsive {
     border-radius: 15px;
@@ -860,7 +859,10 @@ document.addEventListener('DOMContentLoaded', function() {
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
-    color: #333 !important;
+}
+
+.table-dark th {
+    color: #fff !important;
 }
 
 .table td {

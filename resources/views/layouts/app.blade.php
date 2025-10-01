@@ -242,6 +242,79 @@
             overflow: hidden;
         }
         
+        /* Estilos para dropdown del sidebar */
+        .sidebar-dropdown {
+            margin: 0.25rem 1rem;
+        }
+        
+        .sidebar-dropdown-toggle {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .sidebar-dropdown-toggle .sidebar-item {
+            margin: 0;
+            justify-content: space-between;
+        }
+        
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+        
+        .sidebar-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .sidebar-dropdown-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            margin-left: 1rem;
+            border-left: 2px solid rgba(39, 219, 159, 0.3);
+            padding-left: 0.5rem;
+        }
+        
+        .sidebar-dropdown.open .sidebar-dropdown-menu {
+            max-height: 500px;
+            opacity: 1;
+        }
+        
+        .sidebar-dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        
+        .sidebar-dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            transform: translateX(5px);
+            text-decoration: none;
+        }
+        
+        .sidebar-dropdown-item.active {
+            background: rgba(39, 219, 159, 0.2);
+            color: #ffffff;
+            border-left: 3px solid #27DB9F;
+        }
+        
+        .sidebar-dropdown-item i {
+            margin-right: 0.75rem;
+            width: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
         .sidebar-item::before {
             content: '';
             position: absolute;
@@ -909,29 +982,36 @@
             </a>
             @endif
             
-            <!-- Equipos y Reparaciones -->
+            <!-- Equipos y Reparaciones - Menú desplegable -->
             @if(isset($modules['equipos']) || isset($modules['reparaciones']))
-            <div class="sidebar-item text-muted small fw-bold mt-3 mb-2">
-                <i class="fas fa-laptop me-2"></i>EQUIPOS Y REPARACIONES
+            <div class="sidebar-dropdown">
+                <div class="sidebar-dropdown-toggle" onclick="toggleDropdown('equipos-reparaciones')">
+                    <div class="sidebar-item">
+                        <i class="fas fa-laptop"></i>
+                        <span>Equipos y Reparaciones</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </div>
+                </div>
+                <div class="sidebar-dropdown-menu" id="equipos-reparaciones">
+                    @if(isset($modules['equipos']))
+                    <a href="{{ route('equipos.index') }}" class="sidebar-dropdown-item {{ request()->routeIs('equipos.*') ? 'active' : '' }}">
+                        <i class="fas fa-laptop"></i>
+                        Gestión de Equipos
+                    </a>
+                    @endif
+                    
+                    @if(isset($modules['reparaciones']))
+                    <a href="{{ route('reparaciones.index') }}" class="sidebar-dropdown-item {{ request()->routeIs('reparaciones.*') ? 'active' : '' }}">
+                        <i class="fas fa-wrench"></i>
+                        Gestión de Reparaciones
+                    </a>
+                    <a href="{{ route('reparaciones.mis-tareas') }}" class="sidebar-dropdown-item {{ request()->routeIs('reparaciones.mis-tareas') ? 'active' : '' }}">
+                        <i class="fas fa-tasks"></i>
+                        Mis Tareas
+                    </a>
+                    @endif
+                </div>
             </div>
-            @endif
-            
-            @if(isset($modules['equipos']))
-            <a href="{{ route('equipos.index') }}" class="sidebar-item {{ request()->routeIs('equipos.*') ? 'active' : '' }}">
-                <i class="fas fa-laptop"></i>
-                Gestión de Equipos
-            </a>
-            @endif
-            
-            @if(isset($modules['reparaciones']))
-            <a href="{{ route('reparaciones.index') }}" class="sidebar-item {{ request()->routeIs('reparaciones.*') ? 'active' : '' }}">
-                <i class="fas fa-wrench"></i>
-                Gestión de Reparaciones
-            </a>
-            <a href="{{ route('reparaciones.mis-tareas') }}" class="sidebar-item {{ request()->routeIs('reparaciones.mis-tareas') ? 'active' : '' }}">
-                <i class="fas fa-tasks"></i>
-                Mis Tareas
-            </a>
             @endif
             
             <!-- Inventario -->
@@ -950,29 +1030,36 @@
             </a>
             @endif
             
-            <!-- Técnicos / Usuarios -->
+            <!-- Técnicos / Usuarios - Menú desplegable -->
             @if(isset($modules['tecnicos']) || isset($modules['usuarios']))
-            <div class="sidebar-item text-muted small fw-bold mt-3 mb-2">
-                <i class="fas fa-user-cog me-2"></i>TÉCNICOS / USUARIOS
+            <div class="sidebar-dropdown">
+                <div class="sidebar-dropdown-toggle" onclick="toggleDropdown('tecnicos-usuarios')">
+                    <div class="sidebar-item">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Técnicos / Usuarios</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </div>
+                </div>
+                <div class="sidebar-dropdown-menu" id="tecnicos-usuarios">
+                    @if(isset($modules['tecnicos']))
+                    <a href="{{ route('tecnicos.index') }}" class="sidebar-dropdown-item {{ request()->routeIs('tecnicos.*') ? 'active' : '' }}">
+                        <i class="fas fa-users-cog"></i>
+                        Gestión de Técnicos
+                    </a>
+                    <a href="{{ route('tecnicos.carga-trabajo') }}" class="sidebar-dropdown-item {{ request()->routeIs('tecnicos.carga-trabajo') ? 'active' : '' }}">
+                        <i class="fas fa-chart-bar"></i>
+                        Carga de Trabajo
+                    </a>
+                    @endif
+                    
+                    @if(isset($modules['usuarios']))
+                    <a href="{{ route('usuarios.index') }}" class="sidebar-dropdown-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        Gestión de Usuarios
+                    </a>
+                    @endif
+                </div>
             </div>
-            @endif
-            
-            @if(isset($modules['tecnicos']))
-            <a href="{{ route('tecnicos.index') }}" class="sidebar-item {{ request()->routeIs('tecnicos.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog"></i>
-                Gestión de Técnicos
-            </a>
-            <a href="{{ route('tecnicos.carga-trabajo') }}" class="sidebar-item {{ request()->routeIs('tecnicos.carga-trabajo') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar"></i>
-                Carga de Trabajo
-            </a>
-            @endif
-            
-            @if(isset($modules['usuarios']))
-            <a href="{{ route('usuarios.index') }}" class="sidebar-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
-                <i class="fas fa-users"></i>
-                Gestión de Usuarios
-            </a>
             @endif
             
             <!-- Reportes -->
@@ -1308,6 +1395,44 @@
             });
         }
 
+        // Función para manejar dropdowns del sidebar
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const dropdownContainer = dropdown.closest('.sidebar-dropdown');
+            
+            // Cerrar otros dropdowns abiertos
+            const allDropdowns = document.querySelectorAll('.sidebar-dropdown');
+            allDropdowns.forEach(dd => {
+                if (dd !== dropdownContainer) {
+                    dd.classList.remove('open');
+                }
+            });
+            
+            // Toggle del dropdown actual
+            dropdownContainer.classList.toggle('open');
+        }
+        
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.sidebar-dropdown')) {
+                const allDropdowns = document.querySelectorAll('.sidebar-dropdown');
+                allDropdowns.forEach(dd => {
+                    dd.classList.remove('open');
+                });
+            }
+        });
+        
+        // Auto-abrir dropdown si hay un item activo
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeDropdownItems = document.querySelectorAll('.sidebar-dropdown-item.active');
+            activeDropdownItems.forEach(item => {
+                const dropdown = item.closest('.sidebar-dropdown');
+                if (dropdown) {
+                    dropdown.classList.add('open');
+                }
+            });
+        });
+        
         // Función para mostrar módulos próximamente
         function mostrarProximamente(modulo) {
             // Crear modal dinámico

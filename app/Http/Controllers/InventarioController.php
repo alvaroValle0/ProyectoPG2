@@ -57,7 +57,7 @@ class InventarioController extends Controller
             'items_activos' => Inventario::activos()->count(),
             'items_agotados' => Inventario::agotados()->count(),
             'items_stock_bajo' => Inventario::stockBajo()->count(),
-            'valor_total' => Inventario::sum(\DB::raw('stock_actual * precio_compra')),
+            'valor_total' => Inventario::sum(\DB::raw('stock_actual * COALESCE(precio_compra, 0)')) ?? 0,
             'categorias' => Inventario::distinct()->pluck('categoria')->count()
         ];
 
@@ -483,7 +483,7 @@ class InventarioController extends Controller
             'items_activos' => Inventario::activos()->count(),
             'items_agotados' => Inventario::agotados()->count(),
             'items_stock_bajo' => Inventario::stockBajo()->count(),
-            'valor_total' => Inventario::sum(\DB::raw('stock_actual * precio_compra')),
+            'valor_total' => Inventario::sum(\DB::raw('stock_actual * COALESCE(precio_compra, 0)')) ?? 0,
             'categorias' => Inventario::distinct()->pluck('categoria')->count()
         ];
 
