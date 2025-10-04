@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Gestión de Reparaciones')
+@section('mobile-title', 'Reparaciones')
 
 @section('content')
 <div class="container-fluid">
@@ -172,11 +173,11 @@
                 <i class="fas fa-clock"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $reparaciones->where('estado', 'pendiente')->count() }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['pendientes'] }}">0</h3>
                 <p class="stat-card-label">Pendientes</p>
                 <div class="stat-card-trend">
                     <i class="fas fa-chart-line"></i>
-                    <span>{{ $reparaciones->total() > 0 ? round(($reparaciones->where('estado', 'pendiente')->count() / $reparaciones->total()) * 100, 1) : 0 }}% del total</span>
+                    <span>{{ $estadisticas['total'] > 0 ? round(($estadisticas['pendientes'] / $estadisticas['total']) * 100, 1) : 0 }}% del total</span>
                 </div>
             </div>
         </div>
@@ -188,11 +189,11 @@
                 <i class="fas fa-cogs"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $reparaciones->where('estado', 'en_proceso')->count() }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['en_proceso'] }}">0</h3>
                 <p class="stat-card-label">En Proceso</p>
                 <div class="stat-card-trend">
                     <i class="fas fa-percentage"></i>
-                    <span>{{ $reparaciones->total() > 0 ? round(($reparaciones->where('estado', 'en_proceso')->count() / $reparaciones->total()) * 100, 1) : 0 }}% del total</span>
+                    <span>{{ $estadisticas['total'] > 0 ? round(($estadisticas['en_proceso'] / $estadisticas['total']) * 100, 1) : 0 }}% del total</span>
                 </div>
             </div>
         </div>
@@ -204,11 +205,11 @@
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $reparaciones->where('estado', 'completada')->count() }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['completadas'] }}">0</h3>
                 <p class="stat-card-label">Completadas</p>
                 <div class="stat-card-trend">
                     <i class="fas fa-arrow-up"></i>
-                    <span>{{ $reparaciones->total() > 0 ? round(($reparaciones->where('estado', 'completada')->count() / $reparaciones->total()) * 100, 1) : 0 }}% completadas</span>
+                    <span>{{ $estadisticas['total'] > 0 ? round(($estadisticas['completadas'] / $estadisticas['total']) * 100, 1) : 0 }}% completadas</span>
                 </div>
             </div>
         </div>
@@ -220,10 +221,10 @@
                 <i class="fas fa-list"></i>
             </div>
             <div class="stat-card-content">
-                <h3 class="stat-card-number" data-count="{{ $reparaciones->total() }}">0</h3>
+                <h3 class="stat-card-number" data-count="{{ $estadisticas['total'] }}">0</h3>
                 <p class="stat-card-label">Total Reparaciones</p>
                 <div class="stat-card-trend">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-database"></i>
                     <span>Base de datos completa</span>
                 </div>
             </div>
@@ -476,8 +477,50 @@
 
 @section('scripts')
 <script>
+// Estado de carga para mejorar la experiencia del usuario
+let isLoading = false;
+
+// Función para mostrar loading en las estadísticas
+function showStatsLoading() {
+    document.querySelectorAll('.stat-card-number').forEach(el => {
+        el.style.opacity = '0.5';
+        el.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    });
+}
+
+// Función para ocultar loading
+function hideStatsLoading() {
+    document.querySelectorAll('.stat-card-number').forEach(el => {
+        el.style.opacity = '1';
+    });
+}
+
+// Animación de contadores optimizada
+function animateCounters() {
+    const counters = document.querySelectorAll('.stat-card-number[data-count]');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const duration = 1000; // 1 segundo
+        const increment = target / (duration / 16); // 60fps
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            counter.textContent = Math.floor(current);
+        }, 16);
+    });
+}
+
 // Función para limpiar filtros
 function limpiarFiltros() {
+    if (isLoading) return;
+    isLoading = true;
+    showStatsLoading();
     window.location.href = '{{ route("reparaciones.index") }}';
 }
 
@@ -500,12 +543,25 @@ function imprimirTicket(reparacionId) {
     }
 }
 
-// Búsqueda en tiempo real (opcional)
+// Inicialización cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Iniciar animaciones de contadores inmediatamente
+    setTimeout(animateCounters, 100);
+    
+    // Ocultar loading si está activo
+    hideStatsLoading();
+});
+
+// Búsqueda en tiempo real optimizada
 let timeoutId;
 document.getElementById('buscarInput').addEventListener('input', function() {
+    if (isLoading) return;
+    
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
         if (this.value.length > 2 || this.value.length === 0) {
+            isLoading = true;
+            showStatsLoading();
             document.getElementById('busquedaForm').submit();
         }
     }, 800);

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Nueva Reparación')
+@section('mobile-title', 'Nueva Reparación')
 
 @section('content')
 <div class="container-fluid">

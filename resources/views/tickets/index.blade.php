@@ -18,6 +18,9 @@
                 <a href="{{ route('tickets.create') }}" class="btn btn-light btn-modern" data-bs-toggle="tooltip" title="Crear un nuevo ticket">
                     <i class="fas fa-plus me-2"></i>Nuevo Ticket
                 </a>
+                <a href="{{ route('tickets.historial.general') }}" class="btn btn-outline-info btn-modern ms-2" data-bs-toggle="tooltip" title="Ver historial completo de tickets">
+                    <i class="fas fa-history me-2"></i>Historial
+                </a>
             </div>
         </div>
     </div>

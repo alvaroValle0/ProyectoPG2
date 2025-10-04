@@ -1,260 +1,256 @@
 /**
- * Sistema de Tablas Móviles Automático
- * Convierte tablas en tarjetas responsive para dispositivos móviles
+ * Sistema de Tablas Responsive para Móviles
+ * Convierte automáticamente tablas en cards en dispositivos móviles
  */
 
 class MobileTableConverter {
     constructor() {
+        this.breakpoint = 768;
         this.init();
     }
 
     init() {
-        // Esperar a que el DOM esté listo
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.convertTables());
-        } else {
-            this.convertTables();
-        }
-
-        // Reconectar al redimensionar ventana
+        // Convertir tablas al cargar la página
+        this.convertTables();
+        
+        // Reconvertir al cambiar tamaño de ventana
         window.addEventListener('resize', () => {
-            this.toggleView();
+            this.convertTables();
         });
     }
 
     convertTables() {
-    const tables = document.querySelectorAll('.modern-table');
-    
-    tables.forEach(table => {
-    const tableContainer = table.closest('.table-responsive');
-    if (!tableContainer) return;
-    
-            // Crear contenedor de tarjetas móviles
-            let mobileContainer = tableContainer.querySelector('.mobile-cards');
-            if (!mobileContainer) {
-                mobileContainer = document.createElement('div');
-                mobileContainer.className = 'mobile-cards';
-                mobileContainer.style.display = 'none';
-                tableContainer.appendChild(mobileContainer);
+        const tables = document.querySelectorAll('.modern-table, .table');
+        
+        tables.forEach(table => {
+            if (window.innerWidth <= this.breakpoint) {
+                this.convertToCards(table);
+            } else {
+                this.restoreTable(table);
             }
-
-            // Generar tarjetas móviles
-            this.generateMobileCards(table, mobileContainer);
         });
-
-        this.toggleView();
     }
 
-    generateMobileCards(table, container) {
-        const headers = Array.from(table.querySelectorAll('thead th')).map(th => ({
-            text: th.textContent.trim(),
-            className: th.className,
-            dataAttribute: th.getAttribute('data-mobile-label') || th.textContent.trim()
-        }));
+    convertToCards(table) {
+        // Si ya está convertida, no hacer nada
+        if (table.dataset.converted === 'true') return;
 
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
         const rows = Array.from(table.querySelectorAll('tbody tr'));
         
-        container.innerHTML = '';
+        // Crear contenedor de cards
+        const cardsContainer = document.createElement('div');
+        cardsContainer.className = 'mobile-cards';
+        cardsContainer.dataset.originalTable = 'true';
 
         rows.forEach((row, index) => {
-            const card = this.createMobileCard(row, headers, index);
-            container.appendChild(card);
+            const cells = Array.from(row.querySelectorAll('td'));
+            const card = this.createCard(headers, cells, index);
+            cardsContainer.appendChild(card);
         });
+
+        // Ocultar tabla original y mostrar cards
+        table.style.display = 'none';
+        table.dataset.converted = 'true';
+        
+        // Insertar cards después de la tabla
+        table.parentNode.insertBefore(cardsContainer, table.nextSibling);
     }
 
-    createMobileCard(row, headers, index) {
-        const cells = Array.from(row.querySelectorAll('td'));
+    restoreTable(table) {
+        // Si no está convertida, no hacer nada
+        if (table.dataset.converted !== 'true') return;
+
+        // Mostrar tabla original
+        table.style.display = '';
+        table.dataset.converted = 'false';
+
+        // Remover cards
+        const cardsContainer = table.parentNode.querySelector('.mobile-cards[data-original-table="true"]');
+        if (cardsContainer) {
+            cardsContainer.remove();
+        }
+    }
+
+    createCard(headers, cells, index) {
         const card = document.createElement('div');
         card.className = 'mobile-card';
+        card.dataset.index = index;
 
-        // Determinar estado para el borde de color
-        const statusCell = cells.find(cell => cell.querySelector('.badge'));
+        // Header de la card
+        const cardHeader = document.createElement('div');
+        cardHeader.className = 'mobile-card-header';
+        
+        // Título principal (primera celda)
+        const title = document.createElement('h6');
+        title.className = 'mobile-card-title';
+        title.textContent = cells[0]?.textContent.trim() || `Registro ${index + 1}`;
+        cardHeader.appendChild(title);
+
+        // Badge de estado si existe
+        const statusCell = cells.find(cell => 
+            cell.querySelector('.badge') || 
+            cell.querySelector('.status-dot') ||
+            cell.textContent.toLowerCase().includes('activo') ||
+            cell.textContent.toLowerCase().includes('inactivo') ||
+            cell.textContent.toLowerCase().includes('pendiente') ||
+            cell.textContent.toLowerCase().includes('completado')
+        );
+
         if (statusCell) {
-            const badge = statusCell.querySelector('.badge');
-            if (badge.classList.contains('bg-success')) {
-                card.classList.add('status-active');
-            } else if (badge.classList.contains('bg-warning')) {
-                card.classList.add('status-pending');
-            } else if (badge.classList.contains('bg-danger')) {
-                card.classList.add('status-inactive');
+            const statusBadge = statusCell.querySelector('.badge') || 
+                               this.createStatusBadge(statusCell.textContent.trim());
+            if (statusBadge) {
+                cardHeader.appendChild(statusBadge.cloneNode(true));
             }
         }
 
-        // Crear header de la tarjeta
-        const header = this.createCardHeader(row, cells, headers);
-        card.appendChild(header);
+        card.appendChild(cardHeader);
 
-        // Crear body de la tarjeta
-        const body = this.createCardBody(row, cells, headers);
-        card.appendChild(body);
+        // Body de la card
+        const cardBody = document.createElement('div');
+        cardBody.className = 'mobile-card-body';
 
-        // Crear acciones de la tarjeta
-        const actions = this.createCardActions(row, cells);
-        if (actions) {
-            card.appendChild(actions);
+        // Crear campos (saltar la primera celda que ya es el título)
+        cells.slice(1).forEach((cell, cellIndex) => {
+            const headerIndex = cellIndex + 1;
+            if (headerIndex < headers.length && !this.isActionColumn(cell)) {
+                const field = this.createField(headers[headerIndex], cell);
+                cardBody.appendChild(field);
+            }
+        });
+
+        card.appendChild(cardBody);
+
+        // Acciones (botones)
+        const actionCell = cells.find(cell => this.isActionColumn(cell));
+        if (actionCell) {
+            const cardActions = document.createElement('div');
+            cardActions.className = 'mobile-card-actions';
+            
+            // Clonar botones de acción
+            const buttons = actionCell.querySelectorAll('.btn, button, a[class*="btn"]');
+            buttons.forEach(btn => {
+                const clonedBtn = btn.cloneNode(true);
+                clonedBtn.className = clonedBtn.className.replace(/btn-sm|btn-lg/g, '').trim();
+                cardActions.appendChild(clonedBtn);
+            });
+
+            if (cardActions.children.length > 0) {
+                card.appendChild(cardActions);
+            }
         }
 
         return card;
     }
 
-    createCardHeader(row, cells, headers) {
-        const header = document.createElement('div');
-        header.className = 'mobile-card-header';
+    createField(header, cell) {
+        const field = document.createElement('div');
+        field.className = 'mobile-card-field';
 
-        // Título principal (primera columna o columna con más peso visual)
-        const titleCell = cells[0];
-        const title = document.createElement('h6');
-        title.className = 'mobile-card-title';
-        title.textContent = this.extractTextContent(titleCell);
+        const label = document.createElement('div');
+        label.className = 'mobile-card-label';
+        label.textContent = header;
 
-        // Subtítulo (segunda columna si existe)
-        let subtitle = null;
-        if (cells.length > 1) {
-            subtitle = document.createElement('div');
-            subtitle.className = 'mobile-card-subtitle';
-            subtitle.textContent = this.extractTextContent(cells[1]);
-        }
+        const value = document.createElement('div');
+        value.className = 'mobile-card-value';
+        
+        // Preservar HTML interno (badges, iconos, etc.)
+        value.innerHTML = cell.innerHTML;
 
-        const titleContainer = document.createElement('div');
-        titleContainer.appendChild(title);
-        if (subtitle) {
-            titleContainer.appendChild(subtitle);
-        }
+        field.appendChild(label);
+        field.appendChild(value);
 
-        // Estado/Badge en el header
-        const statusContainer = document.createElement('div');
-        const statusBadge = row.querySelector('.badge');
-        if (statusBadge) {
-            statusContainer.appendChild(statusBadge.cloneNode(true));
-        }
-
-        header.appendChild(titleContainer);
-        header.appendChild(statusContainer);
-
-        return header;
+        return field;
     }
 
-    createCardBody(row, cells, headers) {
-        const body = document.createElement('div');
-        body.className = 'mobile-card-body';
-
-        // Mostrar columnas importantes en el body
-        for (let i = 2; i < Math.min(cells.length, headers.length); i++) {
-            const cell = cells[i];
-            const header = headers[i];
-
-            // Saltar columnas de acciones
-            if (cell.querySelector('.btn') || cell.querySelector('.btn-group')) {
-                continue;
-            }
-            
-            const field = document.createElement('div');
-            field.className = 'mobile-card-field';
-            
-            const label = document.createElement('div');
-            label.className = 'mobile-card-label';
-            label.textContent = header.dataAttribute;
-            
-            const value = document.createElement('div');
-            value.className = 'mobile-card-value';
-            
-            // Copiar contenido de la celda
-            if (cell.innerHTML.trim()) {
-            value.innerHTML = cell.innerHTML;
-            } else {
-                value.textContent = this.extractTextContent(cell);
-            }
-            
-            field.appendChild(label);
-            field.appendChild(value);
-            body.appendChild(field);
+    createStatusBadge(text) {
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        
+        // Determinar clase según el texto
+        const lowerText = text.toLowerCase();
+        if (lowerText.includes('activo') || lowerText.includes('completado')) {
+            badge.className += ' bg-success';
+        } else if (lowerText.includes('pendiente') || lowerText.includes('proceso')) {
+            badge.className += ' bg-warning';
+        } else if (lowerText.includes('inactivo') || lowerText.includes('cancelado')) {
+            badge.className += ' bg-danger';
+        } else {
+            badge.className += ' bg-secondary';
         }
-
-        return body;
+        
+        badge.textContent = text;
+        return badge;
     }
 
-    createCardActions(row, cells) {
-        const actionCell = cells.find(cell => 
-            cell.querySelector('.btn') || cell.querySelector('.btn-group')
-        );
-
-        if (!actionCell) return null;
-
-        const actions = document.createElement('div');
-        actions.className = 'mobile-card-actions';
-
-        // Copiar botones de la celda de acciones
-        const buttons = actionCell.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            const clonedButton = button.cloneNode(true);
-            clonedButton.className = button.className;
-            actions.appendChild(clonedButton);
-        });
-
-        return actions;
+    isActionColumn(cell) {
+        return cell.querySelector('.btn, button, .dropdown, a[class*="btn"]') !== null;
     }
 
-    extractTextContent(element) {
-        // Remover contenido de botones y elementos interactivos
-        const clone = element.cloneNode(true);
-        clone.querySelectorAll('.btn, .btn-group, .dropdown').forEach(el => el.remove());
-        return clone.textContent.trim();
-    }
-
+    // Método para alternar entre vista de tabla y cards
     toggleView() {
-        const isMobile = window.innerWidth <= 768;
-    
-    document.querySelectorAll('.table-responsive').forEach(container => {
-            const table = container.querySelector('.modern-table');
-            const mobileCards = container.querySelector('.mobile-cards');
-            
-            if (table && mobileCards) {
-                if (isMobile) {
-                    table.style.display = 'none';
-                    mobileCards.style.display = 'block';
-                } else {
-                    table.style.display = 'table';
-                    mobileCards.style.display = 'none';
-                }
-            }
+        this.convertTables();
+    }
+
+    // Método para forzar conversión a cards
+    forceCardView() {
+        const tables = document.querySelectorAll('.modern-table, .table');
+        tables.forEach(table => {
+            this.convertToCards(table);
         });
     }
 
-    // Método público para reconvertir tablas (útil después de actualizaciones AJAX)
-    reconvert() {
-        this.convertTables();
+    // Método para forzar vista de tabla
+    forceTableView() {
+        const tables = document.querySelectorAll('.modern-table, .table');
+        tables.forEach(table => {
+            this.restoreTable(table);
+        });
     }
 }
 
-// Inicializar automáticamente
-window.mobileTableConverter = new MobileTableConverter();
+// Variable global para la instancia
+let mobileTableConverterInstance = null;
 
-// Función global para reconvertir tablas
-window.reconvertMobileTables = () => {
-    if (window.mobileTableConverter) {
-        window.mobileTableConverter.reconvert();
+// Función para inicializar el convertidor
+function initMobileTableConverter() {
+    if (!mobileTableConverterInstance) {
+        mobileTableConverterInstance = new MobileTableConverter();
+        window.mobileTableConverter = mobileTableConverterInstance;
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initMobileTableConverter();
+});
+
+// Función global para reconvertir tablas (útil para contenido dinámico)
+window.reconvertMobileTables = function() {
+    if (window.mobileTableConverter && typeof window.mobileTableConverter.convertTables === 'function') {
+        window.mobileTableConverter.convertTables();
+    } else {
+        // Si no está disponible, inicializar
+        initMobileTableConverter();
+        if (window.mobileTableConverter) {
+            window.mobileTableConverter.convertTables();
+        }
     }
 };
 
-// Auto-reconvertir después de actualizaciones AJAX
-document.addEventListener('DOMContentLoaded', () => {
-    // Observer para detectar cambios en el DOM
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList') {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1 && node.querySelector && node.querySelector('.modern-table')) {
-                        setTimeout(() => {
-                            window.reconvertMobileTables();
-                        }, 100);
-                    }
-                });
-            }
-        });
-    });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+// Asegurar que la instancia esté disponible después de la carga
+window.addEventListener('load', function() {
+    if (!window.mobileTableConverter) {
+        initMobileTableConverter();
+    }
 });
+
+// Función de fallback global para toggleView
+window.toggleMobileTable = function() {
+    if (window.mobileTableConverter && typeof window.mobileTableConverter.toggleView === 'function') {
+        window.mobileTableConverter.toggleView();
+    } else if (window.reconvertMobileTables && typeof window.reconvertMobileTables === 'function') {
+        window.reconvertMobileTables();
+    }
+};

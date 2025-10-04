@@ -14,6 +14,8 @@
     <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
     <!-- CSS Optimizado para touch -->
     <link href="{{ asset('css/touch-optimized.css') }}" rel="stylesheet">
+    <!-- Mejoras adicionales para móviles -->
+    <link href="{{ asset('css/mobile-enhancements.css') }}" rel="stylesheet">
     <!-- Sistema de Tutoriales -->
     <link href="{{ asset('css/tutorial-system.css') }}" rel="stylesheet">
     <!-- Sistema de Notificaciones Toast -->
@@ -1088,9 +1090,15 @@
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light mb-4">
             <div class="container-fluid">
-                <button class="btn btn-outline-primary me-3 navbar-toggler" id="sidebarToggle" type="button">
-                    <span class="navbar-toggler-icon"></span>
+                <!-- Botón hamburguesa para móvil -->
+                <button class="btn btn-outline-primary me-3 d-lg-none" id="sidebarToggle" type="button" aria-label="Abrir menú">
+                    <i class="fas fa-bars"></i>
                 </button>
+                
+                <!-- Título de página en móvil -->
+                <div class="navbar-brand d-lg-none">
+                    <span class="fw-bold text-primary">@yield('mobile-title', 'HDC')</span>
+                </div>
                 
                 <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown">
@@ -1189,6 +1197,12 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Mobile Tables JS -->
+    <script src="{{ asset('js/mobile-tables.js') }}"></script>
+    <!-- Mobile FAB JS -->
+    <script src="{{ asset('js/mobile-fab.js') }}"></script>
+    <!-- Mobile Sidebar JS -->
+    <script src="{{ asset('js/mobile-sidebar.js') }}"></script>
     
     <!-- Scripts para navegación móvil -->
     <script>
@@ -1259,9 +1273,6 @@
     <!-- Sistema de eliminación unificado -->
     <script src="{{ asset('js/eliminacion.js') }}"></script>
     
-    <!-- Sistema de tablas móviles automático -->
-    <script src="{{ asset('js/mobile-tables.js') }}"></script>
-    
     <!-- Utilidades móviles -->
     <script src="{{ asset('js/mobile-utils.js') }}"></script>
     
@@ -1281,16 +1292,29 @@
     <!-- Custom Scripts -->
     <script>
         // Sidebar toggle mejorado para móviles
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebarToggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
             const overlay = document.getElementById('sidebarOverlay');
             
             // En móviles usar show/hide, en desktop usar collapsed/expanded
             if (window.innerWidth <= 768) {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-                document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+                const isOpen = sidebar.classList.contains('show');
+                
+                if (isOpen) {
+                    // Cerrar sidebar
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                    document.body.classList.remove('sidebar-open');
+                } else {
+                    // Abrir sidebar
+                    sidebar.classList.add('show');
+                    overlay.classList.add('show');
+                    document.body.classList.add('sidebar-open');
+                }
             } else {
                 sidebar.classList.toggle('collapsed');
                 mainContent.classList.toggle('expanded');
@@ -1304,8 +1328,30 @@
             
             sidebar.classList.remove('show');
             overlay.classList.remove('show');
-            document.body.style.overflow = '';
+            document.body.classList.remove('sidebar-open');
         });
+        
+        // Función para cerrar sidebar
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+            document.body.classList.remove('sidebar-open');
+        }
+        
+        // Cerrar sidebar al hacer click en elementos del menú (solo en móvil)
+        if (window.innerWidth <= 768) {
+            document.querySelectorAll('.sidebar-item, .sidebar-dropdown-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Cerrar sidebar después de un pequeño delay para permitir la navegación
+                    setTimeout(() => {
+                        closeSidebar();
+                    }, 300);
+                });
+            });
+        }
 
         // Cerrar sidebar al redimensionar ventana
         window.addEventListener('resize', function() {

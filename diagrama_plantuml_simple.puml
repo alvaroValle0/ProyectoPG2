@@ -1,0 +1,122 @@
+@startuml SistemaHDC
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam actor {
+    BackgroundColor #E1F5FE
+    BorderColor #01579B
+    FontColor #000000
+}
+skinparam usecase {
+    BackgroundColor #F3E5F5
+    BorderColor #4A148C
+    FontColor #000000
+}
+
+title Sistema HDC - Diagrama de Casos de Uso
+
+left to right direction
+
+' Actores
+actor "Administrador" as Admin
+actor "Técnico" as Tecnico  
+actor "Usuario" as Usuario
+actor "Cliente" as Cliente
+
+' Sistema
+rectangle "Sistema HDC" {
+    
+    ' Casos de Uso Administrador
+    usecase "Gestionar Usuarios" as UC1
+    usecase "Gestionar Técnicos" as UC2
+    usecase "Gestionar Clientes" as UC3
+    usecase "Gestionar Equipos" as UC4
+    usecase "Gestionar Reparaciones" as UC5
+    usecase "Gestionar Inventario" as UC6
+    usecase "Gestionar Tickets" as UC7
+    usecase "Ver Dashboard Completo" as UC8
+    usecase "Generar Reportes" as UC9
+    usecase "Configurar Sistema" as UC10
+    
+    ' Casos de Uso Técnico
+    usecase "Ver Tareas Asignadas" as UC12
+    usecase "Gestionar Reparaciones Asignadas" as UC13
+    usecase "Actualizar Estado Reparaciones" as UC14
+    usecase "Ver Dashboard Personalizado" as UC16
+    usecase "Generar Tickets" as UC17
+    
+    ' Casos de Uso Usuario
+    usecase "Ver Dashboard Básico" as UC19
+    usecase "Gestionar Clientes Limitado" as UC20
+    usecase "Ver Reparaciones Solo Lectura" as UC21
+    usecase "Ver Equipos Solo Lectura" as UC22
+    
+    ' Casos de Uso Cliente
+    usecase "Consultar Estado Reparación" as UC23
+    usecase "Recibir Notificaciones" as UC24
+    usecase "Firmar Tickets" as UC25
+    usecase "Recibir Equipos Reparados" as UC26
+    
+    ' Autenticación
+    usecase "Iniciar Sesión" as UC_AUTH
+    usecase "Cerrar Sesión" as UC_LOGOUT
+}
+
+' Relaciones Administrador
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC_AUTH
+Admin --> UC_LOGOUT
+
+' Relaciones Técnico
+Tecnico --> UC5
+Tecnico --> UC12
+Tecnico --> UC13
+Tecnico --> UC14
+Tecnico --> UC16
+Tecnico --> UC17
+Tecnico --> UC_AUTH
+Tecnico --> UC_LOGOUT
+
+' Relaciones Usuario
+Usuario --> UC19
+Usuario --> UC20
+Usuario --> UC21
+Usuario --> UC22
+Usuario --> UC_AUTH
+Usuario --> UC_LOGOUT
+
+' Relaciones Cliente
+Cliente --> UC23
+Cliente --> UC24
+Cliente --> UC25
+Cliente --> UC26
+
+' Dependencias entre casos de uso
+UC5 ..> UC13 : <<include>>
+UC4 ..> UC5 : <<include>>
+UC3 ..> UC4 : <<include>>
+UC2 ..> UC12 : <<include>>
+UC1 ..> UC2 : <<include>>
+
+' Extensión de autenticación
+UC1 ..> UC_AUTH : <<extend>>
+UC2 ..> UC_AUTH : <<extend>>
+UC3 ..> UC_AUTH : <<extend>>
+UC4 ..> UC_AUTH : <<extend>>
+UC5 ..> UC_AUTH : <<extend>>
+UC6 ..> UC_AUTH : <<extend>>
+UC7 ..> UC_AUTH : <<extend>>
+UC8 ..> UC_AUTH : <<extend>>
+UC9 ..> UC_AUTH : <<extend>>
+UC10 ..> UC_AUTH : <<extend>>
+
+@enduml

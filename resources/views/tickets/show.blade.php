@@ -19,6 +19,9 @@
                         <a href="{{ route('tickets.index') }}" class="btn btn-outline-secondary btn-sm">
                             <i class="fas fa-list me-1"></i>Listado
                         </a>
+                        <a href="{{ route('tickets.historial', $ticket) }}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-history me-1"></i>Historial
+                        </a>
                         <a href="{{ route('tickets.imprimir', $ticket) }}" class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-print me-1"></i>Imprimir
                         </a>

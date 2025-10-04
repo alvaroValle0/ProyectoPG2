@@ -391,28 +391,6 @@
 </div>
 @endsection
 
-<!-- Modal de Tutorial Simple -->
-<div class="tutorial-modal" id="tutorialModal" style="display: none;">
-    <div class="tutorial-overlay-simple"></div>
-    <div class="tutorial-content-simple">
-        <div class="tutorial-header-simple">
-            <h5 id="tutorialTitle">Tutorial del Dashboard</h5>
-            <button type="button" class="btn-close-tutorial" onclick="closeTutorial()">&times;</button>
-        </div>
-        <div class="tutorial-body-simple">
-            <p id="tutorialDescription">Aquí puedes ver las estadísticas principales del sistema.</p>
-        </div>
-        <div class="tutorial-footer-simple">
-            <div class="tutorial-pagination">
-                <span id="tutorialStep">1 de 13</span>
-            </div>
-            <div class="tutorial-buttons">
-                <button type="button" class="btn-tutorial-prev" onclick="prevStep()" id="prevBtn" style="display: none;">Anterior</button>
-                <button type="button" class="btn-tutorial-next" onclick="nextStep()" id="nextBtn">Siguiente</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
 /* Tutorial Modal Simple */
@@ -1100,20 +1078,6 @@ window.startDashboardTutorial = startSimpleTutorial;
 </script>
 @endsection
 
-@section('tutorial-button')
-<button class="tutorial-button" onclick="startDashboardTutorial()" id="tutorialBtn" style="display: none;">
-    <i class="fas fa-graduation-cap"></i>
-    <span>Tutorial</span>
-</button>
-
-<!-- Botón para reiniciar tutorial (solo para admins) -->
-@if(auth()->user()->role === 'admin')
-<button class="tutorial-button" onclick="resetTutorial()" id="resetTutorialBtn" style="display: none; top: 60%; background: #6b7280;">
-    <i class="fas fa-redo"></i>
-    <span>Reiniciar</span>
-</button>
-@endif
-@endsection
 
 @section('styles')
 <style>

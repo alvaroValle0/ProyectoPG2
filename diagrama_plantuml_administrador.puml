@@ -1,0 +1,94 @@
+@startuml AdministradorHDC
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam actor {
+    BackgroundColor #FFEBEE
+    BorderColor #B71C1C
+    FontColor #000000
+}
+skinparam usecase {
+    BackgroundColor #FFEBEE
+    BorderColor #B71C1C
+    FontColor #000000
+}
+
+title Casos de Uso - Administrador\nSistema HDC
+
+left to right direction
+
+actor "👨‍💼 Administrador" as Admin
+
+rectangle "Sistema HDC" {
+    
+    ' Gestión de Usuarios y Permisos
+    usecase "Gestionar Usuarios" as UC1
+    usecase "Gestionar Técnicos" as UC2
+    usecase "Gestionar Permisos" as UC3
+    
+    ' Gestión de Datos Maestros
+    usecase "Gestionar Clientes" as UC4
+    usecase "Gestionar Equipos" as UC5
+    usecase "Gestionar Inventario" as UC6
+    
+    ' Gestión Operativa
+    usecase "Gestionar Reparaciones" as UC7
+    usecase "Gestionar Tickets" as UC8
+    
+    ' Dashboard y Reportes
+    usecase "Ver Dashboard Completo" as UC9
+    usecase "Generar Reportes" as UC10
+    
+    ' Configuración del Sistema
+    usecase "Configurar Sistema" as UC11
+    usecase "Gestionar Módulos" as UC12
+    
+    ' Autenticación
+    usecase "Iniciar Sesión" as UC_AUTH
+    usecase "Cerrar Sesión" as UC_LOGOUT
+}
+
+' Relaciones principales
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+Admin --> UC_AUTH
+Admin --> UC_LOGOUT
+
+' Dependencias
+UC1 ..> UC2 : <<include>>
+UC2 ..> UC3 : <<include>>
+UC4 ..> UC5 : <<include>>
+UC5 ..> UC7 : <<include>>
+UC6 ..> UC7 : <<include>>
+UC7 ..> UC8 : <<include>>
+UC9 ..> UC10 : <<include>>
+
+' Extensión de autenticación
+UC1 ..> UC_AUTH : <<extend>>
+UC2 ..> UC_AUTH : <<extend>>
+UC3 ..> UC_AUTH : <<extend>>
+UC4 ..> UC_AUTH : <<extend>>
+UC5 ..> UC_AUTH : <<extend>>
+UC6 ..> UC_AUTH : <<extend>>
+UC7 ..> UC_AUTH : <<extend>>
+UC8 ..> UC_AUTH : <<extend>>
+UC9 ..> UC_AUTH : <<extend>>
+UC10 ..> UC_AUTH : <<extend>>
+UC11 ..> UC_AUTH : <<extend>>
+UC12 ..> UC_AUTH : <<extend>>
+
+note right of Admin : "El Administrador tiene control\ntotal del sistema y puede\ngestionar todos los módulos."
+
+note bottom of UC7 : "Caso de uso central que\ncoordina todo el proceso\nde reparación."
+
+@enduml

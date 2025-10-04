@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ticket;
+use App\Models\TicketHistory;
 use App\Models\Reparacion;
+use App\Helpers\DatabaseHelper;
 use App\Models\Cliente;
 use App\Models\Equipo;
 use App\Models\Tecnico;
@@ -121,6 +123,9 @@ class TicketController extends Controller
             // Calcular total automáticamente
             $ticket->calcularTotal();
 
+            // Registrar en el historial
+            TicketHistory::recordCreated($ticket, auth()->user(), $validated);
+
             DB::commit();
 
             return redirect()->route('tickets.show', $ticket)
@@ -182,8 +187,14 @@ class TicketController extends Controller
         ]);
 
         try {
+            // Guardar datos anteriores para el historial
+            $oldData = $ticket->only(array_keys($validated));
+            
             $ticket->update($validated);
             $ticket->calcularTotal();
+
+            // Registrar en el historial
+            TicketHistory::recordUpdated($ticket, auth()->user(), $oldData, $validated);
 
             return redirect()->route('tickets.show', $ticket)
                            ->with('success', 'Ticket actualizado exitosamente.');
@@ -250,6 +261,19 @@ class TicketController extends Controller
             'reparacion.tecnico.user'
         ]);
 
+        // Registrar en el historial que se está imprimiendo (solo si la tabla existe)
+        try {
+            // Asegurar que la tabla existe
+            DatabaseHelper::ensureTicketHistoriesTable();
+            
+            if (DatabaseHelper::tableExists('ticket_histories')) {
+                TicketHistory::recordPrinted($ticket, auth()->user());
+            }
+        } catch (\Exception $e) {
+            // Si hay error al registrar el historial, continuar con la impresión
+            \Log::warning('No se pudo registrar el historial de impresión: ' . $e->getMessage());
+        }
+
         return view('tickets.imprimir', compact('ticket'));
     }
 
@@ -264,7 +288,11 @@ class TicketController extends Controller
         }
 
         try {
+            $oldStatus = $ticket->estado;
             $ticket->marcarComoEntregado();
+
+            // Registrar en el historial
+            TicketHistory::recordDelivered($ticket, auth()->user());
 
             return back()->with('success', 'Ticket marcado como entregado exitosamente.');
         } catch (\Exception $e) {
@@ -285,6 +313,9 @@ class TicketController extends Controller
 
         try {
             $ticket->anular($motivo);
+
+            // Registrar en el historial
+            TicketHistory::recordCancelled($ticket, auth()->user(), $motivo);
 
             return back()->with('success', 'Ticket anulado exitosamente.');
         } catch (\Exception $e) {
@@ -328,5 +359,80 @@ class TicketController extends Controller
                         });
 
         return response()->json($tickets);
+    }
+
+    /**
+     * Show ticket history
+     */
+    public function history(Request $request)
+    {
+        $query = TicketHistory::with(['ticket', 'user']);
+
+        // Filtro por ticket específico
+        if ($request->filled('ticket_id')) {
+            $query->where('ticket_id', $request->ticket_id);
+        }
+
+        // Filtro por usuario
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Filtro por acción
+        if ($request->filled('action')) {
+            $query->where('action', $request->action);
+        }
+
+        // Filtro por fecha
+        if ($request->filled('fecha_inicio')) {
+            $query->whereDate('created_at', '>=', $request->fecha_inicio);
+        }
+        if ($request->filled('fecha_fin')) {
+            $query->whereDate('created_at', '<=', $request->fecha_fin);
+        }
+
+        // Búsqueda rápida
+        if ($request->filled('buscar')) {
+            $termino = $request->buscar;
+            $query->where(function($q) use ($termino) {
+                $q->where('description', 'like', "%{$termino}%")
+                  ->orWhereHas('ticket', function($sq) use ($termino) {
+                      $sq->where('numero_ticket', 'like', "%{$termino}%");
+                  })
+                  ->orWhereHas('user', function($sq) use ($termino) {
+                      $sq->where('name', 'like', "%{$termino}%");
+                  });
+            });
+        }
+
+        $historial = $query->orderBy('created_at', 'desc')
+                          ->paginate(20);
+
+        // Estadísticas del historial
+        $estadisticas = [
+            'total_acciones' => TicketHistory::count(),
+            'acciones_hoy' => TicketHistory::whereDate('created_at', today())->count(),
+            'acciones_esta_semana' => TicketHistory::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'acciones_este_mes' => TicketHistory::whereMonth('created_at', now()->month)->count(),
+        ];
+
+        // Acciones más comunes
+        $acciones_comunes = TicketHistory::select('action', DB::raw('count(*) as total'))
+                                       ->groupBy('action')
+                                       ->orderBy('total', 'desc')
+                                       ->limit(5)
+                                       ->get();
+
+        return view('tickets.history', compact('historial', 'estadisticas', 'acciones_comunes'));
+    }
+
+    /**
+     * Show specific ticket history
+     */
+    public function ticketHistory(Ticket $ticket)
+    {
+        $historial = $ticket->history()->with('user')->get();
+        
+        return view('tickets.ticket-history', compact('ticket', 'historial'));
     }
 }

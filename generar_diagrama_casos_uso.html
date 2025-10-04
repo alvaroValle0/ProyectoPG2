@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Diagrama de Casos de Uso - Sistema HDC</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #27DB9F, #22c495);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .control-group select,
+        .control-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #27DB9F, #22c495);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(39, 219, 159, 0.3);
+        }
+        
+        .diagram-container {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 600px;
+        }
+        
+        .info-panel {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .info-panel h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        
+        .actor-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .actor-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .actor-card:hover {
+            border-color: #27DB9F;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .actor-card h4 {
+            margin: 0 0 10px 0;
+            color: #27DB9F;
+        }
+        
+        .use-case-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .use-case-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .use-case-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .export-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .export-buttons .btn {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Generador de Diagrama de Casos de Uso</h1>
+            <p>Sistema de Gestión HDC - Servicios Electrónicos</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-panel">
+                <h3>🎯 Información del Sistema</h3>
+                <p>Este generador te permite crear diagramas de casos de uso para tu sistema HDC. 
+                Puedes personalizar los actores, casos de uso y generar el diagrama automáticamente.</p>
+            </div>
+            
+            <div class="controls">
+                <h3>⚙️ Configuración del Diagrama</h3>
+                
+                <div class="control-group">
+                    <label for="tipoDiagrama">Tipo de Diagrama:</label>
+                    <select id="tipoDiagrama">
+                        <option value="completo">Diagrama Completo</option>
+                        <option value="admin">Solo Administrador</option>
+                        <option value="tecnico">Solo Técnico</option>
+                        <option value="usuario">Solo Usuario</option>
+                        <option value="cliente">Solo Cliente</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="estilo">Estilo del Diagrama:</label>
+                    <select id="estilo">
+                        <option value="moderno">Moderno</option>
+                        <option value="clasico">Clásico</option>
+                        <option value="minimalista">Minimalista</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="generarDiagrama()">🎨 Generar Diagrama</button>
+            </div>
+            
+            <div class="actor-list">
+                <div class="actor-card">
+                    <h4>👨‍💼 Administrador</h4>
+                    <ul class="use-case-list">
+                        <li>Gestionar Usuarios</li>
+                        <li>Gestionar Técnicos</li>
+                        <li>Gestionar Clientes</li>
+                        <li>Gestionar Equipos</li>
+                        <li>Gestionar Reparaciones</li>
+                        <li>Gestionar Inventario</li>
+                        <li>Gestionar Tickets</li>
+                        <li>Ver Dashboard Completo</li>
+                        <li>Generar Reportes</li>
+                        <li>Configurar Sistema</li>
+                        <li>Gestionar Permisos</li>
+                    </ul>
+                </div>
+                
+                <div class="actor-card">
+                    <h4>🔧 Técnico</h4>
+                    <ul class="use-case-list">
+                        <li>Ver Tareas Asignadas</li>
+                        <li>Gestionar Reparaciones Asignadas</li>
+                        <li>Actualizar Estado Reparaciones</li>
+                        <li>Gestionar Equipos</li>
+                        <li>Ver Dashboard Personalizado</li>
+                        <li>Generar Tickets</li>
+                        <li>Gestionar Inventario Limitado</li>
+                    </ul>
+                </div>
+                
+                <div class="actor-card">
+                    <h4>👤 Usuario</h4>
+                    <ul class="use-case-list">
+                        <li>Ver Dashboard Básico</li>
+                        <li>Gestionar Clientes Limitado</li>
+                        <li>Ver Reparaciones Solo Lectura</li>
+                        <li>Ver Equipos Solo Lectura</li>
+                    </ul>
+                </div>
+                
+                <div class="actor-card">
+                    <h4>👥 Cliente</h4>
+                    <ul class="use-case-list">
+                        <li>Consultar Estado Reparación</li>
+                        <li>Recibir Notificaciones</li>
+                        <li>Firmar Tickets</li>
+                        <li>Recibir Equipos Reparados</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="diagram-container">
+                <div id="diagrama"></div>
+            </div>
+            
+            <div class="export-buttons">
+                <button class="btn" onclick="exportarPNG()">📸 Exportar PNG</button>
+                <button class="btn" onclick="exportarSVG()">🎨 Exportar SVG</button>
+                <button class="btn" onclick="copiarCodigo()">📋 Copiar Código</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#27DB9F',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#22c495',
+                lineColor: '#666',
+                secondaryColor: '#f0f0f0',
+                tertiaryColor: '#fff'
+            }
+        });
+
+        // Definir diagramas
+        const diagramas = {
+            completo: `
+                graph TB
+                    %% Actores
+                    Admin[👨‍💼 Administrador]
+                    Tecnico[🔧 Técnico]
+                    Usuario[👤 Usuario]
+                    Cliente[👥 Cliente]
+                    Sistema[🤖 Sistema]
+
+                    %% Casos de Uso - Administrador
+                    Admin --> UC1[Gestionar Usuarios]
+                    Admin --> UC2[Gestionar Técnicos]
+                    Admin --> UC3[Gestionar Clientes]
+                    Admin --> UC4[Gestionar Equipos]
+                    Admin --> UC5[Gestionar Reparaciones]
+                    Admin --> UC6[Gestionar Inventario]
+                    Admin --> UC7[Gestionar Tickets]
+                    Admin --> UC8[Ver Dashboard Completo]
+                    Admin --> UC9[Generar Reportes]
+                    Admin --> UC10[Configurar Sistema]
+                    Admin --> UC11[Gestionar Permisos]
+
+                    %% Casos de Uso - Técnico
+                    Tecnico --> UC12[Ver Tareas Asignadas]
+                    Tecnico --> UC13[Gestionar Reparaciones Asignadas]
+                    Tecnico --> UC14[Actualizar Estado Reparaciones]
+                    Tecnico --> UC15[Gestionar Equipos]
+                    Tecnico --> UC16[Ver Dashboard Personalizado]
+                    Tecnico --> UC17[Generar Tickets]
+                    Tecnico --> UC18[Gestionar Inventario Limitado]
+
+                    %% Casos de Uso - Usuario
+                    Usuario --> UC19[Ver Dashboard Básico]
+                    Usuario --> UC20[Gestionar Clientes Limitado]
+                    Usuario --> UC21[Ver Reparaciones Solo Lectura]
+                    Usuario --> UC22[Ver Equipos Solo Lectura]
+
+                    %% Casos de Uso - Cliente
+                    Cliente --> UC23[Consultar Estado Reparación]
+                    Cliente --> UC24[Recibir Notificaciones]
+                    Cliente --> UC25[Firmar Tickets]
+                    Cliente --> UC26[Recibir Equipos Reparados]
+
+                    %% Casos de Uso - Sistema
+                    Sistema --> UC27[Enviar Notificaciones]
+                    Sistema --> UC28[Generar Estadísticas]
+                    Sistema --> UC29[Backup Automático]
+                    Sistema --> UC30[Validar Datos]
+
+                    %% Relaciones entre casos de uso
+                    UC5 --> UC13
+                    UC4 --> UC5
+                    UC3 --> UC4
+                    UC2 --> UC12
+                    UC1 --> UC2
+                    UC6 --> UC18
+                    UC7 --> UC17
+                    UC8 --> UC16
+                    UC8 --> UC19
+
+                    %% Estilos
+                    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+                    classDef admin fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+                    classDef tecnico fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                    classDef usuario fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                    classDef cliente fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+                    classDef sistema fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+
+                    class Admin,Tecnico,Usuario,Cliente,Sistema actor
+                    class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8,UC9,UC10,UC11 admin
+                    class UC12,UC13,UC14,UC15,UC16,UC17,UC18 tecnico
+                    class UC19,UC20,UC21,UC22 usuario
+                    class UC23,UC24,UC25,UC26 cliente
+                    class UC27,UC28,UC29,UC30 sistema
+            `,
+            
+            admin: `
+                graph TB
+                    Admin[👨‍💼 Administrador]
+                    
+                    Admin --> UC1[Gestionar Usuarios]
+                    Admin --> UC2[Gestionar Técnicos]
+                    Admin --> UC3[Gestionar Clientes]
+                    Admin --> UC4[Gestionar Equipos]
+                    Admin --> UC5[Gestionar Reparaciones]
+                    Admin --> UC6[Gestionar Inventario]
+                    Admin --> UC7[Gestionar Tickets]
+                    Admin --> UC8[Ver Dashboard Completo]
+                    Admin --> UC9[Generar Reportes]
+                    Admin --> UC10[Configurar Sistema]
+                    Admin --> UC11[Gestionar Permisos]
+                    
+                    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+                    classDef admin fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+                    
+                    class Admin actor
+                    class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8,UC9,UC10,UC11 admin
+            `,
+            
+            tecnico: `
+                graph TB
+                    Tecnico[🔧 Técnico]
+                    
+                    Tecnico --> UC12[Ver Tareas Asignadas]
+                    Tecnico --> UC13[Gestionar Reparaciones Asignadas]
+                    Tecnico --> UC14[Actualizar Estado Reparaciones]
+                    Tecnico --> UC15[Gestionar Equipos]
+                    Tecnico --> UC16[Ver Dashboard Personalizado]
+                    Tecnico --> UC17[Generar Tickets]
+                    Tecnico --> UC18[Gestionar Inventario Limitado]
+                    
+                    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+                    classDef tecnico fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                    
+                    class Tecnico actor
+                    class UC12,UC13,UC14,UC15,UC16,UC17,UC18 tecnico
+            `,
+            
+            usuario: `
+                graph TB
+                    Usuario[👤 Usuario]
+                    
+                    Usuario --> UC19[Ver Dashboard Básico]
+                    Usuario --> UC20[Gestionar Clientes Limitado]
+                    Usuario --> UC21[Ver Reparaciones Solo Lectura]
+                    Usuario --> UC22[Ver Equipos Solo Lectura]
+                    
+                    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+                    classDef usuario fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                    
+                    class Usuario actor
+                    class UC19,UC20,UC21,UC22 usuario
+            `,
+            
+            cliente: `
+                graph TB
+                    Cliente[👥 Cliente]
+                    
+                    Cliente --> UC23[Consultar Estado Reparación]
+                    Cliente --> UC24[Recibir Notificaciones]
+                    Cliente --> UC25[Firmar Tickets]
+                    Cliente --> UC26[Recibir Equipos Reparados]
+                    
+                    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+                    classDef cliente fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+                    
+                    class Cliente actor
+                    class UC23,UC24,UC25,UC26 cliente
+            `
+        };
+
+        function generarDiagrama() {
+            const tipo = document.getElementById('tipoDiagrama').value;
+            const estilo = document.getElementById('estilo').value;
+            
+            // Configurar tema según estilo
+            const temas = {
+                moderno: {
+                    primaryColor: '#27DB9F',
+                    primaryTextColor: '#333',
+                    primaryBorderColor: '#22c495'
+                },
+                clasico: {
+                    primaryColor: '#2196F3',
+                    primaryTextColor: '#000',
+                    primaryBorderColor: '#1976D2'
+                },
+                minimalista: {
+                    primaryColor: '#666',
+                    primaryTextColor: '#333',
+                    primaryBorderColor: '#999'
+                }
+            };
+            
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'default',
+                themeVariables: temas[estilo]
+            });
+            
+            const diagrama = diagramas[tipo];
+            document.getElementById('diagrama').innerHTML = diagrama;
+            
+            mermaid.init(undefined, document.getElementById('diagrama'));
+        }
+
+        function exportarPNG() {
+            // Implementar exportación a PNG
+            alert('Función de exportación PNG en desarrollo. Usa Mermaid Live Editor para exportar.');
+        }
+
+        function exportarSVG() {
+            // Implementar exportación a SVG
+            alert('Función de exportación SVG en desarrollo. Usa Mermaid Live Editor para exportar.');
+        }
+
+        function copiarCodigo() {
+            const tipo = document.getElementById('tipoDiagrama').value;
+            const codigo = diagramas[tipo];
+            
+            navigator.clipboard.writeText(codigo).then(() => {
+                alert('Código copiado al portapapeles. Pégalo en Mermaid Live Editor.');
+            });
+        }
+
+        // Generar diagrama inicial
+        window.onload = function() {
+            generarDiagrama();
+        };
+    </script>
+</body>
+</html>

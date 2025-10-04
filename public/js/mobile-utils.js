@@ -173,8 +173,12 @@ class MobileUtils {
         window.addEventListener('orientationchange', () => {
             // Redimensionar tablas después de cambio de orientación
             setTimeout(() => {
-                if (window.mobileTableConverter) {
+                if (window.toggleMobileTable && typeof window.toggleMobileTable === 'function') {
+                    window.toggleMobileTable();
+                } else if (window.mobileTableConverter && typeof window.mobileTableConverter.toggleView === 'function') {
                     window.mobileTableConverter.toggleView();
+                } else if (window.reconvertMobileTables && typeof window.reconvertMobileTables === 'function') {
+                    window.reconvertMobileTables();
                 }
             }, 500);
         });
@@ -304,8 +308,8 @@ class MobileUtils {
 }
 
 // CSS para animaciones
-const style = document.createElement('style');
-style.textContent = `
+const mobileUtilsStyles = document.createElement('style');
+mobileUtilsStyles.textContent = `
     @keyframes ripple {
         to {
             transform: scale(4);
@@ -330,7 +334,7 @@ style.textContent = `
         gap: 0.5rem;
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(mobileUtilsStyles);
 
 // Inicializar automáticamente
 window.mobileUtils = new MobileUtils();

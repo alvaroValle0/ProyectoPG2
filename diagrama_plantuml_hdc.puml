@@ -1,0 +1,183 @@
+@startuml DiagramaCasosUsoHDC
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam actor {
+    BackgroundColor #E1F5FE
+    BorderColor #01579B
+    FontColor #000000
+}
+skinparam usecase {
+    BackgroundColor #F3E5F5
+    BorderColor #4A148C
+    FontColor #000000
+}
+skinparam rectangle {
+    BackgroundColor #F8F9FA
+    BorderColor #6C757D
+}
+
+title Diagrama de Casos de Uso - Sistema HDC\nServicios Electrónicos
+
+left to right direction
+
+' Actores del Sistema
+actor "👨‍💼 Administrador" as Admin
+actor "🔧 Técnico" as Tecnico
+actor "👤 Usuario" as Usuario
+actor "👥 Cliente" as Cliente
+actor "🤖 Sistema" as Sistema
+
+' Rectángulo del sistema
+rectangle "Sistema HDC - Gestión de Reparaciones" {
+    
+    ' Casos de Uso del Administrador
+    usecase "Gestionar Usuarios" as UC1
+    usecase "Gestionar Técnicos" as UC2
+    usecase "Gestionar Clientes" as UC3
+    usecase "Gestionar Equipos" as UC4
+    usecase "Gestionar Reparaciones" as UC5
+    usecase "Gestionar Inventario" as UC6
+    usecase "Gestionar Tickets" as UC7
+    usecase "Ver Dashboard Completo" as UC8
+    usecase "Generar Reportes" as UC9
+    usecase "Configurar Sistema" as UC10
+    usecase "Gestionar Permisos" as UC11
+    
+    ' Casos de Uso del Técnico
+    usecase "Ver Tareas Asignadas" as UC12
+    usecase "Gestionar Reparaciones Asignadas" as UC13
+    usecase "Actualizar Estado Reparaciones" as UC14
+    usecase "Gestionar Equipos" as UC15
+    usecase "Ver Dashboard Personalizado" as UC16
+    usecase "Generar Tickets" as UC17
+    usecase "Gestionar Inventario Limitado" as UC18
+    
+    ' Casos de Uso del Usuario
+    usecase "Ver Dashboard Básico" as UC19
+    usecase "Gestionar Clientes Limitado" as UC20
+    usecase "Ver Reparaciones Solo Lectura" as UC21
+    usecase "Ver Equipos Solo Lectura" as UC22
+    
+    ' Casos de Uso del Cliente
+    usecase "Consultar Estado Reparación" as UC23
+    usecase "Recibir Notificaciones" as UC24
+    usecase "Firmar Tickets" as UC25
+    usecase "Recibir Equipos Reparados" as UC26
+    
+    ' Casos de Uso del Sistema
+    usecase "Enviar Notificaciones" as UC27
+    usecase "Generar Estadísticas" as UC28
+    usecase "Backup Automático" as UC29
+    usecase "Validar Datos" as UC30
+    
+    ' Casos de Uso de Autenticación (Comunes)
+    usecase "Iniciar Sesión" as UC_AUTH1
+    usecase "Cerrar Sesión" as UC_AUTH2
+    usecase "Recuperar Contraseña" as UC_AUTH3
+    usecase "Cambiar Contraseña" as UC_AUTH4
+}
+
+' Relaciones del Administrador
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC11
+Admin --> UC_AUTH1
+Admin --> UC_AUTH2
+Admin --> UC_AUTH3
+Admin --> UC_AUTH4
+
+' Relaciones del Técnico
+Tecnico --> UC12
+Tecnico --> UC13
+Tecnico --> UC14
+Tecnico --> UC15
+Tecnico --> UC16
+Tecnico --> UC17
+Tecnico --> UC18
+Tecnico --> UC_AUTH1
+Tecnico --> UC_AUTH2
+Tecnico --> UC_AUTH3
+Tecnico --> UC_AUTH4
+
+' Relaciones del Usuario
+Usuario --> UC19
+Usuario --> UC20
+Usuario --> UC21
+Usuario --> UC22
+Usuario --> UC_AUTH1
+Usuario --> UC_AUTH2
+Usuario --> UC_AUTH3
+Usuario --> UC_AUTH4
+
+' Relaciones del Cliente
+Cliente --> UC23
+Cliente --> UC24
+Cliente --> UC25
+Cliente --> UC26
+
+' Relaciones del Sistema
+Sistema --> UC27
+Sistema --> UC28
+Sistema --> UC29
+Sistema --> UC30
+
+' Relaciones entre casos de uso (Dependencias)
+UC5 ..> UC13 : <<include>>
+UC4 ..> UC5 : <<include>>
+UC3 ..> UC4 : <<include>>
+UC2 ..> UC12 : <<include>>
+UC1 ..> UC2 : <<include>>
+UC6 ..> UC18 : <<include>>
+UC7 ..> UC17 : <<include>>
+UC8 ..> UC16 : <<include>>
+UC8 ..> UC19 : <<include>>
+
+' Relaciones de extensión para autenticación
+UC1 ..> UC_AUTH1 : <<extend>>
+UC2 ..> UC_AUTH1 : <<extend>>
+UC3 ..> UC_AUTH1 : <<extend>>
+UC4 ..> UC_AUTH1 : <<extend>>
+UC5 ..> UC_AUTH1 : <<extend>>
+UC6 ..> UC_AUTH1 : <<extend>>
+UC7 ..> UC_AUTH1 : <<extend>>
+UC8 ..> UC_AUTH1 : <<extend>>
+UC9 ..> UC_AUTH1 : <<extend>>
+UC10 ..> UC_AUTH1 : <<extend>>
+UC11 ..> UC_AUTH1 : <<extend>>
+UC12 ..> UC_AUTH1 : <<extend>>
+UC13 ..> UC_AUTH1 : <<extend>>
+UC14 ..> UC_AUTH1 : <<extend>>
+UC15 ..> UC_AUTH1 : <<extend>>
+UC16 ..> UC_AUTH1 : <<extend>>
+UC17 ..> UC_AUTH1 : <<extend>>
+UC18 ..> UC_AUTH1 : <<extend>>
+UC19 ..> UC_AUTH1 : <<extend>>
+UC20 ..> UC_AUTH1 : <<extend>>
+UC21 ..> UC_AUTH1 : <<extend>>
+UC22 ..> UC_AUTH1 : <<extend>>
+
+' Notas explicativas
+note right of Admin : "Control total del sistema.\nGestiona todos los módulos\ny configuraciones."
+
+note right of Tecnico : "Especializado en reparaciones.\nManeja equipos y procesos\ntécnicos asignados."
+
+note right of Usuario : "Acceso limitado al sistema.\nPuede consultar información\nbásica y gestionar clientes."
+
+note right of Cliente : "Usuario externo que interactúa\ncon el sistema para consultas\ny servicios de reparación."
+
+note right of Sistema : "Procesos automáticos del sistema\nque no requieren intervención\nhumana directa."
+
+note bottom of UC5 : "Caso de uso principal que\ncoordina todo el proceso\nde reparación."
+
+note bottom of UC_AUTH1 : "Caso de uso común requerido\npor la mayoría de funcionalidades\ndel sistema."
+
+@enduml

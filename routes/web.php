@@ -147,6 +147,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/{ticket}/imprimir', [TicketController::class, 'imprimir'])->name('imprimir');
         Route::patch('/{ticket}/marcar-entregado', [TicketController::class, 'marcarEntregado'])->name('marcar-entregado');
         Route::patch('/{ticket}/anular', [TicketController::class, 'anular'])->name('anular');
+        Route::get('/{ticket}/historial', [TicketController::class, 'ticketHistory'])->name('historial');
+        
+        // Historial general de tickets
+        Route::get('/historial/general', [TicketController::class, 'history'])->name('historial.general');
         
         // Generar ticket desde reparación
         Route::post('/generar-desde-reparacion/{reparacion}', [TicketController::class, 'generarDesdeReparacion'])->name('generar-desde-reparacion');

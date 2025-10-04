@@ -65,6 +65,11 @@ class Ticket extends Model
         return $this->hasOneThrough(Tecnico::class, Reparacion::class, 'id', 'id', 'reparacion_id', 'tecnico_id');
     }
 
+    public function history()
+    {
+        return $this->hasMany(TicketHistory::class)->orderBy('created_at', 'desc');
+    }
+
     // Scopes
     public function scopeGenerados($query)
     {

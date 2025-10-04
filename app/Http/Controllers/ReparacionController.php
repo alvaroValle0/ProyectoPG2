@@ -7,12 +7,40 @@ use App\Models\Equipo;
 use App\Models\Tecnico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ReparacionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Reparacion::with(['equipo', 'tecnico.user']);
+        // Base query con eager loading optimizado
+        $baseQuery = Reparacion::with(['equipo', 'tecnico.user']);
+
+        // Precalcular estadísticas globales con caché para mejor rendimiento
+        $estadisticas = Cache::remember('reparaciones_estadisticas', 300, function () { // Cache por 5 minutos
+            $estadisticasRaw = DB::table('reparaciones')
+                ->selectRaw('
+                    COUNT(*) as total,
+                    SUM(CASE WHEN estado = "pendiente" THEN 1 ELSE 0 END) as pendientes,
+                    SUM(CASE WHEN estado = "en_proceso" THEN 1 ELSE 0 END) as en_proceso,
+                    SUM(CASE WHEN estado = "completada" THEN 1 ELSE 0 END) as completadas,
+                    SUM(CASE WHEN estado = "cancelada" THEN 1 ELSE 0 END) as canceladas,
+                    SUM(CASE WHEN estado IN ("pendiente", "en_proceso") AND fecha_inicio < ? THEN 1 ELSE 0 END) as vencidas
+                ', [now()->subDays(7)])
+                ->first();
+
+            return [
+                'total' => (int) $estadisticasRaw->total,
+                'pendientes' => (int) $estadisticasRaw->pendientes,
+                'en_proceso' => (int) $estadisticasRaw->en_proceso,
+                'completadas' => (int) $estadisticasRaw->completadas,
+                'canceladas' => (int) $estadisticasRaw->canceladas,
+                'vencidas' => (int) $estadisticasRaw->vencidas,
+            ];
+        });
+
+        // Aplicar filtros a la consulta para la paginación
+        $query = clone $baseQuery;
 
         // Filtros
         if ($request->filled('estado')) {
@@ -76,10 +104,15 @@ class ReparacionController extends Controller
                 ->where('fecha_inicio', '<', now()->subDays(7));
         }
 
+        // Obtener reparaciones paginadas
         $reparaciones = $query->orderBy('fecha_inicio', 'desc')->paginate(15);
-        $tecnicos = Tecnico::activos()->with('user')->get();
+        
+        // Cargar técnicos de manera optimizada con caché
+        $tecnicos = Cache::remember('tecnicos_activos', 600, function () { // Cache por 10 minutos
+            return Tecnico::activos()->with('user')->get();
+        });
 
-        return view('reparaciones.reparaciones.index', compact('reparaciones', 'tecnicos'));
+        return view('reparaciones.reparaciones.index', compact('reparaciones', 'tecnicos', 'estadisticas'));
     }
 
     public function create(Request $request)
@@ -116,6 +149,9 @@ class ReparacionController extends Controller
             
             // Actualizar estado del equipo
             $reparacion->equipo->update(['estado' => 'en_reparacion']);
+
+            // Limpiar caché de estadísticas
+            Cache::forget('reparaciones_estadisticas');
 
             DB::commit();
             
@@ -173,6 +209,9 @@ class ReparacionController extends Controller
         try {
             $reparacion->update($validated);
             
+            // Limpiar caché de estadísticas
+            Cache::forget('reparaciones_estadisticas');
+            
             return redirect()->route('reparaciones.show', $reparacion)
                 ->with('success', 'Reparación actualizada exitosamente.');
         } catch (\Exception $e) {
@@ -192,6 +231,9 @@ class ReparacionController extends Controller
             }
 
             $reparacion->delete();
+
+            // Limpiar caché de estadísticas
+            Cache::forget('reparaciones_estadisticas');
 
             DB::commit();
             
@@ -221,6 +263,9 @@ class ReparacionController extends Controller
             if ($validated['estado'] === 'completada' && $estadoAnterior !== 'completada') {
                 $reparacion->update(['fecha_fin' => now()]);
             }
+
+            // Limpiar caché de estadísticas
+            Cache::forget('reparaciones_estadisticas');
 
             DB::commit();
             
