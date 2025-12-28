@@ -25,6 +25,7 @@ class Inventario extends Model
         'precio_compra',
         'precio_venta',
         'proveedor',
+        'proveedor_id',
         'ubicacion',
         'estado',
         'fecha_compra',
@@ -188,7 +189,12 @@ class Inventario extends Model
         return $this->stock_actual <= $this->stock_minimo;
     }
 
-    // Relaciones (si las hay en el futuro)
+    // Relaciones
+    public function proveedorRelacion()
+    {
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
+    }
+
     // public function movimientos()
     // {
     //     return $this->hasMany(MovimientoInventario::class);

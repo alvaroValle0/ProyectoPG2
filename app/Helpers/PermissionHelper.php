@@ -51,14 +51,14 @@ class PermissionHelper
         $permissionsByRole = [
             'admin' => [
                 'dashboard', 'clientes', 'equipos', 'reparaciones', 'inventario', 
-                'tickets', 'tecnicos', 'usuarios', 'configuracion', 'reportes'
+                'proveedores', 'tickets', 'tecnicos', 'usuarios', 'configuracion', 'reportes'
             ],
             'tecnico' => [
                 'dashboard', 'clientes', 'equipos', 'reparaciones', 'inventario', 
-                'tickets', 'reportes'
+                'proveedores', 'tickets', 'reportes'
             ],
             'usuario' => [
-                'dashboard', 'clientes', 'equipos', 'inventario', 'tickets'
+                'dashboard', 'clientes', 'equipos', 'inventario', 'proveedores', 'tickets'
             ]
         ];
 
@@ -76,6 +76,7 @@ class PermissionHelper
                 'create_reparacion', 'edit_reparacion', 'delete_reparacion', 'view_reparacion',
                 'create_cliente', 'edit_cliente', 'delete_cliente', 'view_cliente',
                 'create_inventario', 'edit_inventario', 'delete_inventario', 'view_inventario',
+                'create_proveedor', 'edit_proveedor', 'delete_proveedor', 'view_proveedor',
                 'create_ticket', 'edit_ticket', 'delete_ticket', 'view_ticket',
                 'manage_users', 'manage_tecnicos', 'view_reports'
             ],
@@ -84,12 +85,13 @@ class PermissionHelper
                 'create_reparacion', 'edit_reparacion', 'view_reparacion',
                 'create_cliente', 'edit_cliente', 'view_cliente',
                 'create_inventario', 'edit_inventario', 'view_inventario',
+                'create_proveedor', 'edit_proveedor', 'view_proveedor',
                 'create_ticket', 'edit_ticket', 'view_ticket',
                 'view_reports'
             ],
             'usuario' => [
                 'view_equipo', 'create_cliente', 'edit_cliente', 'view_cliente',
-                'view_inventario', 'create_ticket', 'view_ticket'
+                'view_inventario', 'view_proveedor', 'create_ticket', 'view_ticket'
             ]
         ];
 
@@ -133,6 +135,11 @@ class PermissionHelper
                 'name' => 'Inventario',
                 'icon' => 'fas fa-boxes',
                 'route' => 'inventario.index',
+            ],
+            'proveedores' => [
+                'name' => 'Proveedores',
+                'icon' => 'fas fa-truck',
+                'route' => 'proveedores.index',
             ],
             'tickets' => [
                 'name' => 'Tickets',

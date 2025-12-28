@@ -1024,6 +1024,14 @@
             </a>
             @endif
             
+            <!-- Proveedores -->
+            @if(isset($modules['proveedores']))
+            <a href="{{ route('proveedores.index') }}" class="sidebar-item {{ request()->routeIs('proveedores.*') ? 'active' : '' }}">
+                <i class="fas fa-truck"></i>
+                Proveedores
+            </a>
+            @endif
+            
             <!-- Tickets -->
             @if(isset($modules['tickets']))
             <a href="{{ route('tickets.index') }}" class="sidebar-item {{ request()->routeIs('tickets.*') ? 'active' : '' }}">

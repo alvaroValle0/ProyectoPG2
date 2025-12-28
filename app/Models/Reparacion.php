@@ -15,6 +15,7 @@ class Reparacion extends Model
     protected $fillable = [
         'equipo_id',
         'tecnico_id',
+        'proveedor_id',
         'descripcion_problema',
         'diagnostico',
         'solucion',
@@ -46,6 +47,11 @@ class Reparacion extends Model
     public function tecnico()
     {
         return $this->belongsTo(Tecnico::class);
+    }
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class);
     }
 
     public function cliente()

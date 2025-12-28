@@ -11,6 +11,7 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\ProveedorController;
 
 // Public routes
 Route::get('/', function () {
@@ -177,6 +178,24 @@ Route::middleware('auth')->group(function () {
         
         // API para búsquedas AJAX
         Route::get('/api/search', [InventarioController::class, 'api'])->name('api');
+    });
+
+    // === MÓDULO DE PROVEEDORES ===
+    Route::prefix('proveedores')->name('proveedores.')->middleware('module:proveedores')->group(function () {
+        Route::get('/', [ProveedorController::class, 'index'])->name('index');
+        Route::get('/create', [ProveedorController::class, 'create'])->name('create');
+        Route::post('/', [ProveedorController::class, 'store'])->name('store');
+        Route::get('/{proveedor}', [ProveedorController::class, 'show'])->name('show');
+        Route::get('/{proveedor}/edit', [ProveedorController::class, 'edit'])->name('edit');
+        Route::put('/{proveedor}', [ProveedorController::class, 'update'])->name('update');
+        Route::delete('/{proveedor}', [ProveedorController::class, 'destroy'])->name('destroy');
+        
+        // Acciones especiales
+        Route::patch('/{proveedor}/toggle-status', [ProveedorController::class, 'toggleStatus'])->name('toggle-status');
+        Route::patch('/{proveedor}/update-rating', [ProveedorController::class, 'updateRating'])->name('update-rating');
+        
+        // API para búsquedas AJAX
+        Route::get('/api/search', [ProveedorController::class, 'api'])->name('api');
     });
 
     // === MÓDULO DE CONFIGURACIÓN ===
